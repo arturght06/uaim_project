@@ -1,7 +1,0 @@
-.env
-.python-version
-.venv
-app.log
-migrations
-.idea
-**/__pycache__
