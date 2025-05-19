@@ -16,7 +16,7 @@ const Input = ({ label, type = 'text', value, onChange, placeholder, name, error
         name={name}
         className={`${styles.input} ${error ? styles.errorInput : ''}`}
       />
-      {error && <p className={styles.errorMessage}>{error}</p>}
+      {error && <div className={styles.errorMessage}>{error}</div>}
     </div>
   );
 };

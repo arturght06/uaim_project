@@ -1,0 +1,70 @@
+:root {
+  /* === Main colors === */
+
+  /* Primary color */
+  --primary-color: #3b82f6;
+  --primary-color-hover: #2563eb;
+  --primary-color-active: #1d4ed8;
+  --primary-color-light: #93c5fd;
+
+  /* Secondary color */
+  --secondary-color: #6b7280;
+  --secondary-color-hover: #4b5563;
+  --secondary-color-active: #374151;
+  --secondary-color-light: #d1d5db;
+
+  /* Background */
+  --bg-page: #f3f4f6;
+  --bg-content: #ffffff;
+  --bg-content-subtle: #f9fafb;
+
+  /* Text */
+  --text-main: #1f2937;
+  --text-secondary: #4b5563;
+  --text-muted: #9ca3af;
+  --text-on-primary: #ffffff;
+  --text-on-secondary: #ffffff;
+  --text-link: var(--primary-color);
+  --text-link-hover: var(--primary-color-hover);
+
+  /* Obramowania i Separatory */
+  --border-color: #d1d5db;
+  --border-color-subtle: #e5e7eb;
+
+  /* === Info colors === */
+
+  /* Succes */
+  --success-color: #10b981;
+  --success-color-hover: #059669;
+  --success-bg-light: #ecfdf5;
+  --text-on-success: #ffffff;
+
+  /* Danger */
+  --danger-color: #ef4444;
+  --danger-color-hover: #dc2626;
+  --danger-bg-light: #fef2f2;
+  --text-on-danger: #ffffff;
+
+  /* Warning */
+  --warning-color: #f59e0b;
+  --warning-color-hover: #d97706;
+  --warning-bg-light: #fffbeb;
+  --text-on-warning: #1f2937;
+
+  /* Info */
+  --info-color: #3b82f6;
+  --info-color-hover: #2563eb;
+  --info-bg-light: #eff6ff;
+  --text-on-info: #ffffff;
+
+  /* === Other === */
+  --border-radius-small: 4px;
+  --border-radius-medium: 8px;
+  --border-radius-large: 12px;
+
+  --shadow-small: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --shadow-large: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}

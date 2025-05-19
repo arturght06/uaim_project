@@ -1,6 +1,6 @@
 .navbar {
-  background-color: #333;
-  color: white;
+  background-color: var(--secondary-color-active);
+  color: var(--text-on-secondary);
   padding: 15px 0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -15,7 +15,7 @@
 }
 
 .brand {
-  color: white;
+  color: var(--text-on-secondary);
   text-decoration: none;
   font-size: 1.5em;
   font-weight: bold;
@@ -34,7 +34,7 @@
 }
 
 .navLink {
-  color: #ddd;
+  color: var(--link-color);
   text-decoration: none;
   padding: 8px 12px;
   border-radius: 4px;
@@ -42,24 +42,12 @@
 }
 
 .navLink:hover {
-  color: white;
-  background-color: #555;
+  color: var(--text-on-secondary);
+  background-color: var(--secondary-color-hover);
 }
 
 .navLink.active {
-  color: white;
+  color: var(--text-on-primary);
   font-weight: bold;
-  background-color: #007bff;
-}
-
-.navButton {
-  background: none;
-  border: none;
-  color: #ddd;
-  cursor: pointer;
-  font-size: inherit;
-}
-
-.navButton:hover {
-  color: white;
+  background-color: var(--primary-color);
 }

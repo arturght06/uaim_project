@@ -10,14 +10,14 @@
   flex-grow: 1;
   padding-top: 20px;
   padding-bottom: 20px;
-  background-color: #f4f4f4;
+  background-color: var(--bg-page);
 }
 
 .container {
   width: 90%;
   max-width: 1100px;
   margin: 0 auto;
-  background-color: #fff;
+  background-color: var(--bg-content);
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
