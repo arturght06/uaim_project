@@ -2,8 +2,7 @@
 
 ## Launching
 
-
-1. Create the `app/.env` file with this structure
+1. Create the `app/.env` file with this structure:
 
 ```
 SECRET_KEY=secret-key
@@ -36,13 +35,13 @@ Update `app/.env` accordingly.
 SQLALCHEMY_DATABASE_URI=postgresql://user:pass@localhost:5432/user
 ```
 
-3. Install requirements
+3. Install requirements.
 
 ```
 pip install -r requirements.txt
 ```
 
-4. Running should work
+4. Running should work.
 
 ```
 python run.py
@@ -50,13 +49,13 @@ python run.py
 
 ### With docker (wip)
 
-2. Build docker image
+2. Build docker image.
 
 ```
 docker build --tag uaim_projekt .
 ```
 
-3. Run docker image
+3. Run docker image.
 
 ```
 docker run -p 5000:5000 uaim_projekt
