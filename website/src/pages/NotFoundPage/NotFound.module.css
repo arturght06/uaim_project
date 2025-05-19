@@ -1,0 +1,38 @@
+.container {
+  text-align: center;
+  padding-top: 50px;
+  padding-bottom: 50px;
+}
+
+.container h1 {
+  font-size: 6em;
+  color: #dc3545;
+  margin-bottom: 0;
+}
+
+.container h2 {
+  font-size: 2em;
+  color: #333;
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+.container p {
+  font-size: 1.2em;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.homeLink {
+  display: inline-block;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.homeLink:hover {
+  background-color: #0056b3;
+}
