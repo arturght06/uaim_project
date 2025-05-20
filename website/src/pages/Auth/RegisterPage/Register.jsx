@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Register.module.css";
 import Input from "../../../components/UI/Input/Input";
 import Button from "../../../components/UI/Button/Button";
+import {
+  tryRegister,
+  validateRegisterClientSide,
+} from "../../../services/register";
+import AppLink from "../../../components/UI/AppLink/AppLink";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -21,16 +26,14 @@ const Register = () => {
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState(""); // General server errors
+  const [generalError, setGeneralError] = useState("");
 
   const handleChange = (e) => {
-    // Change data
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
-    // Clear errors
     if (errors[name]) {
       setErrors((prevErrors) => ({
         ...prevErrors,
@@ -40,88 +43,33 @@ const Register = () => {
     setGeneralError("");
   };
 
-  // Client-side validation
-  const validateClientSide = () => {
-    const newErrors = {};
-    if (!formData.username.trim())
-      newErrors.username = "Nazwa użytkownika jest wymagana.";
-    if (!formData.name.trim()) newErrors.name = "Imię jest wymagane.";
-    if (!formData.surname.trim()) newErrors.surname = "Nazwisko jest wymagane.";
-    if (!formData.birthday)
-      newErrors.birthday = "Data urodzenia jest wymagana.";
-    else if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.birthday)) {
-      newErrors.birthday = "Niepoprawny format daty (YYYY-MM-DD).";
-    }
-    if (!formData.email.trim()) newErrors.email = "Email jest wymagany.";
-    else if (!/\S+@\S+\.\S+/.test(formData.email))
-      newErrors.email = "Niepoprawny format email.";
-
-    if (!formData.password) newErrors.password = "Hasło jest wymagane.";
-    else if (formData.password.length < 8)
-      newErrors.password = "Hasło musi mieć co najmniej 8 znaków.";
-    if (formData.password !== formData.confirmPassword)
-      newErrors.confirmPassword = "Hasła nie są zgodne.";
-
-    if (formData.phone_country_code && !formData.phone_number) {
-      newErrors.phone_number =
-        "Numer telefonu jest wymagany, jeśli podano kod kraju.";
-    }
-    if (!formData.phone_country_code && formData.phone_number) {
-      newErrors.phone_country_code =
-        "Kod kraju jest wymagany, jeśli podano numer telefonu.";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setGeneralError("");
-    setErrors({});
 
-    if (!validateClientSide()) {
+    try {
+      validateRegisterClientSide(formData);
+      setErrors({});
+    } catch (validationErrors) {
+      setErrors(validationErrors);
       return;
     }
 
     setIsLoading(true);
 
-    // Remove client-side elements
-    const { _confirmPassword, ...dataToSubmit } = formData;
-
-    // Fetch
     try {
-      const response = await fetch("/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(dataToSubmit),
-      });
-
-      const responseData = await response.json();
-
-      if (!response.ok) {
-        if (responseData && responseData.errors) {
-          setErrors(responseData.errors);
-        } else if (responseData && responseData.error) {
-          setGeneralError(responseData.error);
-        } else {
-          setGeneralError(
-            `Nieznany błąd rejestracji: ${response.status} ${response.statusText}`
-          );
-        }
-        setIsLoading(false);
-        return;
-      }
+      const responseData = await tryRegister(formData);
 
       // Success
-      console.log("Rejestracja udana:", responseData);
-      alert("Rejestracja zakończona pomyślnie! Możesz się teraz zalogować.");
+      console.log("Registration successful (component):", responseData);
       navigate("/login");
     } catch (error) {
-      console.error("Błąd podczas wysyłania żądania:", error);
-      setGeneralError("Wystąpił nieoczekiwany błąd. Spróbuj ponownie później.");
+      console.error("Registration error (component):", error);
+      if (error.errors) {
+        setErrors(error.errors);
+      } else {
+        setGeneralError(error.error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -132,6 +80,9 @@ const Register = () => {
       <div className={styles.center}>
         <h1>Rejestracja</h1>
         <p>Dołącz do naszej społeczności i odkrywaj wydarzenia kulturalne.</p>
+        <p className={styles.loginLink}>
+          Masz już konto? <AppLink to="/login">Zaloguj się</AppLink>
+        </p>
       </div>
       <div className={styles.container}>
         {generalError && <p className={styles.generalError}>{generalError}</p>}
@@ -189,7 +140,6 @@ const Register = () => {
               onChange={handleChange}
               placeholder="+48"
               error={errors.phone_country_code}
-              className={styles.phoneCountryCode}
             />
             <Input
               label="Numer telefonu"
@@ -199,7 +149,6 @@ const Register = () => {
               onChange={handleChange}
               placeholder="123456789"
               error={errors.phone_number}
-              className={styles.phoneNumber}
             />
           </div>
           <Input

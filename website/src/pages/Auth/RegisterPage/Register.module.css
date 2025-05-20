@@ -26,6 +26,10 @@
   flex-grow: 1;
 }
 
+.loginLink {
+  font-size: 0.9em;
+}
+
 .generalError {
   color: var(--danger-color);
   background-color: var(--danger-bg-light);

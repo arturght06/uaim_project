@@ -1,0 +1,14 @@
+.appLink {
+  text-decoration: none;
+  transition: color 0.2s ease-in-out, opacity 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+/* Default variant */
+.default {
+  color: var(--text-link);
+}
+.default:hover {
+  color: var(--text-link-hover);
+  text-decoration: underline;
+}

@@ -18,20 +18,7 @@
 }
 
 .registerLink {
-  margin-top: 25px;
-  color: var(--text-secondary);
   font-size: 0.9em;
-}
-
-.registerLink a {
-  color: var(--text-link);
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.registerLink a:hover {
-  text-decoration: underline;
-  color: var(--text-link-hover);
 }
 
 .generalError {
