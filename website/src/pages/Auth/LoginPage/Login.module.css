@@ -1,10 +1,45 @@
 .container {
-  max-width: 400px;
+  max-width: 500px;
   margin: 20px auto;
-  padding: 20px;
+  padding: 30px;
+  background-color: var(--bg-content);
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-.container h2 {
+.center {
   text-align: center;
-  margin-bottom: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.registerLink {
+  margin-top: 25px;
+  color: var(--text-secondary);
+  font-size: 0.9em;
+}
+
+.registerLink a {
+  color: var(--text-link);
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.registerLink a:hover {
+  text-decoration: underline;
+  color: var(--text-link-hover);
+}
+
+.generalError {
+  color: var(--danger-color);
+  background-color: var(--danger-bg-light);
+  border: 1px solid var(--danger-color);
+  padding: 10px;
+  border-radius: 4px;
+  margin-bottom: 15px;
+  text-align: center;
 }
