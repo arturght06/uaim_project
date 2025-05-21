@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css";
 import Input from "../../../components/UI/Input/Input";
 import Button from "../../../components/UI/Button/Button";
-import { tryLogin, validateClientSide } from "../../../services/login";
+import { validateClientSide } from "../../../services/login";
 import AppLink from "../../../components/UI/AppLink/AppLink";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 const Login = () => {
   const navigate = useNavigate();
+  const auth = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     login: "",
@@ -48,7 +50,7 @@ const Login = () => {
     setIsLoading(true);
 
     try {
-      await tryLogin(formData);
+      await auth.tryLogin(formData);
     } catch (error) {
       setGeneralError(error);
       setIsLoading(false);

@@ -37,15 +37,23 @@ export const tryLogin = async (data) => {
   }
 
   // Success
-  if (
-    responseData.success &&
-    responseData.tokens &&
-    responseData.tokens.access_token
-  ) {
+  if (responseData.success && responseData.tokens && responseData.user) {
     console.log("Logowanie udane:", responseData);
     localStorage.setItem("accessToken", responseData.tokens.access_token);
     localStorage.setItem("refreshToken", responseData.tokens.refresh_token);
+    localStorage.setItem("userUUID", responseData.user.id);
+    return responseData.user;
   } else {
+    console.log(responseData);
     throw "Błąd logowania: Nieprawidłowa odpowiedź serwera.";
   }
+};
+
+/**
+ * Logs out user
+ */
+export const logout = () => {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("refreshToken");
+  localStorage.removeItem("userUUID");
 };
