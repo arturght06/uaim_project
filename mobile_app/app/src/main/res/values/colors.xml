@@ -1,0 +1,55 @@
+<resources>
+    <!-- Paleta -->
+    <color name="olivine">#9dc183</color>
+    <color name="tawny">#cc5500</color>
+    <color name="tawny_hover">#af4900</color>
+    <color name="tawny_active">#a34300</color>
+    <color name="tawny_light">#ff8c40</color>
+    <color name="hunter_green">#3f6c51</color>
+    <color name="hunter_green_hover">#355e45</color>
+    <color name="hunter_green_active">#2b4f3a</color>
+    <color name="black">#0a0908</color>
+    <color name="white">#ffffff</color>
+
+    <!-- Główne kolory -->
+    <color name="primary_color">@color/tawny</color>
+    <color name="primary_color_variant">@color/tawny_active</color>
+    <color name="on_primary">@color/white</color>
+    <color name="secondary_color">@color/hunter_green</color>
+    <color name="secondary_color_variant">@color/hunter_green_active</color>
+    <color name="on_secondary">@color/white</color>
+
+    <!-- Tło -->
+    <color name="bg_page">#f8f9fa</color>
+    <color name="bg_content">@color/white</color>
+    <color name="bg_content_subtle">#fbfdfa</color>
+
+    <!-- Tekst -->
+    <color name="text_main">@color/black</color>
+    <color name="text_secondary">@color/hunter_green</color>
+    <color name="text_muted">@color/olivine</color>
+    <color name="text_link">@color/tawny</color>
+    <color name="text_link_hover">@color/tawny_hover</color>
+
+    <!-- Ramki -->
+    <color name="border_color">@color/olivine</color>
+    <color name="border_color_subtle">#eef3ea</color>
+
+    <!-- Info -->
+    <color name="success_color">@color/hunter_green</color>
+    <color name="success_color_hover">@color/hunter_green_hover</color>
+    <color name="success_bg_light">#eef3ea</color>
+    <color name="text_on_success">@color/white</color>
+    <color name="danger_color">@color/tawny</color>
+    <color name="danger_color_hover">#b84c00</color>
+    <color name="danger_bg_light">#ffe8d6</color>
+    <color name="text_on_danger">@color/black</color>
+    <color name="warning_color">@color/tawny</color>
+    <color name="warning_color_hover">#b84c00</color>
+    <color name="warning_bg_light">#fff2e0</color>
+    <color name="text_on_warning">@color/black</color>
+    <color name="info_color">@color/hunter_green</color>
+    <color name="info_color_hover">@color/hunter_green_hover</color>
+    <color name="info_bg_light">@color/olivine</color>
+    <color name="text_on_info">@color/black</color>
+</resources>
