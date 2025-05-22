@@ -11,7 +11,7 @@ def get_categories_logic(db):
             results.append({
                 "id": str(category.id),
                 "name": category.name,
-                "description": category.description  # ← dodano to pole
+                "description": category.description  
             })
 
         return jsonify(results), 200
@@ -20,3 +20,6 @@ def get_categories_logic(db):
         return jsonify({"error": "Database error", "details": str(e)}), 500
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+  
