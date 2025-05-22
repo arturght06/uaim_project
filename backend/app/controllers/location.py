@@ -1,19 +1,33 @@
-"""Location's requests controller"""
 from flask import Blueprint, request
 from app.extensions import db
-from app.services.location import get_location_logic, create_location_logic
+from app.services.location.get_logic import get_location_logic
+from app.services.location.get_all_logic import get_all_locations_logic
+from app.services.location.create_logic import create_location_logic
+from app.services.location.update_logic import update_location_logic
+from app.services.location.delete_logic import delete_location_logic
 from app.utils.wrappers import token_required
 
 location_bp = Blueprint('location', __name__, url_prefix='/api/location')
 
+@location_bp.route('/', methods=['GET'])
+def get_all_locations():
+    return get_all_locations_logic(db)
 
 @location_bp.route('/<uid>', methods=['GET'])
 def get_location(uid):
     return get_location_logic(db, uid)
-
 
 @location_bp.route('/', methods=['POST'])
 @token_required
 def create_location():
     return create_location_logic(db, request)
 
+@location_bp.route('/<uid>', methods=['PUT'])
+@token_required
+def update_location(uid):
+    return update_location_logic(db, request, uid)
+
+@location_bp.route('/<uid>', methods=['DELETE'])
+@token_required
+def delete_location(uid):
+    return delete_location_logic(db, uid)
