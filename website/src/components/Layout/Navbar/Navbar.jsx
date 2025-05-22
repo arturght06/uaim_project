@@ -1,20 +1,59 @@
-import React, { useContext } from "react";
-import { Link, NavLink } from "react-router-dom";
+import React, { useContext, useState, useEffect } from "react";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
 import { AuthContext } from "../../../contexts/AuthContext";
 import Button from "../../UI/Button/Button";
 
 const Navbar = () => {
   const auth = useContext(AuthContext);
+  const location = useLocation();
 
-  // Loading authentication - display placeholder
+  const isHomePage = location.pathname === "/";
+  // Controls if the solid background pseudo-element should be visible
+  const [showSolidBackground, setShowSolidBackground] = useState(!isHomePage);
+
+  useEffect(() => {
+    const handleStateChange = () => {
+      if (isHomePage) {
+        setShowSolidBackground(window.scrollY > 50); // Scroll threshold for solid background
+      } else {
+        setShowSolidBackground(true); // Always solid on other pages
+      }
+    };
+
+    handleStateChange();
+
+    if (isHomePage) {
+      window.addEventListener("scroll", handleStateChange);
+      return () => window.removeEventListener("scroll", handleStateChange);
+    }
+  }, [location.pathname, isHomePage]);
+
+  // Determine navbar classes
+  const navbarComputedClasses = `
+    ${styles.navbar}
+    ${
+      isHomePage && !showSolidBackground
+        ? styles.navbarTransparentState
+        : styles.navbarSolidState
+    }
+  `;
+  // Class for the ::before pseudo-element to control its slide
+  const backgroundSliderClass = showSolidBackground
+    ? styles.backgroundVisible
+    : styles.backgroundHidden;
+
   if (auth.isLoadingAuth) {
     return (
-      <nav className={styles.navbar}>
+      <nav className={`${styles.navbar} ${styles.navbarSolidState}`}>
         <div className={styles.container}>
-          <Link to="/" className={styles.brand}>
-            Portal Wydarzeń
-          </Link>
+          <ul className={styles.navList}>
+            <li className={styles.navItem}>
+              <Link to="/" className={styles.brand}>
+                EVE.NT
+              </Link>
+            </li>
+          </ul>
           <div className={styles.loadingAuth}>Ładowanie...</div>
         </div>
       </nav>
@@ -22,19 +61,19 @@ const Navbar = () => {
   }
 
   return (
-    <nav className={styles.navbar}>
+    <nav className={`${navbarComputedClasses} ${backgroundSliderClass}`}>
       <div className={styles.container}>
         <ul className={styles.navList}>
           <li className={styles.navItem}>
             <Link to="/" className={styles.brand}>
-              Portal Wydarzeń
+              EVE.NT
             </Link>
           </li>
           <li className={styles.navItem}>
             <NavLink
               to="/"
               className={({ isActive }) =>
-                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                `${styles.navLink} ${isActive ? styles.active : ""}`
               }
             >
               Strona Główna
@@ -44,7 +83,7 @@ const Navbar = () => {
             <NavLink
               to="/events"
               className={({ isActive }) =>
-                isActive ? `${styles.navLink} ${styles.active}` : styles.navLink
+                `${styles.navLink} ${isActive ? styles.active : ""}`
               }
             >
               Wydarzenia
@@ -65,9 +104,7 @@ const Navbar = () => {
                 <NavLink
                   to="/reservations"
                   className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
+                    `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
                   Moje Rezerwacje
@@ -91,9 +128,7 @@ const Navbar = () => {
                 <NavLink
                   to="/login"
                   className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
+                    `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
                   Logowanie
@@ -103,9 +138,7 @@ const Navbar = () => {
                 <NavLink
                   to="/register"
                   className={({ isActive }) =>
-                    isActive
-                      ? `${styles.navLink} ${styles.active}`
-                      : styles.navLink
+                    `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
                   Rejestracja
