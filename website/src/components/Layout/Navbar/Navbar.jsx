@@ -57,7 +57,7 @@ const Navbar = () => {
               {auth.currentUser && (
                 <li className={styles.navItem}>
                   <span className={styles.userName}>
-                    Witaj, {auth.currentUser.username || auth.currentUser.name}!
+                    Witaj, {auth.currentUser.name || auth.currentUser.username}!
                   </span>
                 </li>
               )}

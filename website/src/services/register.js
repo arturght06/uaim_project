@@ -1,3 +1,5 @@
+import { translateErrors } from "./translate";
+
 /**
  * Validates registration form data on the client-side.
  * Throws an error object if validation fails.
@@ -65,7 +67,19 @@ export const tryRegister = async (userData) => {
   const responseData = await response.json();
 
   if (!response.ok) {
-    throw responseData;
+    if (response.status === 400) {
+      if (responseData.error) {
+        throw { error: "Użytkownik już istnieje." };
+      } else if (responseData.errors) {
+        throw { errors: translateErrors(responseData.errors) };
+      } else {
+        throw { error: "Nieznany błąd walidacji." };
+      }
+    } else if (response.status === 500) {
+      throw { error: "Błąd serwera." };
+    } else {
+      throw responseData;
+    }
   }
 
   return responseData;
