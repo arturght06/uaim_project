@@ -1,27 +1,25 @@
-import json
-from flask import jsonify
-from app import UserRoleEnum
+﻿from flask import jsonify
 from app.models import Location
-from app.utils import handle_creation_error
-from app.utils.factory.location_factory import create_new_location
-from app.utils.getters import get_user_by_id
+from app.models.user import UserRoleEnum  # ← poprawny import
+from app.utils.getters import get_user_by_id, get_location_by_id
+from app.utils.errors import handle_not_found, handle_server_error
 
 
-def create_location_logic(db, request):
-    allowed_roles = [str(UserRoleEnum.admin), str(UserRoleEnum.organizer)]
-
+def delete_location_logic(db, uid, request):
     try:
-        data = json.loads(request.get_data())
         user = get_user_by_id(db, request.user_id)
 
-        if str(user.role) not in allowed_roles:
+        if str(user.role) not in [str(UserRoleEnum.admin), str(UserRoleEnum.organizer)]:
             return jsonify({"error": "Not authorized"}), 401
 
-        new_location: Location = create_new_location(db, data)
-        if not new_location:
-            return jsonify({"error": "Failed to create location"}), 400
+        location = get_location_by_id(db, uid)
+        if not location:
+            return handle_not_found("Location")
 
-        return jsonify(new_location.to_dict()), 200
+        db.session.delete(location)
+        db.session.commit()
+
+        return jsonify({"message": "Location deleted successfully"}), 200
 
     except Exception:
-        return handle_creation_error()
+        return handle_server_error()

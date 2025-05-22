@@ -1,6 +1,6 @@
 ﻿from flask import jsonify
 from app.models.category import Category
-from utils.validators.name_surname import is_valid_name
+from app.utils.validators.name_surname import is_valid_name
 from sqlalchemy.exc import IntegrityError
 
 def create_category_logic(db, request):
