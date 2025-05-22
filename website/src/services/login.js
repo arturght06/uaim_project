@@ -33,7 +33,11 @@ export const tryLogin = async (data) => {
   // Error
   if (!response.ok) {
     // Server error is always a string
-    throw responseData;
+    if (response.status == 500) {
+      throw "Błąd serwera.";
+    } else {
+      throw "Niepoprawne dane.";
+    }
   }
 
   // Success
