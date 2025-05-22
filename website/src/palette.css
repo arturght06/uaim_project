@@ -1,61 +1,68 @@
 :root {
+  /* === Palette Definitions === */
+  --olivine: #9dc183;
+  --tawny: #cc5500;
+  --hunter-green: #3f6c51;
+  --black: #0a0908;
+  --white: #ffffff;
+
   /* === Main colors === */
 
   /* Primary color */
-  --primary-color: #3b82f6;
-  --primary-color-hover: #2563eb;
-  --primary-color-active: #1d4ed8;
-  --primary-color-light: #93c5fd;
+  --primary-color: var(--tawny);
+  --primary-color-hover: #af4900;
+  --primary-color-active: #a34300;
+  --primary-color-light: #ff8c40;
 
   /* Secondary color */
-  --secondary-color: #6b7280;
-  --secondary-color-hover: #4b5563;
-  --secondary-color-active: #374151;
-  --secondary-color-light: #d1d5db;
+  --secondary-color: var(--hunter-green);
+  --secondary-color-hover: #355e45;
+  --secondary-color-active: #2b4f3a;
+  --secondary-color-light: var(--olivine);
 
   /* Background */
-  --bg-page: #f3f4f6;
-  --bg-content: #ffffff;
-  --bg-content-subtle: #f9fafb;
+  --bg-page: #f8f9fa;
+  --bg-content: var(--white);
+  --bg-content-subtle: #fbfdfa;
 
   /* Text */
-  --text-main: #1f2937;
-  --text-secondary: #4b5563;
-  --text-muted: #9ca3af;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --text-main: var(--black);
+  --text-secondary: var(--hunter-green);
+  --text-muted: var(--olivine);
+  --text-on-primary: var(--white);
+  --text-on-secondary: var(--white);
   --text-link: var(--primary-color);
   --text-link-hover: var(--primary-color-hover);
 
-  /* Obramowania i Separatory */
-  --border-color: #d1d5db;
-  --border-color-subtle: #e5e7eb;
+  /* Borders and Separators */
+  --border-color: var(--olivine);
+  --border-color-subtle: #eef3ea;
 
   /* === Info colors === */
 
-  /* Succes */
-  --success-color: #10b981;
-  --success-color-hover: #059669;
-  --success-bg-light: #ecfdf5;
-  --text-on-success: #ffffff;
+  /* Success (Greens) */
+  --success-color: var(--hunter-green);
+  --success-color-hover: #355e45;
+  --success-bg-light: #eef3ea;
+  --text-on-success: var(--white);
 
   /* Danger */
-  --danger-color: #ef4444;
-  --danger-color-hover: #dc2626;
-  --danger-bg-light: #fef2f2;
-  --text-on-danger: #ffffff;
+  --danger-color: var(--tawny);
+  --danger-color-hover: #b84c00;
+  --danger-bg-light: #ffe8d6;
+  --text-on-danger: var(--black);
 
   /* Warning */
-  --warning-color: #f59e0b;
-  --warning-color-hover: #d97706;
-  --warning-bg-light: #fffbeb;
-  --text-on-warning: #1f2937;
+  --warning-color: var(--tawny);
+  --warning-color-hover: #b84c00; 
+  --warning-bg-light: #fff2e0;
+  --text-on-warning: var(--black);
 
   /* Info */
-  --info-color: #3b82f6;
-  --info-color-hover: #2563eb;
-  --info-bg-light: #eff6ff;
-  --text-on-info: #ffffff;
+  --info-color: var(--hunter-green);
+  --info-color-hover: #355e45;
+  --info-bg-light: var(--olivine);
+  --text-on-info: var(--black);
 
   /* === Other === */
   --border-radius-small: 4px;
