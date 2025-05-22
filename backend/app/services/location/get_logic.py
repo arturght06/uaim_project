@@ -10,6 +10,14 @@ def get_location_logic(db, uid: str):
         if not location:
             return handle_not_found("Location")
         return jsonify(location.to_dict()), 200
-    except Exception as e:
+    except Exception:
         return handle_server_error()
 
+
+def get_all_locations_logic(db):
+    try:
+        locations = db.session.query(Location).all()
+        result = [location.to_dict() for location in locations]
+        return jsonify(result), 200
+    except Exception:
+        return handle_server_error()
