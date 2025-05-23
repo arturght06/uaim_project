@@ -16,7 +16,7 @@ public class RegisterDataSource {
         Log.d("RegisterDataSource", "Rozpoczynam rejestrację: username=" + username + ", email=" + email);
 
         try {
-            URL url = new URL("http://192.168.1.184:8800/auth/register");
+            URL url = new URL(ApiConfig.BASE_URL + "auth/register");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

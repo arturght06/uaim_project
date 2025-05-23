@@ -19,7 +19,7 @@ public class LoginDataSource {
     public Result<LoggedInUser> login(String username, String password) {
         Log.d("LoginDataSource", "Rozpoczynam logowanie: username=" + username);
         try {
-            URL url = new URL("http://192.168.1.184:8800/auth/login");
+            URL url = new URL(ApiConfig.BASE_URL + "auth/login");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");

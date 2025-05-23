@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.fragment.NavHostFragment;
 import com.example.event.R;
+import com.example.event.data.ApiConfig;
 import com.example.event.data.LoginRepository;
 import com.example.event.data.model.LoggedInUser;
 import com.example.event.databinding.FragmentUserBinding;
@@ -61,7 +62,7 @@ public class UserFragment extends Fragment {
                 protected JSONObject doInBackground(Void... voids) {
                     try {
                         String userId = user.getUserId();
-                        URL url = new URL("http://192.168.1.184:8800/users/" + userId);
+                        URL url = new URL(ApiConfig.BASE_URL + "users/" + userId);
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("GET");
                         String accessToken = com.example.event.data.TokenManager.getAccessToken();
