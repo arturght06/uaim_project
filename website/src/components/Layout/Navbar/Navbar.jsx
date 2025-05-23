@@ -15,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const handleStateChange = () => {
       if (isHomePage) {
-        setShowSolidBackground(window.scrollY > 50); // Scroll threshold for solid background
+        setShowSolidBackground(window.scrollY > 200); // Scroll threshold for solid background
       } else {
         setShowSolidBackground(true); // Always solid on other pages
       }
@@ -66,6 +66,7 @@ const Navbar = () => {
         <ul className={styles.navList}>
           <li className={styles.navItem}>
             <Link to="/" className={styles.brand}>
+              <img src="/logo.png" alt="Logo" className={styles.logo} />
               EVE.NT
             </Link>
           </li>
