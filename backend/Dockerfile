@@ -12,4 +12,10 @@ COPY run.py /project/
 
 EXPOSE 8800
 
-CMD ["gunicorn", "-b", "0.0.0.0:8800", "app:create_app()"]
+ENV FLASK_APP=run.py
+
+# For development:
+CMD ["python3", "-m", "flask", "run", "--host=0.0.0.0", "--port=8800"]
+
+# For production, uncomment and use gunicorn:
+# CMD ["gunicorn", "-b", "0.0.0.0:8800", "app:create_app()"]

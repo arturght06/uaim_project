@@ -21,4 +21,25 @@
         android:name="com.example.event.ui.notifications.NotificationsFragment"
         android:label="@string/title_notifications"
         tools:layout="@layout/fragment_notifications" />
+
+    <fragment
+        android:id="@+id/navigation_login"
+        android:name="com.example.event.ui.login.LoginFragment"
+        android:label="Logowanie"
+        tools:layout="@layout/fragment_login">
+        <action
+            android:id="@+id/action_login_to_user"
+            app:destination="@id/navigation_user" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigation_register"
+        android:name="com.example.event.ui.register.RegisterFragment"
+        android:label="Rejestracja"
+        tools:layout="@layout/fragment_register">
+        <action
+            android:id="@+id/action_register_to_user"
+            app:destination="@id/navigation_user" />
+    </fragment>
+
 </navigation>

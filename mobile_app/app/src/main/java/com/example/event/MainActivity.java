@@ -10,15 +10,21 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.event.data.LoginDataSource;
+import com.example.event.data.LoginRepository;
 import com.example.event.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static android.content.Context appContext;
     private ActivityMainBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        appContext = getApplicationContext();
+
+        LoginRepository.getInstance(new LoginDataSource());
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -34,4 +40,15 @@ public class MainActivity extends AppCompatActivity {
         NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
+    public static android.content.Context getAppContext() {
+        return appContext;
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        return NavigationUI.navigateUp(navController, new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.navigation_user, R.id.navigation_notifications
+        ).build()) || super.onSupportNavigateUp();
+    }
 }

@@ -4,15 +4,19 @@
     <item
         android:id="@+id/navigation_user"
         android:icon="@drawable/ic_person"
-        android:title="@string/title_user" />
+        android:title="@string/title_user"
+        android:menuCategory="container" />
 
     <item
         android:id="@+id/navigation_home"
         android:icon="@drawable/ic_house"
-        android:title="@string/title_home" />
+        android:title="@string/title_home"
+        android:menuCategory="container" />
+
     <item
         android:id="@+id/navigation_notifications"
         android:icon="@drawable/ic_bell"
-        android:title="@string/title_notifications" />
+        android:title="@string/title_notifications"
+        android:menuCategory="container" />
 
 </menu>
