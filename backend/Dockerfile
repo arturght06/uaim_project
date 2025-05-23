@@ -1,20 +1,15 @@
-FROM python:3.12-alpine
+FROM python:3.12-slim
 
 WORKDIR /project
 
-RUN apk add screen
+RUN apt-get update && apt-get install -y gcc libpq-dev && rm -rf /var/lib/apt/lists/*
 
-COPY app app/
-COPY requirements.txt /project
-COPY run.py /project
+COPY requirements.txt /project/
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip3 install -r /project/requirements.txt
+COPY app /project/app
+COPY run.py /project/
 
-#RUN flask db init
-#RUN flask db migrate
-#RUN flask db upgrade
+EXPOSE 8800
 
-EXPOSE 5000
-
-CMD [ "python3", "-m" , "flask", "run", "--host=0.0.0.0" ]
-#ENTRYPOINT ["top"]
+CMD ["gunicorn", "-b", "0.0.0.0:8800", "app:create_app()"]

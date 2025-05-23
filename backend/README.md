@@ -15,6 +15,7 @@ DEBUG=True
 
 If you're using docker for launching the backend and running postgresql on localhost, use `host.docker.internal` as the host address.
 
+---
 
 ### With WSL (or linux)
 
@@ -47,16 +48,41 @@ pip install -r requirements.txt
 python run.py
 ```
 
-### With docker (wip)
+---
 
-2. Build docker image.
+### With Docker
+
+1. Make sure you have `app/.env` configured as above.
+
+Set in `app/.env`:
+```
+SQLALCHEMY_DATABASE_URI=postgresql://user:pass@host.docker.internal:5432/user
+```
+
+2. Start a PostgreSQL container if you don't have one:
 
 ```
-docker build --tag uaim_projekt .
+docker run -itd \
+    -e POSTGRES_USER=user \
+    -e POSTGRES_PASSWORD=pass \
+    -p 5432:5432 \
+    -v pgdata:/var/lib/postgresql/data \
+    --name db postgres
 ```
 
-3. Run docker image.
+3. Build the backend image:
 
 ```
-docker run -p 5000:5000 uaim_projekt
+docker build -t uaim_backend .
 ```
+
+4. Run the backend container:
+
+```
+docker run --rm -p 8800:8800 \
+    --env-file app/.env \
+    --name uaim_backend \
+    uaim_backend
+```
+
+The backend will be available at [http://localhost:8800](http://localhost:8800).
