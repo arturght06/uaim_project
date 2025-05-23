@@ -17,7 +17,7 @@ class Notification(db.Model):
     """SQLAlchemy Notifications table model"""
     __tablename__ = 'notifications'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), doc='Notification unique ID')
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, doc='Notification unique ID')
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete="CASCADE"), nullable=False, doc='User ID')
     event_id = Column(UUID(as_uuid=True), ForeignKey('events.id', ondelete='CASCADE'), nullable=False, doc='Event ID')
     title = Column(String(255), nullable=False, doc='Notification title')

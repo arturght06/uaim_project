@@ -10,7 +10,7 @@ class EventCategory(db.Model):
     """Event-Category relationship Model"""
     __tablename__ = 'event_categories'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     event_id = Column(UUID(as_uuid=True), ForeignKey('events.id', ondelete='CASCADE'), nullable=False)
     category_id = Column(UUID(as_uuid=True), ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
 

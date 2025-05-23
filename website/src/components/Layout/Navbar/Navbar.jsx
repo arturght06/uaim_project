@@ -66,8 +66,12 @@ const Navbar = () => {
         <ul className={styles.navList}>
           <li className={styles.navItem}>
             <Link to="/" className={styles.brand}>
-              <img src="/logo.png" alt="Logo" className={styles.logo} />
-              EVE.NT
+              {/* <img src="/logo.png" alt="Logo" className={styles.logo} /> */}
+              <img
+                src="/logo-long.png"
+                alt="Logo"
+                className={styles.logoLong}
+              />
             </Link>
           </li>
           <li className={styles.navItem}>
@@ -103,12 +107,12 @@ const Navbar = () => {
               )}
               <li className={styles.navItem}>
                 <NavLink
-                  to="/reservations"
+                  to="/profile"
                   className={({ isActive }) =>
                     `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
-                  Moje Rezerwacje
+                  Mój profil
                 </NavLink>
               </li>
               <li className={styles.navItem}>

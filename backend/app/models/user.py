@@ -17,7 +17,7 @@ class User(db.Model):
     """Sqlalchemy model for Users table"""
     __tablename__ = 'users'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), doc='Stable User UUID_v4 for all tables')
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, doc='Stable User UUID_v4 for all tables')
     username = Column(String(30), unique=True, nullable=False, doc='Username')
     name = Column(String(30), nullable=False, doc='User\'s name')
     surname = Column(String(30), nullable=False, doc='User\'s surname')

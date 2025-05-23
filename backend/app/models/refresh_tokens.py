@@ -10,7 +10,7 @@ class RefreshToken(db.Model):
     """Sqlalchemy model for refresh_tokens table"""
     __tablename__ = 'refresh_tokens'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4(), doc='Unique token identifier UUID_v4')
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, doc='Unique token identifier UUID_v4')
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, doc='Reference to User UUID')
     token = Column(String(255), unique=True, nullable=False, doc='Hashed refresh token value')
     expires_at = Column(DateTime, nullable=False, doc='Token expiration timestamp')

@@ -10,7 +10,7 @@ class Location(db.Model):
     """Describing Location table"""
     __tablename__ = 'locations'
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4(), primary_key=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
     country = Column(String(100), nullable=False)
     city = Column(String(100), nullable=False)
     address = Column(Text, nullable=False)

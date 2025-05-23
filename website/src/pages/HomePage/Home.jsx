@@ -1,5 +1,6 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./Home.module.css";
+import EventList from "../../components/Events/EventList/EventList";
 
 const videoList = [
   "https://ik.imagekit.io/ybxfqvwjs/Filmik_o_EVENT_Gotowy.mp4?updatedAt=1747938669145",
@@ -116,6 +117,7 @@ const Home = () => {
           Przeglądaj nadchodzące wydarzenia, rezerwuj miejsca i ciesz się
           kulturą.
         </p>
+        <EventList></EventList>
       </div>
     </>
   );

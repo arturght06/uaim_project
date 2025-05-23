@@ -10,7 +10,7 @@ class Category(db.Model):
     """SQLAlchemy event's category model"""
     __tablename__ = 'categories'
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4())
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     name = Column(String(100), nullable=False)
     description = Column(Text, nullable=False)
 

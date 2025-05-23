@@ -1,3 +1,5 @@
+import { getAuthHeaders } from "./auth";
+
 /**
  * Attempts to get the user's information based on login data.
  * Returns null if unsuccessful
@@ -8,9 +10,7 @@ export const getUser = async () => {
   if (access_token && uuid) {
     const response = await fetch(`/users/${uuid}`, {
       method: "GET",
-      headers: {
-        Authorization: `bearer ${access_token}`,
-      },
+      headers: getAuthHeaders(),
     });
     const responseData = await response.json();
     // Success

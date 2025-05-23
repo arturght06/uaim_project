@@ -7,8 +7,7 @@ from datetime import datetime
 def create_event_logic(db, request):
     try:
         data = request.get_json()
-
-        # Pobranie i walidacja pól
+        # Pobranie i walidacja pï¿½l
         required_fields = ["organizer_id", "location_id", "event_date", "title", "description"]
         for field in required_fields:
             if not data.get(field):
@@ -20,7 +19,6 @@ def create_event_logic(db, request):
             event_date = datetime.fromisoformat(data["event_date"])
         except (ValueError, TypeError):
             return jsonify({"error": "Invalid UUID or date format"}), 400
-
         max_participants = data.get("max_participants")
         if max_participants is not None and not isinstance(max_participants, int):
             return jsonify({"error": "max_participants must be an integer"}), 400
@@ -34,7 +32,6 @@ def create_event_logic(db, request):
             event_date=event_date,
             title=data["title"]
         )
-
         db.session.add(new_event)
         db.session.commit()
 

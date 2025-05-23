@@ -10,7 +10,7 @@ class Event(db.Model):
     """SQLAlchemy Events table"""
     __tablename__ = 'events'
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4(), primary_key=True)
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
     organizer_id = Column(UUID(as_uuid=True), ForeignKey('users.id'), nullable=False)
     location_id = Column(UUID(as_uuid=True), ForeignKey('locations.id'), nullable=False)
     max_participants = Column(Integer)

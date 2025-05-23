@@ -1,0 +1,82 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1050; /* High z-index to be on top */
+  padding: 20px;
+}
+
+.modalContent {
+  background-color: var(--bg-content, #fff);
+  padding: 25px;
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-large, 0 5px 15px rgba(0, 0, 0, 0.2));
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto; /* Scroll for content taller than max-height */
+  position: relative;
+  animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+  border-bottom: 1px solid var(--border-color-subtle, #eee);
+}
+
+.modalTitle {
+  margin: 0;
+  font-size: 1.5em;
+  color: var(--text-main, black);
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 1.8em;
+  line-height: 1;
+  padding: 5px;
+  cursor: pointer;
+  color: var(--text-muted, #aaa);
+  transition: color 0.2s ease;
+}
+.closeButton {
+  padding: 0.2em 0.5em !important;
+}
+
+.closeButton:hover {
+  color: var(--text-main, #333);
+}
+
+.modalBody {
+  margin-bottom: 20px;
+}
+
+.modalFooter {
+  padding-top: 15px;
+  border-top: 1px solid var(--border-color-subtle, #eee);
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

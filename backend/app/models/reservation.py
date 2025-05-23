@@ -10,7 +10,7 @@ class Reservation(db.Model):
     """Describing Reservation tabel"""
     __tablename__ = 'reservations'
 
-    id = Column(UUID(as_uuid=True), default=uuid.uuid4(), primary_key=True, doc='Unique Reservation\'s id')
+    id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True, doc='Unique Reservation\'s id')
     user_id = Column(UUID(as_uuid=True), ForeignKey('users.id', ondelete='CASCADE'), nullable=False, doc='Connected User\'s id')
     event_id = Column(UUID(as_uuid=True), ForeignKey('events.id', ondelete='CASCADE'), doc='Connected Event\'s id')
     status = Column(String(20), doc='Reservation status')

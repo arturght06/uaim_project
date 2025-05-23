@@ -1,0 +1,59 @@
+.createEventContainer {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 30px;
+  background-color: var(--bg-content, #fff);
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-large, 0 5px 15px rgba(0, 0, 0, 0.1));
+}
+
+.createEventContainer h1 {
+  text-align: center;
+  color: var(--text-main, black);
+  margin-bottom: 30px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.submitButton {
+  margin-top: 10px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 1.1em;
+}
+
+.serverError {
+  color: var(--danger-color, red);
+  background-color: var(--danger-bg-light, #f8d7da);
+  border: 1px solid var(--danger-color, #f5c6cb);
+  padding: 10px;
+  border-radius: var(--border-radius-small, 4px);
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.message {
+  text-align: center;
+  font-size: 1.2em;
+  padding: 40px;
+  color: var(--text-secondary, #555);
+}
+.addLocationButton {
+  margin-top: -10px;
+  margin-bottom: 15px;
+  align-self: flex-start;
+  font-size: 0.9em;
+}
+
+.createLocationFormWrapper {
+  border: 1px solid var(--border-color-subtle, #eee);
+  padding: 15px;
+  margin-top: 10px;
+  margin-bottom: 15px;
+  border-radius: var(--border-radius-small, 4px);
+  background-color: var(--bg-page);
+}

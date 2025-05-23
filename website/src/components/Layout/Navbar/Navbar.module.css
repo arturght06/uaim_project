@@ -64,7 +64,13 @@
 .logo {
   height: 0.73em;
   width: 0.73em;
-  margin-right: 8px;
+  margin-right: 0px;
+}
+.logoLong {
+  height: 1.4em;
+  width: 6em;
+  object-fit: cover;
+  margin-right: 0px;
 }
 
 .container {
@@ -83,6 +89,8 @@
   font-size: 2em;
   font-weight: bold;
   font-family: "Arial Black";
+  display: flex;
+  align-items: center;
 }
 
 .navList {

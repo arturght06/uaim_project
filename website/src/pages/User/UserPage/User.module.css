@@ -1,0 +1,75 @@
+.profileContainer {
+  padding: 20px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.loadingMessage {
+  text-align: center;
+  font-size: 1.2em;
+  padding: 40px;
+  color: var(--text-secondary, #555);
+}
+
+.profileHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color-subtle, #eee);
+}
+
+.profileHeader h1 {
+  color: var(--text-main, #333);
+  font-size: 2em;
+  margin: 0;
+}
+
+.profileDetails {
+  background-color: var(--bg-content, #fff);
+  padding: 25px;
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-small, 0 2px 4px rgba(0, 0, 0, 0.05));
+  margin-bottom: 40px;
+}
+
+.profileDetails h2 {
+  color: var(--primary-color, #007bff);
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+  border-bottom: 1px solid var(--border-color-subtle, #eee);
+  padding-bottom: 10px;
+}
+
+.detailItem {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px dashed var(--border-color-subtle, #f0f0f0);
+}
+.detailItem:last-child {
+  border-bottom: none;
+}
+
+.detailLabel {
+  font-weight: bold;
+  color: var(--text-secondary, #555);
+  margin-right: 10px;
+}
+
+.detailValue {
+  color: var(--text-main, #333);
+  text-align: right;
+}
+
+.userEventsSection {
+  margin-top: 30px;
+}
+
+.userEventsSection h2 {
+  color: var(--text-main, #333);
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
