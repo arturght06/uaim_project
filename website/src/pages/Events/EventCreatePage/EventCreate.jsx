@@ -17,7 +17,7 @@ const EventCreate = () => {
   const auth = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
-    organizer_id: auth.currentUser.id,
+    organizer_id: auth.isAuthenticated && auth.currentUser.id,
     title: "",
     description: "",
     event_date: "",
@@ -39,8 +39,23 @@ const EventCreate = () => {
         console.error("Failed to fetch locations for event form:", error);
       }
     };
-    fetchLocations();
-  }, []);
+    if (auth.currentUser) {
+      fetchLocations();
+    }
+  }, [auth.currentUser]);
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      setFormData((f) => {
+        return {
+          ...f,
+          organizer_id: auth.currentUser.id,
+          organizer_data: auth.currentUser,
+          created_at: Date.now(),
+        };
+      });
+    }
+  }, [auth.currentUser, auth.isAuthenticated]);
 
   if (auth.isLoadingAuth) return <p className={styles.message}>Ładowanie...</p>;
   if (!auth.isAuthenticated || !auth.currentUser) {
@@ -50,6 +65,13 @@ const EventCreate = () => {
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
+    if (name == "location_id") {
+      const location = locations.find((loc) => loc.id === value);
+      setFormData((prevData) => ({
+        ...prevData,
+        location_data: location,
+      }));
+    }
     setFormData((prevData) => ({
       ...prevData,
       [name]:
@@ -97,7 +119,11 @@ const EventCreate = () => {
       );
       return existingLocation ? prevLocations : [...prevLocations, newLocation];
     });
-    setFormData((prevData) => ({ ...prevData, location_id: newLocation.id }));
+    setFormData((prevData) => ({
+      ...prevData,
+      location_id: newLocation.id,
+      location_data: newLocation,
+    }));
     setIsLocationModalOpen(false); // Close the modal
   };
 
@@ -219,7 +245,7 @@ const EventCreate = () => {
           />
         </Modal>
       </div>
-      <div className={styles.createEventContainer}>
+      <div className={styles.eventCard}>
         <h1>Karta wydarzenia</h1>
         <EventCard event={formData} disableLink={true}></EventCard>
       </div>

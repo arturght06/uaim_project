@@ -2,83 +2,34 @@
   text-decoration: none;
   color: inherit;
   display: block;
-  width: 320px; /* Adjust */
   margin: 20px auto;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: var(--secondary-color);
   box-shadow: var(--shadow-large);
   border-radius: var(--border-radius-medium);
   overflow: hidden;
+  width: 100%;
 }
 
 .eventCard {
   display: flex;
   flex-direction: column;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition: transform 0.15s linear;
+  width: 101%;
+  transform: translateY(0);
 }
 
-.eventCard:hover:not(.disabledLink) {
+.eventCard:hover {
   transform: translateY(-5px);
-  box-shadow: var(--shadow-medium, 0 5px 15px rgba(0, 0, 0, 0.1));
 }
 
-.disabledLink:hover {
-  transform: none !important;
-  box-shadow: none !important;
-  cursor: default;
+/* .eventCardOwner {
+  transform: translateY(-5px) scale(1.01);
 }
 
-/* Top section with triangle pattern and circle */
-.cardTop {
-  flex-grow: 1;
-  background-color: var(--bg-content);
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 30px 20px;
-  min-height: 280px;
-  overflow: hidden;
-}
-
-/* Pseudo-element for the triangle pattern */
-.cardTop::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-
-  background-color: var(--primary-color-light);
-
-  /* SVG mask for triangles */
-  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='10,3 17,17 3,17' fill='black'/%3E%3C/svg%3E");
-  mask-repeat: repeat;
-  mask-size: 25px 25px; /* Fixed size for the pattern */
-
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='10,3 17,17 3,17' fill='black'/%3E%3C/svg%3E");
-  -webkit-mask-repeat: repeat;
-  -webkit-mask-size: 25px 25px;
-}
-
-.eventCircle {
-  width: 220px;
-  height: 220px;
-  background-color: var(--primary-color);
-  border-radius: 50%;
-  color: var(--text-on-primary);
-  box-shadow: var(--shadow-large);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 15px;
-  box-sizing: border-box;
-  position: relative;
-  z-index: 1; /* Above the ::before pseudo-element */
-}
+.eventCardOwner:hover {
+  transform: translateY(-8px) scale(1.01);
+} */
 
 .mainTitle {
   font-family: "Georgia", Times, "Times New Roman", serif;
@@ -86,32 +37,6 @@
   letter-spacing: 1.5px;
   margin: 0;
   line-height: 1.1;
-}
-
-/* Bottom dark section */
-.cardBottom {
-  background-color: var(--secondary-color);
-  color: var(--text-on-secondary);
-  padding: 25px;
-  display: flex;
-  flex-direction: column;
-  justify-content: baseline;
-  gap: 20px;
-  min-height: 150px;
-}
-
-.subtitle {
-  font-size: 0.65em;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  line-height: 1.4;
-}
-
-.title {
-  font-family: "Georgia", Times, "Times New Roman", serif;
-  font-size: 1.8em;
-  font-weight: normal;
-  line-height: 1;
 }
 
 .descriptionText {
@@ -125,5 +50,101 @@
 }
 
 .owner {
-  background-color: var(--warning-bg-light);
+  background-color: var(--warning-color);
+}
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #eee;
+}
+
+.metaInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: baseline;
+  font-size: 1em;
+  color: #444;
+}
+
+.eventDate {
+  font-size: 0.8em;
+  color: #888;
+}
+
+.moreIcon {
+  font-size: 1.2em;
+  cursor: pointer;
+  color: #aaa;
+}
+
+.cardBody {
+  padding: 16px;
+  background: #f9f9f9;
+  text-align: left;
+}
+
+.activityTitle {
+  font-size: 1.25em;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.eventDetails {
+  display: flex;
+  flex-direction: column;
+  gap: calc(min(100px, 5%));
+  font-size: 0.95em;
+  color: #333;
+}
+
+.eventItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cardFooter {
+  padding: 16px;
+  background: white;
+  border-top: 1px solid #eee;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.descriptionText {
+  font-size: 0.85em;
+  line-height: 1.5;
+  flex-grow: 1;
+  margin-right: 12px;
+  color: #444;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.action {
+  display: flex;
+  gap: 5px;
+  font-size: 0.9em;
+  align-items: center;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.iconButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+}
+
+.footerOwner {
+  color: var(--warning-color);
+  font-weight: bold;
+  font-size: 0.9em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }

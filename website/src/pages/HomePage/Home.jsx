@@ -111,13 +111,15 @@ const Home = () => {
         ))}
       </div>
 
-      <div className={styles.container}>
-        <h1>Witaj w EVE.NT!</h1>
-        <p>
-          Przeglądaj nadchodzące wydarzenia, rezerwuj miejsca i ciesz się
-          kulturą.
-        </p>
-        <EventList></EventList>
+      <div className={styles.rootContainer}>
+        <div className={styles.container}>
+          <h1>Witaj w EVE.NT!</h1>
+          <p>
+            Przeglądaj nadchodzące wydarzenia, rezerwuj miejsca i ciesz się
+            kulturą.
+          </p>
+          <EventList></EventList>
+        </div>
       </div>
     </>
   );

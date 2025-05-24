@@ -1,7 +1,21 @@
+.rootContainer {
+  flex-grow: 1;
+  background-color: var(--bg-page, #f4f4f4);
+  padding: calc(min(200px, 10%));
+  padding-top: calc(5em + 50px);
+}
+
 .container {
   text-align: center;
-  min-height: 1000px;
+  width: 100%;
+  margin: 0;
+  background-color: var(--bg-content, #ffffff);
+  min-height: 100%;
   padding: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .container h1 {
