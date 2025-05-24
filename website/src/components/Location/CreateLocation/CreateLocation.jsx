@@ -49,7 +49,6 @@ const CreateLocation = ({ onSuccess, onCancel }) => {
     try {
       const newLocation = await createNewLocation(locationDataToSubmit);
       console.log("Lokalizacja utworzona (formularz):", newLocation);
-      alert(`Lokalizacja "${newLocation.name}" została pomyślnie utworzona!`);
       if (onSuccess) {
         onSuccess(newLocation);
       }

@@ -21,3 +21,11 @@ def get_all_locations_logic(db):
         return jsonify(result), 200
     except Exception:
         return handle_server_error()
+
+def get_user_locations_logic(db, userId):
+    try:
+        locations = db.session.query(Location).filter_by(user_id=userId).all()
+        result = [location.to_dict() for location in locations]
+        return jsonify(result), 200
+    except Exception:
+        return handle_server_error()

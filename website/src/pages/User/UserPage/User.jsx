@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import styles from "./User.module.css";
 import { AuthContext } from "../../../contexts/AuthContext";
 import Button from "../../../components/UI/Button/Button";
+import EventList from "../../../components/Events/EventList/EventList";
 
 const User = () => {
   const auth = useContext(AuthContext);
@@ -69,6 +70,7 @@ const User = () => {
         <h2>Twoje Wydarzenia</h2>
         <p>Lista Twoich wydarzeń pojawi się tutaj wkrótce.</p>
       </div>
+      <EventList filterType="user" userId={auth.currentUser.id}></EventList>
     </div>
   );
 };

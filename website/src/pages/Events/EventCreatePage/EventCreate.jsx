@@ -9,7 +9,7 @@ import Modal from "../../../components/UI/Modal/Modal";
 import CreateLocationForm from "../../../components/Location/CreateLocation/CreateLocation";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { createNewEvent } from "../../../services/events";
-import { getAllLocations } from "../../../services/location";
+import { getUserLocations } from "../../../services/location";
 
 const EventCreate = () => {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ const EventCreate = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const data = await getAllLocations();
+        const data = await getUserLocations();
         setLocations(data || []);
       } catch (error) {
         console.error("Failed to fetch locations for event form:", error);
@@ -151,7 +151,6 @@ const EventCreate = () => {
           value={formData.title}
           onChange={handleChange}
           error={errors.title}
-          required
         />
         <Textarea
           label="Opis wydarzenia"
@@ -160,7 +159,6 @@ const EventCreate = () => {
           onChange={handleChange}
           error={errors.description}
           rows={6}
-          required
         />
         <Input
           label="Data i godzina wydarzenia"
@@ -169,7 +167,6 @@ const EventCreate = () => {
           value={formData.event_date}
           onChange={handleChange}
           error={errors.event_date}
-          required
         />
         <Select
           label="Lokalizacja"
@@ -179,7 +176,6 @@ const EventCreate = () => {
           error={errors.location_id}
           options={locationOptions}
           defaultOptionText="Wybierz istniejącą lokalizację..."
-          required
         />
         <Button
           type="button"

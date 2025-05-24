@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from app.extensions import db
-from app.services.event.get_logic import get_all_events_logic, get_event_by_id_logic
+from app.services.event.get_logic import get_all_events_logic, get_user_events_logic, get_event_by_id_logic
 from app.services.event.create_logic import create_event_logic
 from app.services.event.delete_logic import delete_event_logic
 from app.utils.wrappers import token_required
@@ -10,6 +10,10 @@ event_bp = Blueprint("event", __name__, url_prefix="/api/events")
 @event_bp.route("/", methods=["GET"])
 def get_all_events():
     return get_all_events_logic(db)
+
+@event_bp.route("/user/<user_id>", methods=["GET"])
+def get_user_events(user_id):
+    return get_user_events_logic(db, user_id)
 
 @event_bp.route("/<event_id>", methods=["GET"])
 def get_event_by_id(event_id):

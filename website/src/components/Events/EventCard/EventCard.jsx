@@ -1,31 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./EventCard.module.css";
-
-// Helper function to format date
-const formatDate = (isoString) => {
-  if (!isoString) return "Data nieznana";
-  try {
-    const date = new Date(isoString);
-    return date.toLocaleDateString("pl-PL", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch (error) {
-    console.error("Error formatting date:", isoString, error);
-    return "Niepoprawna data";
-  }
-};
+import { getLocationById } from "../../../services/location";
+import { formatDate, formatLocation } from "../../../services/format";
 
 const EventCard = ({ event }) => {
-  if (!event) {
-    return null;
-  }
-
+  const [locationName, setLocationName] = useState("Ładowanie lokalizacji...");
+  const [isLocationLoading, setIsLocationLoading] = useState(false);
   const { id, title, description, event_date, location_id } = event;
+
+  useEffect(() => {
+    // Fetch location details if location_id is present
+    if (location_id) {
+      setIsLocationLoading(true);
+      const fetchLocation = async () => {
+        try {
+          const locationData = await getLocationById(location_id);
+          if (locationData) {
+            setLocationName(formatLocation(locationData));
+          } else {
+            setLocationName("Lokalizacja nieznana");
+          }
+        } catch (error) {
+          console.error(
+            `Error fetching location ${location_id} for event ${id}:`,
+            error
+          );
+          setLocationName("Błąd ładowania lokalizacji");
+        } finally {
+          setIsLocationLoading(false);
+        }
+      };
+      fetchLocation();
+    } else {
+      setLocationName("Lokalizacja nieokreślona"); // No location_id provided
+    }
+  }, [location_id, id]); // Re-fetch if location_id or event id changes
 
   // Truncate description if it's too long for the card
   const shortDescription =
@@ -40,10 +50,9 @@ const EventCard = ({ event }) => {
         {event_date && (
           <p className={styles.date}>Data: {formatDate(event_date)}</p>
         )}
-        {/* TODO: Display location name instead of ID.. */}
-        {location_id && (
-          <p className={styles.info}>Lokalizacja ID: {location_id}</p>
-        )}
+        <p className={styles.info}>
+          Lokalizacja: {isLocationLoading ? "Ładowanie..." : locationName}
+        </p>
         <p className={styles.description}>
           {shortDescription || "Brak opisu."}
         </p>

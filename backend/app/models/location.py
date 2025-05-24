@@ -11,6 +11,7 @@ class Location(db.Model):
     __tablename__ = 'locations'
 
     id = Column(UUID(as_uuid=True), default=uuid.uuid4, primary_key=True)
+    user_id = Column(UUID(as_uuid=True), nullable=False)
     country = Column(String(100), nullable=False)
     city = Column(String(100), nullable=False)
     address = Column(Text, nullable=False)
@@ -25,6 +26,7 @@ class Location(db.Model):
     def to_dict(self):
         return {
             'id': str(self.id),
+            'user_id': str(self.user_id),
             'country': str(self.country),
             'city': str(self.city),
             'address': str(self.address),

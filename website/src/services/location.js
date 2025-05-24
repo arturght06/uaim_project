@@ -11,6 +11,14 @@ export const getAllLocations = async () => {
 };
 
 /**
+ * Fetches a user's locations.
+ */
+export const getUserLocations = async (userId) => {
+  const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+  return handleResponse(response);
+};
+
+/**
  * Fetches a single location by its UUID.
  */
 export const getLocationById = async (locationId) => {

@@ -11,6 +11,14 @@ export const getAllEvents = async () => {
 };
 
 /**
+ * Fetches a user's events by their ID.
+ */
+export const getUserEvents = async (userId) => {
+  const response = await fetch(`${API_BASE_URL}/user/${userId}`);
+  return handleResponse(response);
+};
+
+/**
  * Fetches a single event by its ID.
  */
 export const getEventById = async (eventId) => {

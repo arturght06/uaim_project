@@ -11,16 +11,18 @@ def create_location_logic(db, request):
 
     try:
         data = json.loads(request.get_data())
+        print(data)
         user = get_user_by_id(db, request.user_id)
 
         # if str(user.role) not in allowed_roles:
         #     return jsonify({"error": "Not authorized"}), 401
 
-        new_location: Location = create_new_location(db, data)
+        new_location: Location = create_new_location(db, data, request.user_id)
         if not new_location:
             return jsonify({"error": "Failed to create location"}), 400
 
         return jsonify(new_location.to_dict()), 200
 
-    except Exception:
+    except Exception as e:
+        print(e)
         return handle_creation_error()

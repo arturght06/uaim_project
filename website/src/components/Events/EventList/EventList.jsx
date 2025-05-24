@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "../EventCard/EventCard";
 import styles from "./EventList.module.css";
-import { getAllEvents } from "../../../services/events";
+import { getAllEvents, getUserEvents } from "../../../services/events";
 
 const EventList = ({
   filterType = "all", // Default to fetching all events
   // categoryId,      // Examples for future filtering
-  // userId,
+  userId,
   customLoadingMessage,
   customNoEventsMessage,
 }) => {
@@ -22,6 +22,8 @@ const EventList = ({
         let data;
         if (filterType === "all") {
           data = await getAllEvents();
+        } else if (filterType === "user" && userId) {
+          data = await getUserEvents(userId);
         } else {
           // Default or handle other filter types
           data = await getAllEvents(); // Fallback to all for now
@@ -36,7 +38,7 @@ const EventList = ({
     };
 
     fetchEvents();
-  }, [filterType]);
+  }, [filterType, userId]);
 
   // ----- RENDER -----
 
