@@ -54,7 +54,7 @@
 
   /* Warning */
   --warning-color: var(--tawny);
-  --warning-color-hover: #b84c00; 
+  --warning-color-hover: #b84c00;
   --warning-bg-light: #fff2e0;
   --text-on-warning: var(--black);
 

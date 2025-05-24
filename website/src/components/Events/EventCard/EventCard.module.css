@@ -2,61 +2,128 @@
   text-decoration: none;
   color: inherit;
   display: block;
+  width: 320px; /* Adjust */
+  margin: 20px auto;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  box-shadow: var(--shadow-large);
+  border-radius: var(--border-radius-medium);
+  overflow: hidden;
 }
 
 .eventCard {
-  background-color: var(--bg-content, #fff);
-  border: 1px solid var(--border-color, #e0e0e0);
-  border-radius: var(--border-radius-medium, 8px);
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-small, 0 2px 4px rgba(0, 0, 0, 0.05));
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  cursor: pointer;
-  height: 100%;
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.eventCard:hover {
+.eventCard:hover:not(.disabledLink) {
   transform: translateY(-5px);
   box-shadow: var(--shadow-medium, 0 5px 15px rgba(0, 0, 0, 0.1));
 }
 
-.title {
-  font-size: 1.4em;
-  color: var(--text-main, #333);
-  margin-top: 0;
-  margin-bottom: 10px;
+.disabledLink:hover {
+  transform: none !important;
+  box-shadow: none !important;
+  cursor: default;
 }
 
-.date {
-  font-size: 0.9em;
-  color: var(--text-secondary, #555);
-  margin-bottom: 8px;
-}
-
-.info {
-  font-size: 0.9em;
-  color: var(--text-secondary, #777);
-  margin-bottom: 15px;
-}
-
-.description {
-  font-size: 1em;
-  color: var(--text-secondary, #555);
-  line-height: 1.5;
+/* Top section with triangle pattern and circle */
+.cardTop {
   flex-grow: 1;
-  margin-bottom: 15px;
+  background-color: var(--bg-content);
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px 20px;
+  min-height: 280px;
+  overflow: hidden;
 }
 
-.detailsButton {
-  display: inline-block;
-  padding: 8px 15px;
-  background-color: var(--primary-color, #007bff);
-  color: var(--text-on-primary, white);
-  border-radius: var(--border-radius-small, 4px);
+/* Pseudo-element for the triangle pattern */
+.cardTop::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+
+  background-color: var(--primary-color-light);
+
+  /* SVG mask for triangles */
+  mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='10,3 17,17 3,17' fill='black'/%3E%3C/svg%3E");
+  mask-repeat: repeat;
+  mask-size: 25px 25px; /* Fixed size for the pattern */
+
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolygon points='10,3 17,17 3,17' fill='black'/%3E%3C/svg%3E");
+  -webkit-mask-repeat: repeat;
+  -webkit-mask-size: 25px 25px;
+}
+
+.eventCircle {
+  width: 220px;
+  height: 220px;
+  background-color: var(--primary-color);
+  border-radius: 50%;
+  color: var(--text-on-primary);
+  box-shadow: var(--shadow-large);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   text-align: center;
-  font-weight: 500;
-  margin-top: auto;
+  padding: 15px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1; /* Above the ::before pseudo-element */
+}
+
+.mainTitle {
+  font-family: "Georgia", Times, "Times New Roman", serif;
+  font-size: 3em;
+  letter-spacing: 1.5px;
+  margin: 0;
+  line-height: 1.1;
+}
+
+/* Bottom dark section */
+.cardBottom {
+  background-color: var(--secondary-color);
+  color: var(--text-on-secondary);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: baseline;
+  gap: 20px;
+  min-height: 150px;
+}
+
+.subtitle {
+  font-size: 0.65em;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  line-height: 1.4;
+}
+
+.title {
+  font-family: "Georgia", Times, "Times New Roman", serif;
+  font-size: 1.8em;
+  font-weight: normal;
+  line-height: 1;
+}
+
+.descriptionText {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 0.9em;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  width: 100%;
+  text-align: center;
+  overflow-wrap: break-word;
+}
+
+.owner {
+  background-color: var(--warning-bg-light);
 }

@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from app.extensions import db
-from app.services.user.get_logic import get_user_logic, get_all_users_logic
+from app.services.user.get_logic import get_user_logic, get_user_name_logic, get_all_users_logic
 from app.services.user.create_logic import create_user_logic
 from app.services.user.update_logic import update_user_logic
 from app.services.user.delete_logic import delete_user_logic
@@ -17,6 +17,10 @@ def get_all_users():
 @token_required
 def get_user(user_id):
     return get_user_logic(db, user_id)
+
+@user_bp.route('/name/<user_id>', methods=['GET'])
+def get_user_name(user_id):
+    return get_user_name_logic(db, user_id)
 
 @user_bp.route('/', methods=['POST'])
 def create_user():

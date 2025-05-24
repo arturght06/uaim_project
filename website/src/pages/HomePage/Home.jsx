@@ -112,7 +112,7 @@ const Home = () => {
       </div>
 
       <div className={styles.container}>
-        <h1>Witaj na Portalu Wydarzeń Kulturalnych!</h1>
+        <h1>Witaj w EVE.NT!</h1>
         <p>
           Przeglądaj nadchodzące wydarzenia, rezerwuj miejsca i ciesz się
           kulturą.

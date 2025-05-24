@@ -17,6 +17,19 @@ def get_user_logic(db, user_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+def get_user_name_logic(db, user_id):
+    try:
+        user = db.session.query(User).filter_by(id=uuid.UUID(user_id)).first()
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({"name": user.name, "surname": user.surname}), 200
+
+    except (ValueError, SQLAlchemyError) as e:
+        return jsonify({"error": "Invalid user ID or database error", "details": str(e)}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 
 def get_all_users_logic(db):
     try:

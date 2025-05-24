@@ -10,12 +10,14 @@ import CreateLocationForm from "../../../components/Location/CreateLocation/Crea
 import { AuthContext } from "../../../contexts/AuthContext";
 import { createNewEvent } from "../../../services/events";
 import { getUserLocations } from "../../../services/location";
+import EventCard from "../../../components/Events/EventCard/EventCard";
 
 const EventCreate = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
+    organizer_id: auth.currentUser.id,
     title: "",
     description: "",
     event_date: "",
@@ -31,7 +33,7 @@ const EventCreate = () => {
   useEffect(() => {
     const fetchLocations = async () => {
       try {
-        const data = await getUserLocations();
+        const data = await getUserLocations(auth.currentUser.id);
         setLocations(data || []);
       } catch (error) {
         console.error("Failed to fetch locations for event form:", error);
@@ -140,81 +142,87 @@ const EventCreate = () => {
   }));
 
   return (
-    <div className={styles.createEventContainer}>
-      <h1>Utwórz Nowe Wydarzenie</h1>
-      {serverError && <p className={styles.serverError}>{serverError}</p>}
-      <form onSubmit={handleSubmitEvent} className={styles.form}>
-        {" "}
-        <Input
-          label="Tytuł wydarzenia"
-          name="title"
-          value={formData.title}
-          onChange={handleChange}
-          error={errors.title}
-        />
-        <Textarea
-          label="Opis wydarzenia"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          error={errors.description}
-          rows={6}
-        />
-        <Input
-          label="Data i godzina wydarzenia"
-          type="datetime-local"
-          name="event_date"
-          value={formData.event_date}
-          onChange={handleChange}
-          error={errors.event_date}
-        />
-        <Select
-          label="Lokalizacja"
-          name="location_id"
-          value={formData.location_id}
-          onChange={handleChange}
-          error={errors.location_id}
-          options={locationOptions}
-          defaultOptionText="Wybierz istniejącą lokalizację..."
-        />
-        <Button
-          type="button"
-          onClick={() => setIsLocationModalOpen(true)}
-          variant="outline"
-          className={styles.addLocationButton}
-        >
-          Dodaj nową lokalizację
-        </Button>
-        <Input
-          label="Maks. liczba uczestników (opcjonalne)"
-          type="number"
-          name="max_participants"
-          value={formData.max_participants}
-          onChange={handleChange}
-          min="0"
-          error={errors.max_participants}
-        />
-        <Button
-          type="submit"
-          variant="primary"
-          disabled={isLoading}
-          className={styles.submitButton}
-        >
-          {isLoading ? "Tworzenie Wydarzenia..." : "Utwórz Wydarzenie"}
-        </Button>
-      </form>
+    <div className={styles.parent}>
+      <div className={styles.createEventContainer}>
+        <h1>Utwórz Nowe Wydarzenie</h1>
+        {serverError && <p className={styles.serverError}>{serverError}</p>}
+        <form onSubmit={handleSubmitEvent} className={styles.form}>
+          {" "}
+          <Input
+            label="Tytuł wydarzenia"
+            name="title"
+            value={formData.title}
+            onChange={handleChange}
+            error={errors.title}
+          />
+          <Textarea
+            label="Opis wydarzenia"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            error={errors.description}
+            rows={6}
+          />
+          <Input
+            label="Data i godzina wydarzenia"
+            type="datetime-local"
+            name="event_date"
+            value={formData.event_date}
+            onChange={handleChange}
+            error={errors.event_date}
+          />
+          <Select
+            label="Lokalizacja"
+            name="location_id"
+            value={formData.location_id}
+            onChange={handleChange}
+            error={errors.location_id}
+            options={locationOptions}
+            defaultOptionText="Wybierz istniejącą lokalizację..."
+          />
+          <Button
+            type="button"
+            onClick={() => setIsLocationModalOpen(true)}
+            variant="outline"
+            className={styles.addLocationButton}
+          >
+            Dodaj nową lokalizację
+          </Button>
+          <Input
+            label="Maks. liczba uczestników (opcjonalne)"
+            type="number"
+            name="max_participants"
+            value={formData.max_participants}
+            onChange={handleChange}
+            min="0"
+            error={errors.max_participants}
+          />
+          <Button
+            type="submit"
+            variant="primary"
+            disabled={isLoading}
+            className={styles.submitButton}
+          >
+            {isLoading ? "Tworzenie Wydarzenia..." : "Utwórz Wydarzenie"}
+          </Button>
+        </form>
 
-      {/* Modal for creating a new location */}
-      <Modal
-        isOpen={isLocationModalOpen}
-        onClose={() => setIsLocationModalOpen(false)}
-        title="Dodaj Nową Lokalizację"
-      >
-        <CreateLocationForm
-          onSuccess={handleLocationCreated}
-          onCancel={() => setIsLocationModalOpen(false)}
-        />
-      </Modal>
+        {/* Modal for creating a new location */}
+        <Modal
+          isOpen={isLocationModalOpen}
+          onClose={() => setIsLocationModalOpen(false)}
+          title="Dodaj Nową Lokalizację"
+        >
+          <CreateLocationForm
+            onSuccess={handleLocationCreated}
+            onCancel={() => setIsLocationModalOpen(false)}
+          />
+        </Modal>
+      </div>
+      <div className={styles.createEventContainer}>
+        <h1>Karta wydarzenia</h1>
+        <EventCard event={formData} disableLink={true}></EventCard>
+      </div>
     </div>
   );
 };

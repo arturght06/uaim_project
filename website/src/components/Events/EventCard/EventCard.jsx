@@ -1,64 +1,107 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styles from "./EventCard.module.css";
+import {
+  formatDate,
+  formatLocation,
+  formatUser,
+} from "../../../services/format";
 import { getLocationById } from "../../../services/location";
-import { formatDate, formatLocation } from "../../../services/format";
+import { AuthContext } from "../../../contexts/AuthContext";
+import { getUserName } from "../../../services/user";
 
-const EventCard = ({ event }) => {
+const EventCard = ({ event, disableLink }) => {
+  const auth = useContext(AuthContext);
   const [locationName, setLocationName] = useState("Ładowanie lokalizacji...");
-  const [isLocationLoading, setIsLocationLoading] = useState(false);
-  const { id, title, description, event_date, location_id } = event;
+  const [organizer, setOrganizer] = useState("Nieznany organizator");
+  const { id, title, description, event_date, location_id, organizer_id } =
+    event || {};
 
   useEffect(() => {
     // Fetch location details if location_id is present
     if (location_id) {
-      setIsLocationLoading(true);
       const fetchLocation = async () => {
         try {
           const locationData = await getLocationById(location_id);
-          if (locationData) {
-            setLocationName(formatLocation(locationData));
-          } else {
-            setLocationName("Lokalizacja nieznana");
-          }
+          setLocationName(formatLocation(locationData));
         } catch (error) {
           console.error(
             `Error fetching location ${location_id} for event ${id}:`,
             error
           );
           setLocationName("Błąd ładowania lokalizacji");
-        } finally {
-          setIsLocationLoading(false);
         }
       };
       fetchLocation();
     } else {
-      setLocationName("Lokalizacja nieokreślona"); // No location_id provided
+      setLocationName("Lokalizacja nieokreślona");
     }
-  }, [location_id, id]); // Re-fetch if location_id or event id changes
+  }, [location_id, id]);
 
-  // Truncate description if it's too long for the card
+  const isOrganizer =
+    auth.isAuthenticated && auth.currentUser.id === organizer_id;
+  useEffect(() => {
+    if (isOrganizer) {
+      setOrganizer("Twoje wydarzenie");
+    } else if (organizer_id) {
+      const fetchOrganizer = async () => {
+        try {
+          const organizerData = await getUserName(organizer_id);
+          setOrganizer(formatUser(organizerData));
+        } catch (error) {
+          console.error(
+            `Error fetching organizer ${organizer_id} for event ${id}:`,
+            error
+          );
+          setOrganizer("Błąd ładowania lokalizacji");
+        }
+      };
+      fetchOrganizer();
+    } else {
+      setLocationName("Nieznany organizator");
+    }
+  }, [organizer_id, id, isOrganizer]);
+
+  // Truncate title and description if it's too long for the card
+  const shortTitle =
+    title && title.length > 8 ? `${title.substring(0, 6)}...` : title;
   const shortDescription =
-    description && description.length > 100
-      ? `${description.substring(0, 100)}...`
+    description && description.length > 90
+      ? `${description.substring(0, 87)}...`
       : description;
 
-  return (
-    <Link to={`/events/${id}`} className={styles.cardLink}>
-      <div className={styles.eventCard}>
-        <h3 className={styles.title}>{title || "Brak tytułu"}</h3>
-        {event_date && (
-          <p className={styles.date}>Data: {formatDate(event_date)}</p>
-        )}
-        <p className={styles.info}>
-          Lokalizacja: {isLocationLoading ? "Ładowanie..." : locationName}
-        </p>
-        <p className={styles.description}>
-          {shortDescription || "Brak opisu."}
-        </p>
-        <div className={styles.detailsButton}>Zobacz szczegóły</div>
+  const date = formatDate(event_date);
+
+  const children = (
+    <div
+      className={`${styles.eventCard} ${disableLink && styles.disabledLink}`}
+    >
+      <div className={`${styles.cardTop} ${isOrganizer && styles.owner}`}>
+        <div className={styles.eventCircle}>
+          <div className={styles.mainTitle}>{shortTitle}</div>
+          <div className={styles.subtitle}>{organizer}</div>
+        </div>
       </div>
-    </Link>
+      <div className={styles.cardBottom}>
+        <div>
+          <div className={styles.title}>{date}</div>
+          <p className={styles.subtitle}>{locationName}</p>
+        </div>
+        <p className={styles.descriptionText}>{shortDescription}</p>
+      </div>
+    </div>
+  );
+
+  return (
+    <>
+      {!disableLink ? (
+        <Link to={`/events/${id}`} className={styles.cardLink}>
+          {children}
+        </Link>
+      ) : (
+        <span className={styles.cardLink}>{children}</span>
+      )}
+    </>
   );
 };
 

@@ -1,3 +1,7 @@
+.parent {
+  display: flex;
+}
+
 .createEventContainer {
   max-width: 700px;
   margin: 20px auto;

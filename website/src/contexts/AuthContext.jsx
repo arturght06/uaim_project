@@ -14,7 +14,8 @@ export const AuthProvider = ({ children }) => {
   const checkUserStatus = useCallback(async () => {
     setIsLoadingAuth(true);
     try {
-      const user = await getUser();
+      let uuid = localStorage.getItem("userUUID");
+      const user = await getUser(uuid);
       if (user) {
         setCurrentUser(user);
       } else {

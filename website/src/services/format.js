@@ -21,3 +21,9 @@ export const formatLocation = (loc) => {
   if (!loc) return "Lokalizacja nieznana";
   return `${loc.country}, ${loc.city}, ${loc.address}`;
 };
+
+/** Helper function to format user */
+export const formatUser = (user) => {
+  if (!user) return "Nieznany użytkownik";
+  return `${user.name} ${user.surname}`;
+};
