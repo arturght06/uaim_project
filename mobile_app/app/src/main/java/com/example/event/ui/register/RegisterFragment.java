@@ -1,5 +1,6 @@
 package com.example.event.ui.register;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -22,6 +23,10 @@ import com.example.event.R;
 import com.example.event.data.RegisterDataSource;
 import com.example.event.data.RegisterRepository;
 import com.example.event.data.Result;
+
+import java.util.Calendar;
+
+import android.text.InputType;
 
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -82,6 +87,28 @@ public class RegisterFragment extends Fragment {
 
         goToLoginText.setOnClickListener(v -> {
             NavHostFragment.findNavController(RegisterFragment.this).navigate(R.id.navigation_login);
+        });
+
+        // DatePickerDialog for birth date
+        birthDateEditText.setFocusable(false);
+        birthDateEditText.setFocusableInTouchMode(false);
+        birthDateEditText.setClickable(true);
+        birthDateEditText.setInputType(InputType.TYPE_NULL);
+        birthDateEditText.setOnClickListener(v -> {
+            final Calendar calendar = Calendar.getInstance();
+            int year = calendar.get(Calendar.YEAR);
+            int month = calendar.get(Calendar.MONTH);
+            int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(
+                requireContext(),
+                (view1, selectedYear, selectedMonth, selectedDay) -> {
+                    String formatted = String.format("%04d-%02d-%02d", selectedYear, selectedMonth + 1, selectedDay);
+                    birthDateEditText.setText(formatted);
+                },
+                year, month, day
+            );
+            datePickerDialog.show();
         });
 
         registerButton.setOnClickListener(v -> {

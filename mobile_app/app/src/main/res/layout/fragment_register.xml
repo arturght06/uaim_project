@@ -1,129 +1,159 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fillViewport="true">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:gravity="center_horizontal">
+        android:paddingBottom="16dp"
+        android:clipToPadding="false"
+        >
 
-        <TextView
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Rejestracja"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Dołącz do naszej społeczności i odkrywaj wydarzenia kulturalne."
-            android:textSize="16sp"
-            android:layout_marginBottom="12dp"
-            android:textAlignment="center"/>
-
-        <TextView
-            android:id="@+id/textGoToLogin"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Masz już konto? Zaloguj się"
-            android:textColor="@color/primary_color"
-            android:textStyle="bold"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp"
-            android:clickable="true"
-            android:focusable="true"/>
+            app:cardCornerRadius="12dp"
+            app:cardElevation="6dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent">
 
-        <EditText
-            android:id="@+id/editTextUsername"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nazwa użytkownika"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/editTextFirstName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Imię"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/editTextLastName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Nazwisko"
-            android:inputType="textPersonName"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/editTextBirthDate"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Data urodzenia (YYYY-MM-DD)"
-            android:inputType="date"
-            android:layout_marginBottom="8dp"/>
-
-        <EditText
-            android:id="@+id/editTextEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Email"
-            android:inputType="textEmailAddress"
-            android:layout_marginBottom="8dp"/>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginBottom="8dp">
-
-            <EditText
-                android:id="@+id/editTextCountryCode"
-                android:layout_width="60dp"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Kod kraju"
-                android:text="+48"
-                android:inputType="phone"/>
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:paddingBottom="40dp"
+                android:gravity="center_horizontal">
 
-            <Space
-                android:layout_width="8dp"
-                android:layout_height="wrap_content"/>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Rejestracja"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:textColor="?attr/colorPrimary"
+                    android:layout_marginBottom="4dp"/>
 
-            <EditText
-                android:id="@+id/editTextPhoneNumber"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Numer telefonu"
-                android:inputType="phone"/>
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Dołącz do naszej społeczności i odkrywaj wydarzenia kulturalne."
+                    android:textSize="16sp"
+                    android:layout_marginBottom="12dp"
+                    android:textAlignment="center"/>
 
-        <EditText
-            android:id="@+id/editTextPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Hasło"
-            android:inputType="textPassword"
-            android:layout_marginBottom="8dp"/>
+                <TextView
+                    android:id="@+id/textGoToLogin"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Masz już konto? Zaloguj się"
+                    android:textColor="@color/primary_color"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="16dp"
+                    android:clickable="true"
+                    android:focusable="true"/>
 
-        <EditText
-            android:id="@+id/editTextConfirmPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Potwierdź hasło"
-            android:inputType="textPassword"
-            android:layout_marginBottom="16dp"/>
+                <EditText
+                    android:id="@+id/editTextUsername"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nazwa użytkownika"
+                    android:inputType="textPersonName"
+                    android:layout_marginBottom="8dp"/>
 
-        <Button
-            android:id="@+id/buttonRegisterSubmit"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Zarejestruj"/>
-    </LinearLayout>
+                <EditText
+                    android:id="@+id/editTextFirstName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Imię"
+                    android:inputType="textPersonName"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editTextLastName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Nazwisko"
+                    android:inputType="textPersonName"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editTextBirthDate"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Data urodzenia"
+                    android:inputType="date"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editTextEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:layout_marginBottom="8dp"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="8dp">
+
+                    <EditText
+                        android:id="@+id/editTextCountryCode"
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:hint="Kod kraju"
+                        android:text="+48"
+                        android:inputType="phone"/>
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content"/>
+
+                    <EditText
+                        android:id="@+id/editTextPhoneNumber"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Numer telefonu"
+                        android:inputType="phone"/>
+                </LinearLayout>
+
+                <EditText
+                    android:id="@+id/editTextPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Hasło"
+                    android:inputType="textPassword"
+                    android:layout_marginBottom="8dp"/>
+
+                <EditText
+                    android:id="@+id/editTextConfirmPassword"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Potwierdź hasło"
+                    android:inputType="textPassword"
+                    android:layout_marginBottom="16dp"/>
+
+                <Button
+                    android:id="@+id/buttonRegisterSubmit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Zarejestruj"
+                    android:backgroundTint="?attr/colorSecondary"
+                    android:textColor="?attr/colorOnSecondary"
+                    android:paddingTop="12dp"
+                    android:paddingBottom="12dp"/>
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

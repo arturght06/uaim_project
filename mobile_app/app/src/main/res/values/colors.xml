@@ -5,6 +5,7 @@
     <color name="tawny_hover">#af4900</color>
     <color name="tawny_active">#a34300</color>
     <color name="tawny_light">#ff8c40</color>
+    <color name="hunter_green_disabled">#808C86</color>
     <color name="hunter_green">#3f6c51</color>
     <color name="hunter_green_hover">#355e45</color>
     <color name="hunter_green_active">#2b4f3a</color>
@@ -17,6 +18,7 @@
     <color name="on_primary">@color/white</color>
     <color name="secondary_color">@color/hunter_green</color>
     <color name="secondary_color_variant">@color/hunter_green_active</color>
+    <color name="secondary_color_disabled">@color/hunter_green_disabled</color>
     <color name="on_secondary">@color/white</color>
 
     <!-- Tło -->
