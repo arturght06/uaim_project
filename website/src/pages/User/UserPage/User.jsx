@@ -65,12 +65,11 @@ const User = () => {
         </div>
       </div>
 
-      {/* Placeholder for user's events list */}
       <div className={styles.userEventsSection}>
         <h2>Twoje Wydarzenia</h2>
         <p>Lista Twoich wydarzeń pojawi się tutaj wkrótce.</p>
       </div>
-      <EventList filterType="user" userId={auth.currentUser.id}></EventList>
+      <EventList userId={auth.currentUser.id}></EventList>
     </div>
   );
 };

@@ -1,7 +1,204 @@
-.container {
-  padding: 20px;
+.eventDetailContainer {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: clamp(15px, 3vw, 30px);
+  background-color: var(--bg-page, #f4f4f4);
 }
 
-.container h2 {
+.loadingMessage,
+.errorMessage {
+  text-align: center;
+  font-size: 1.2em;
+  padding: 40px;
+  color: var(--text-secondary, #555);
+}
+.errorMessage {
+  color: var(--danger-color, #ef4444);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
+  border-bottom: 2px solid var(--primary-color, #3b82f6);
+}
+
+.title {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: var(--text-main, #1f2937);
+  font-size: clamp(1.8em, 4vw, 2.8em);
+  font-weight: bold;
+  margin: 0;
+  line-height: 1.2;
+  margin-right: 20px;
+}
+
+.ownerActions {
+  display: flex;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.actionButtonSmall button {
+  padding: 6px 12px !important;
+  font-size: 0.85em !important;
+  display: flex;
+  align-items: center;
+}
+
+.metaInfoBar {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 20px;
+  font-size: 0.9em;
+  color: var(--text-main, #6b7280);
+  margin-bottom: 30px;
+  padding: 10px;
+  background-color: var(--bg-content-subtle, #f9fafb);
+  border-radius: var(--border-radius-small, 4px);
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.metaItem .material-symbols-outlined {
+  font-size: 1.3em; /* Icon size */
+  color: var(--primary-color, #3b82f6);
+}
+.metaItem strong {
+  color: var(--text-main, #1f2937);
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 2.5fr) minmax(0, 1fr);
+  gap: 30px;
+}
+
+@media (max-width: 850px) {
+  /* Adjusted breakpoint */
+  .contentGrid {
+    grid-template-columns: 1fr; /* Stack on smaller screens */
+  }
+  .header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .title {
+    margin-bottom: 15px;
+  }
+  .ownerActions {
+    margin-left: 0;
+    justify-content: flex-start;
+  }
+}
+
+.mainContent {
+  background-color: var(--bg-content, #ffffff);
+  padding: clamp(15px, 3vw, 25px);
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-small, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+}
+
+.eventImage {
+  width: 100%;
+  max-height: 450px;
+  object-fit: cover;
+  border-radius: var(--border-radius-small, 4px);
+  margin-bottom: 25px;
+}
+
+.sectionTitle {
+  font-size: 1.6em;
+  color: var(--text-main, #1f2937);
+  margin-top: 0;
   margin-bottom: 15px;
+  border-bottom: 1px solid var(--border-color-subtle, #e5e7eb);
+  padding-bottom: 10px;
+}
+
+.description {
+  font-size: 1em;
+  line-height: 1.7;
+  color: var(--text-muted, #4b5563);
+  white-space: pre-wrap;
+}
+
+.sidebar {
+}
+
+.sidebarCard {
+  background-color: var(--bg-content, #ffffff);
+  padding: 20px;
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-small, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
+  position: sticky;
+  top: calc(70px + 20px);
+}
+
+.sidebarTitle {
+  font-size: 1.3em;
+  color: var(--text-main, #3b82f6);
+  margin-top: 0;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color-subtle, #e5e7eb);
+}
+
+.detailItem {
+  display: flex;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  gap: 10px;
+  font-size: 0.95em;
+}
+
+.detailItem .material-symbols-outlined {
+  font-size: 1.5em;
+  margin-right: 12px;
+  color: var(--text-main, #3b82f6);
+  margin-top: 2px;
+}
+
+.detailText {
+  color: var(--text-main, #1f2937);
+}
+.detailText p {
+  margin: 0 0 4px 0;
+  line-height: 1.5;
+}
+.detailText strong {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 600;
+}
+.subDetail {
+  font-size: 0.9em;
+  color: var(--text-muted, #6b7280);
+}
+
+.primaryActionButton {
+  width: 100%;
+  margin-top: 25px;
+  padding: 12px;
+  font-size: 1.05em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginPrompt {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 0.95em;
+  color: var(--text-secondary, #6b7280);
+}
+.loginPrompt a {
+  color: var(--text-link, var(--primary-color));
+  font-weight: bold;
 }

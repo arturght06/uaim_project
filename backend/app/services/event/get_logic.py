@@ -42,7 +42,7 @@ def get_event_by_id_logic(db, event_id):
         if not event:
             return jsonify({"error": "Event not found"}), 404
 
-        return jsonify(event.to_dict()), 200
+        return jsonify(add_event_data(db, event)), 200
 
     except SQLAlchemyError as e:
         return jsonify({"error": "Database error", "details": str(e)}), 500

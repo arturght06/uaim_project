@@ -4,8 +4,7 @@ import styles from "./EventList.module.css";
 import { getAllEvents, getUserEvents } from "../../../services/events";
 
 const EventList = ({
-  filterType = "all", // Default to fetching all events
-  // categoryId,      // Examples for future filtering
+  // categoryId,
   userId,
   customLoadingMessage,
   customNoEventsMessage,
@@ -20,17 +19,13 @@ const EventList = ({
         setIsLoading(true);
         setError(null);
         let data;
-        if (filterType === "all") {
-          data = await getAllEvents();
-        } else if (filterType === "user" && userId) {
+        if (userId) {
           data = await getUserEvents(userId);
         } else {
-          // Default or handle other filter types
-          data = await getAllEvents(); // Fallback to all for now
+          data = await getAllEvents(); // Fallback to all
         }
         setEvents(data || []);
       } catch (err) {
-        console.error(`Error fetching events (filter: ${filterType}):`, err);
         setError(err.message || "Nie udało się załadować wydarzeń.");
       } finally {
         setIsLoading(false);
@@ -38,7 +33,7 @@ const EventList = ({
     };
 
     fetchEvents();
-  }, [filterType, userId]);
+  }, [userId]);
 
   // ----- RENDER -----
 

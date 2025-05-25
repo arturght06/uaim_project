@@ -51,10 +51,12 @@ const EventCard = ({ event, disableLink }) => {
         <h2 className={styles.activityTitle}>{shortTitle}</h2>
         <div className={styles.eventDetails}>
           <div className={styles.eventItem}>
-            📍 <span>{formatLocation(location_data)}</span>
+            <span class="material-symbols-outlined">pin_drop</span>{" "}
+            <span>{formatLocation(location_data)}</span>
           </div>
           <div className={styles.eventItem}>
-            🗓 <span>{date}</span>
+            <span class="material-symbols-outlined">calendar_month</span>{" "}
+            <span>{date}</span>
           </div>
           <div className={styles.eventItem}>
             <p className={styles.descriptionText}>{shortDescription}</p>
@@ -63,7 +65,6 @@ const EventCard = ({ event, disableLink }) => {
       </div>
 
       <div className={styles.cardFooter}>
-        {/* Actions (buttons) remain as the first child */}
         <div className={styles.actions}>
           <div className={styles.action}>
             <span class="material-symbols-outlined">thumb_up</span>
@@ -74,7 +75,6 @@ const EventCard = ({ event, disableLink }) => {
             10
           </div>
         </div>
-        {/* "Twoje wydarzenie" becomes the second direct child, conditionally rendered */}
         {isOrganizer && (
           <div className={styles.footerOwner}>Twoje wydarzenie</div>
         )}

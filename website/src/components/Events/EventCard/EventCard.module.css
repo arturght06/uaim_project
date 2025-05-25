@@ -16,7 +16,8 @@
   flex-direction: column;
   transition: transform 0.15s linear;
   width: 101%;
-  transform: translateY(0);
+  height: 101%;
+  transform: translateY(0.4px);
 }
 
 .eventCard:hover {
@@ -57,7 +58,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: white;
+  background: var(--bg-content);
   border-bottom: 1px solid #eee;
 }
 
@@ -66,23 +67,17 @@
   flex-direction: column;
   align-items: baseline;
   font-size: 1em;
-  color: #444;
+  color: var(--text-main);
 }
 
 .eventDate {
   font-size: 0.8em;
-  color: #888;
-}
-
-.moreIcon {
-  font-size: 1.2em;
-  cursor: pointer;
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .cardBody {
   padding: 16px;
-  background: #f9f9f9;
+  background: var(--bg-page);
   text-align: left;
 }
 
@@ -97,7 +92,6 @@
   flex-direction: column;
   gap: calc(min(100px, 5%));
   font-size: 0.95em;
-  color: #333;
 }
 
 .eventItem {
@@ -108,7 +102,7 @@
 
 .cardFooter {
   padding: 16px;
-  background: white;
+  background: var(--bg-content);
   border-top: 1px solid #eee;
   display: flex;
   justify-content: space-between;
@@ -120,7 +114,7 @@
   line-height: 1.5;
   flex-grow: 1;
   margin-right: 12px;
-  color: #444;
+  color: var(--text-muted);
 }
 
 .actions {

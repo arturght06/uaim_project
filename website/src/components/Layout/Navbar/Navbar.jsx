@@ -84,7 +84,7 @@ const Navbar = () => {
               Strona Główna
             </NavLink>
           </li>
-          <li className={styles.navItem}>
+          {/* <li className={styles.navItem}>
             <NavLink
               to="/events"
               className={({ isActive }) =>
@@ -93,7 +93,7 @@ const Navbar = () => {
             >
               Wydarzenia
             </NavLink>
-          </li>
+          </li> */}
         </ul>
         <ul className={styles.navList}>
           {auth.isAuthenticated ? (
