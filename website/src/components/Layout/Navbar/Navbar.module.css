@@ -121,4 +121,40 @@
   background: none;
   border: none;
   padding: 0;
+  text-decoration: none;
+}
+
+.navLink {
+  text-decoration: none;
+  padding: 8px 12px;
+  border-radius: var(--border-radius-small, 4px);
+  transition: background-color 0.2s ease, color 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navButton button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.navItem a {
+  text-decoration: none;
+}
+
+.navItem button {
+  text-decoration: none;
+  padding: 8px 12px;
+}
+
+.linkText {
+  display: inline;
+}
+
+@media (max-width: 800px) {
+  .linkText {
+    display: none;
+  }
 }

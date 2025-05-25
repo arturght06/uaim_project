@@ -9,15 +9,14 @@ const Navbar = () => {
   const location = useLocation();
 
   const isHomePage = location.pathname === "/";
-  // Controls if the solid background pseudo-element should be visible
   const [showSolidBackground, setShowSolidBackground] = useState(!isHomePage);
 
   useEffect(() => {
     const handleStateChange = () => {
       if (isHomePage) {
-        setShowSolidBackground(window.scrollY > 200); // Scroll threshold for solid background
+        setShowSolidBackground(window.scrollY > 200);
       } else {
-        setShowSolidBackground(true); // Always solid on other pages
+        setShowSolidBackground(true);
       }
     };
 
@@ -29,7 +28,6 @@ const Navbar = () => {
     }
   }, [location.pathname, isHomePage]);
 
-  // Determine navbar classes
   const navbarComputedClasses = `
     ${styles.navbar}
     ${
@@ -38,7 +36,6 @@ const Navbar = () => {
         : styles.navbarSolidState
     }
   `;
-  // Class for the ::before pseudo-element to control its slide
   const backgroundSliderClass = showSolidBackground
     ? styles.backgroundVisible
     : styles.backgroundHidden;
@@ -66,7 +63,6 @@ const Navbar = () => {
         <ul className={styles.navList}>
           <li className={styles.navItem}>
             <Link to="/" className={styles.brand}>
-              {/* <img src="/logo.png" alt="Logo" className={styles.logo} /> */}
               <img
                 src="/logo-long.png"
                 alt="Logo"
@@ -81,19 +77,10 @@ const Navbar = () => {
                 `${styles.navLink} ${isActive ? styles.active : ""}`
               }
             >
-              Strona Główna
+              <span className="material-symbols-outlined">home</span>
+              <span className={styles.linkText}>Strona Główna</span>
             </NavLink>
           </li>
-          {/* <li className={styles.navItem}>
-            <NavLink
-              to="/events"
-              className={({ isActive }) =>
-                `${styles.navLink} ${isActive ? styles.active : ""}`
-              }
-            >
-              Wydarzenia
-            </NavLink>
-          </li> */}
         </ul>
         <ul className={styles.navList}>
           {auth.isAuthenticated ? (
@@ -112,17 +99,17 @@ const Navbar = () => {
                     `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
-                  Mój profil
+                  <span className="material-symbols-outlined">
+                    account_circle
+                  </span>
+                  <span className={styles.linkText}>Mój profil</span>
                 </NavLink>
               </li>
               <li className={styles.navItem}>
                 <Link to="/">
-                  <Button
-                    onClick={auth.logout}
-                    variant="secondary"
-                    className={styles.navButton}
-                  >
-                    Wyloguj
+                  <Button onClick={auth.logout} variant="danger">
+                    <span className="material-symbols-outlined">logout</span>
+                    <span className={styles.linkText}>Wyloguj</span>
                   </Button>
                 </Link>
               </li>
@@ -136,7 +123,8 @@ const Navbar = () => {
                     `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
-                  Logowanie
+                  <span className="material-symbols-outlined">login</span>
+                  <span className={styles.linkText}>Logowanie</span>
                 </NavLink>
               </li>
               <li className={styles.navItem}>
@@ -146,7 +134,8 @@ const Navbar = () => {
                     `${styles.navLink} ${isActive ? styles.active : ""}`
                   }
                 >
-                  Rejestracja
+                  <span className="material-symbols-outlined">how_to_reg</span>
+                  <span className={styles.linkText}>Rejestracja</span>
                 </NavLink>
               </li>
             </>
