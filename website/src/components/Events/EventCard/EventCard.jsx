@@ -19,9 +19,9 @@ const EventCard = ({ event, disableLink }) => {
     created_at,
     location_data,
     organizer_data,
+    reservation,
+    reservation_count,
   } = event || {};
-
-  console.log(organizer_data);
 
   const isOrganizer =
     auth.isAuthenticated && auth.currentUser.id === organizer_id;
@@ -67,6 +67,10 @@ const EventCard = ({ event, disableLink }) => {
       <div className={styles.cardFooter}>
         <div className={styles.actions}>
           <div className={styles.action}>
+            <span class="material-symbols-outlined">groups</span>
+            {reservation_count}
+          </div>
+          <div className={styles.action}>
             <span class="material-symbols-outlined">thumb_up</span>
             50
           </div>
@@ -78,6 +82,9 @@ const EventCard = ({ event, disableLink }) => {
         {isOrganizer && (
           <div className={styles.footerOwner}>Twoje wydarzenie</div>
         )}
+        {reservation && (
+          <div className={styles.footerAttend}>Weźmiesz udział</div>
+        )}
       </div>
     </div>
   );
@@ -87,7 +94,9 @@ const EventCard = ({ event, disableLink }) => {
       {!disableLink ? (
         <Link
           to={`/events/${id}`}
-          className={`${styles.cardLink} ${isOrganizer && styles.owner}`}
+          className={`${styles.cardLink} ${isOrganizer && styles.owner} ${
+            reservation && styles.attend
+          }`}
         >
           {children}
         </Link>

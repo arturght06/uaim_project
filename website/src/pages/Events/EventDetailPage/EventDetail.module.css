@@ -2,7 +2,7 @@
   max-width: 1200px;
   margin: 20px auto;
   padding: clamp(15px, 3vw, 30px);
-  background-color: var(--bg-page, #f4f4f4);
+  background-color: var(--bg-content, #f4f4f4);
 }
 
 .loadingMessage,
@@ -55,7 +55,7 @@
   color: var(--text-main, #6b7280);
   margin-bottom: 30px;
   padding: 10px;
-  background-color: var(--bg-content-subtle, #f9fafb);
+  background-color: var(--bg-page, #f9fafb);
   border-radius: var(--border-radius-small, 4px);
 }
 
@@ -99,7 +99,7 @@
 }
 
 .mainContent {
-  background-color: var(--bg-content, #ffffff);
+  background-color: var(--bg-page, #ffffff);
   padding: clamp(15px, 3vw, 25px);
   border-radius: var(--border-radius-medium, 8px);
   box-shadow: var(--shadow-small, 0 1px 2px 0 rgba(0, 0, 0, 0.05));
@@ -133,7 +133,7 @@
 }
 
 .sidebarCard {
-  background-color: var(--bg-content, #ffffff);
+  background-color: var(--bg-page, #ffffff);
   padding: 20px;
   border-radius: var(--border-radius-medium, 8px);
   box-shadow: var(--shadow-small, 0 1px 2px 0 rgba(0, 0, 0, 0.05));

@@ -17,6 +17,13 @@ export const AuthProvider = ({ children }) => {
       let uuid = localStorage.getItem("userUUID");
       const user = await getUser(uuid);
       if (user) {
+        if (user.phone_number === "None") {
+          delete user.phone_number;
+        }
+        if (user.phone_country_code === "None") {
+          delete user.phone_country_code;
+        }
+        console.log(user);
         setCurrentUser(user);
       } else {
         setCurrentUser(null);

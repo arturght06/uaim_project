@@ -1,5 +1,5 @@
 .pageContainer {
-  max-width: 750px;
+  max-width: 700px;
   margin: 20px auto;
   padding: 20px;
 }
@@ -7,4 +7,12 @@
   text-align: center;
   color: var(--primary-color);
   margin-bottom: 30px;
+}
+.message,
+.errorMessage {
+  text-align: center;
+  padding: 20px;
+}
+.errorMessage {
+  color: var(--danger-color);
 }

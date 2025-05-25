@@ -1,0 +1,35 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.phoneGroup {
+  display: flex;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.phoneGroup > div {
+  flex: 1;
+}
+
+.submitButton {
+  margin-top: 20px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 1.1em;
+  width: 100%;
+}
+
+.serverError {
+  color: var(--danger-color, #ef4444);
+  background-color: var(--danger-bg-light, #fef2f2);
+  border: 1px solid var(--danger-color, #ef4444);
+  padding: 12px 15px;
+  border-radius: var(--border-radius-small, 4px);
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 0.95em;
+  line-height: 1.4;
+}

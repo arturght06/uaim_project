@@ -53,6 +53,9 @@
 .owner {
   background-color: var(--warning-color);
 }
+.attend {
+  background-color: var(--info-bg-light);
+}
 .cardHeader {
   display: flex;
   justify-content: space-between;
@@ -138,6 +141,12 @@
 
 .footerOwner {
   color: var(--warning-color);
+  font-weight: bold;
+  font-size: 0.9em;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.footerAttend {
+  color: var(--info-bg-light);
   font-weight: bold;
   font-size: 0.9em;
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;

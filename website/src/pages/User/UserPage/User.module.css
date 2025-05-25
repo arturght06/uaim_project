@@ -26,6 +26,20 @@
   margin: 0;
 }
 
+.headerName {
+  display: flex;
+  flex-direction: column;
+}
+
+.mainName {
+  font-size: 1.5em;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 10px;
+}
+
 .profileDetails {
   background-color: var(--bg-content, #fff);
   padding: 25px;

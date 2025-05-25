@@ -40,6 +40,9 @@ export const handleResponse = async (response) => {
           // data might not be stringifiable
         }
       }
+      if (data.details) {
+        errorMessage = `${errorMessage} ${data.details}`;
+      }
     }
 
     const error = new Error(errorMessage);
@@ -55,7 +58,7 @@ export const handleResponse = async (response) => {
 };
 
 /**
- * Returns a headers object headers for authenticated requests.
+ * Returns a headers object for authenticated requests.
  */
 export const getAuthHeaders = (includeContentTypeJson = true) => {
   const headers = {};
@@ -66,6 +69,19 @@ export const getAuthHeaders = (includeContentTypeJson = true) => {
   }
   if (includeContentTypeJson) {
     headers["Content-Type"] = "application/json";
+  }
+  return headers;
+};
+
+/**
+ * Returns a headers object for user specific requests.
+ */
+export const getUserHeaders = () => {
+  const headers = {};
+  const uuid = localStorage.getItem("userUUID");
+
+  if (uuid) {
+    headers["Useruuid"] = `${uuid}`;
   }
   return headers;
 };

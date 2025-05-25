@@ -8,3 +8,11 @@
   color: var(--primary-color);
   margin-bottom: 30px;
 }
+.message,
+.errorMessage {
+  text-align: center;
+  padding: 20px;
+}
+.errorMessage {
+  color: var(--danger-color);
+}
