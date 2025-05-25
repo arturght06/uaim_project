@@ -3,6 +3,7 @@ from app.models.event import Event
 from app.models.user import User
 from app.models.location import Location
 from app.models.reservation import Reservation
+from app.models.event_category import EventCategory
 from sqlalchemy.exc import SQLAlchemyError
 
 # Add extra data to event object to improve performance
@@ -45,6 +46,20 @@ def get_user_events_logic(db, user_id):
         all_events = {event.id: event for event in organized_events + reserved_events}.values()
 
         return jsonify([add_event_data(db, event) for event in all_events]), 200
+
+    except SQLAlchemyError as e:
+        return jsonify({"error": "Database error", "details": str(e)}), 500
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+def get_category_events_logic(db, category_id):
+    try:
+        events = db.session.query(Event).\
+            join(EventCategory, Event.id == EventCategory.event_id).\
+            filter(EventCategory.category_id == category_id).\
+            order_by(Event.event_date.desc()).all()
+
+        return jsonify([add_event_data(db, event) for event in events]), 200
 
     except SQLAlchemyError as e:
         return jsonify({"error": "Database error", "details": str(e)}), 500

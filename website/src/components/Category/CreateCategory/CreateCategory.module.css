@@ -1,0 +1,35 @@
+.createCategoryForm {
+  padding: 20px;
+}
+
+.createCategoryForm h3 {
+  text-align: center;
+  color: var(--primary-color, #007bff);
+  margin-top: 0;
+  margin-bottom: 25px;
+  font-size: 1.3em;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.formActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.serverError {
+  color: var(--danger-color, #ef4444);
+  background-color: var(--danger-bg-light, #fef2f2);
+  border: 1px solid var(--danger-color, #ef4444);
+  padding: 10px 15px;
+  border-radius: var(--border-radius-small, 4px);
+  margin-bottom: 15px;
+  text-align: center;
+  font-size: 0.9em;
+}

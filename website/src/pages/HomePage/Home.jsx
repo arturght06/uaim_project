@@ -1,6 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
 import styles from "./Home.module.css";
 import EventList from "../../components/Events/EventList/EventList";
+import Select from "../../components/UI/Select/Select";
+import { getAllCategories } from "../../services/category";
 
 const videoList = [
   "https://ik.imagekit.io/ybxfqvwjs/Filmik_o_EVENT_Gotowy.mp4?updatedAt=1747938669145",
@@ -89,6 +91,26 @@ const Home = () => {
     };
   }, [activeVideo]);
 
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [categories, setCategories] = useState([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const data = await getAllCategories();
+        setCategories(data);
+      } catch (err) {
+        console.error("Błąd ładowania kategorii:", err);
+      }
+    };
+
+    fetchCategories();
+  }, []);
+
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value);
+  };
+
   return (
     <>
       <div className={styles.videoContainer}>
@@ -114,11 +136,23 @@ const Home = () => {
       <div className={styles.rootContainer}>
         <div className={styles.container}>
           <h1>Witaj w EVE.NT!</h1>
+
           <p>
             Przeglądaj nadchodzące wydarzenia, rezerwuj miejsca i ciesz się
             kulturą.
           </p>
-          <EventList></EventList>
+          <Select
+            label="Filtruj według kategorii"
+            name="category"
+            value={selectedCategory}
+            onChange={handleCategoryChange}
+            options={categories.map((cat) => ({
+              value: cat.id,
+              label: cat.name,
+            }))}
+            defaultOptionText="Wszystkie kategorie"
+          />
+          <EventList categoryId={selectedCategory || null} />
         </div>
       </div>
     </>

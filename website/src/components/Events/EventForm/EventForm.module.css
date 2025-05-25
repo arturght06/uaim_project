@@ -59,11 +59,54 @@
   font-size: 0.9em;
 }
 
-.createLocationFormWrapper {
+.createFormWrapper {
   border: 1px solid var(--border-color-subtle, #eee);
   padding: 15px;
-  margin-top: 10px;
-  margin-bottom: 15px;
+  margin-top: 5px;
+  margin-bottom: 10px;
   border-radius: var(--border-radius-small, 4px);
   background-color: var(--bg-page);
+}
+
+.categorySection {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 15px;
+  border: 1px solid var(--border-color-subtle, #eee);
+  border-radius: var(--border-radius-small, 4px);
+}
+
+.categorySection .label {
+  display: block;
+  font-weight: bold;
+  color: var(--text-main);
+  margin-bottom: 10px;
+}
+
+.categoryCheckboxGroup {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.checkboxItem {
+  display: flex;
+  align-items: center;
+}
+
+.checkboxItem input[type="checkbox"] {
+  margin-right: 8px;
+  cursor: pointer;
+  background: red;
+}
+.checkboxItem label {
+  cursor: pointer;
+  font-size: 0.95em;
+  color: var(--text-secondary);
+}
+
+.addCategoryButton {
+  font-size: 0.9em;
+  margin-top: 5px;
 }

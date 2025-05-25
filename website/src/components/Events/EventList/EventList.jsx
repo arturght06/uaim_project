@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import EventCard from "../EventCard/EventCard";
 import styles from "./EventList.module.css";
-import { getAllEvents, getUserEvents } from "../../../services/events";
+import {
+  getAllEvents,
+  getCategoryEvents,
+  getUserEvents,
+} from "../../../services/events";
 
 const EventList = ({
-  // categoryId,
+  categoryId,
   userId,
   customLoadingMessage,
   customNoEventsMessage,
@@ -21,8 +25,10 @@ const EventList = ({
         let data;
         if (userId) {
           data = await getUserEvents(userId);
+        } else if (categoryId) {
+          data = await getCategoryEvents(categoryId);
         } else {
-          data = await getAllEvents(); // Fallback to all
+          data = await getAllEvents();
         }
         setEvents(data || []);
       } catch (err) {
@@ -33,7 +39,7 @@ const EventList = ({
     };
 
     fetchEvents();
-  }, [userId]);
+  }, [userId, categoryId]);
 
   // ----- RENDER -----
 

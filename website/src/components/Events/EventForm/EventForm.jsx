@@ -1,85 +1,135 @@
-// src/components/Events/EventForm/EventForm.jsx
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import styles from "./EventForm.module.css"; // Upewnij się, że ten plik CSS istnieje i jest dostosowany
+import styles from "./EventForm.module.css";
 import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import Textarea from "../../UI/Textarea/Textarea";
 import Select from "../../UI/Select/Select";
 import Modal from "../../UI/Modal/Modal";
-import { AuthContext } from "../../../contexts/AuthContext";
-import { createNewEvent, updateEvent } from "../../../services/events";
-import { getAllLocations } from "../../../services/location";
 import CreateLocation from "../../Location/CreateLocation/CreateLocation";
+import CreateCategory from "../../Category/CreateCategory/CreateCategory";
+import { AuthContext } from "../../../contexts/AuthContext";
+import {
+  createNewEvent,
+  updateEvent,
+  getEventById,
+} from "../../../services/events";
+import { getAllLocations } from "../../../services/location";
+import { getAllCategories } from "../../../services/category";
+import {
+  linkEventToCategory,
+  unlinkEventFromCategory,
+  getAllEventCategoryRelations,
+} from "../../../services/eventCategory";
 import { formatLocation } from "../../../services/format";
 
-const EventForm = ({ eventToEdit, onSuccess }) => {
+const EventForm = ({ eventToEditId, onSuccess }) => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
-  const isEditMode = !!eventToEdit;
+  const isEditMode = !!eventToEditId;
 
+  const [eventDataForEdit, setEventDataForEdit] = useState(null);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    event_date: "", // YYYY-MM-DDTHH:MM
+    event_date: "",
     location_id: "",
     max_participants: "",
+    selectedCategoryIds: [], // Array of selected category IDs
   });
+
+  const [allCategories, setAllCategories] = useState([]);
+  const [existingEventCategoryRelations, setExistingEventCategoryRelations] =
+    useState([]);
 
   const [locations, setLocations] = useState([]);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
   const [errors, setErrors] = useState({});
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(isEditMode); // Loading initial event/category data
+  const [isSubmitting, setIsSubmitting] = useState(false); // For form submission process
   const [serverError, setServerError] = useState("");
 
-  // Fetch locations on component mount
-  useEffect(() => {
-    const fetchLocationsData = async () => {
-      try {
-        const data = await getAllLocations();
-        setLocations(data || []);
-      } catch (error) {
-        console.error("Failed to fetch locations for event form:", error);
-        setServerError("Nie udało się załadować listy lokalizacji.");
-      }
-    };
-    fetchLocationsData();
+  const resetFormState = useCallback(() => {
+    setFormData({
+      title: "",
+      description: "",
+      event_date: "",
+      location_id: "",
+      max_participants: "",
+      selectedCategoryIds: [],
+    });
+    setErrors({});
+    setServerError("");
   }, []);
 
-  // Populate form if in edit mode
+  // Fetch initial data
   useEffect(() => {
-    if (isEditMode && eventToEdit) {
-      setFormData({
-        title: eventToEdit.title || "",
-        description: eventToEdit.description || "",
-        event_date: eventToEdit.event_date
-          ? new Date(
-              new Date(eventToEdit.event_date).getTime() -
-                new Date().getTimezoneOffset() * 60000
-            )
-              .toISOString()
-              .slice(0, 16)
-          : "",
-        location_id: eventToEdit.location_id || "",
-        max_participants:
-          eventToEdit.max_participants !== null &&
-          eventToEdit.max_participants !== undefined
-            ? eventToEdit.max_participants.toString()
-            : "",
-      });
-    }
-    // Reset form for create mode if eventToEdit becomes null (e.g. navigating from edit to create)
-    // This might not be strictly necessary if the component is always remounted.
-    if (!isEditMode) {
-      setFormData({
-        title: "",
-        description: "",
-        event_date: "",
-        location_id: "",
-        max_participants: "",
-      });
-    }
-  }, [eventToEdit, isEditMode]);
+    console.log(
+      "EventForm useEffect triggered. isEditMode:",
+      isEditMode,
+      "eventToEditId:",
+      eventToEditId
+    );
+    const fetchInitialData = async () => {
+      setIsLoadingData(true);
+      try {
+        const [locationsData, categoriesData] = await Promise.all([
+          getAllLocations(),
+          getAllCategories(),
+        ]);
+        setLocations(locationsData || []);
+        setAllCategories(categoriesData || []);
+
+        if (isEditMode && eventToEditId) {
+          const fetchedEvent = await getEventById(eventToEditId);
+          setEventDataForEdit(fetchedEvent);
+
+          setFormData({
+            title: fetchedEvent.title || "",
+            description: fetchedEvent.description || "",
+            event_date: fetchedEvent.event_date
+              ? new Date(
+                  new Date(fetchedEvent.event_date).getTime() -
+                    new Date().getTimezoneOffset() * 60000
+                )
+                  .toISOString()
+                  .slice(0, 16)
+              : "",
+            location_id: fetchedEvent.location_id || "",
+            max_participants:
+              fetchedEvent.max_participants !== null &&
+              fetchedEvent.max_participants !== undefined
+                ? fetchedEvent.max_participants.toString()
+                : "",
+            selectedCategoryIds: [],
+          });
+
+          const allRelations = await getAllEventCategoryRelations();
+          const eventRelations = allRelations.filter(
+            (rel) => rel.event_id === eventToEditId
+          );
+          setExistingEventCategoryRelations(eventRelations);
+
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            selectedCategoryIds: eventRelations.map((rel) => rel.category_id),
+          }));
+        } else {
+          resetFormState();
+        }
+      } catch (error) {
+        console.error("Error fetching initial data for event form:", error);
+        setServerError(
+          "Nie udało się załadować danych formularza. Spróbuj odświeżyć stronę."
+        );
+      } finally {
+        setIsLoadingData(false);
+      }
+    };
+    fetchInitialData();
+  }, [eventToEditId, isEditMode, resetFormState]);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -101,48 +151,72 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
       newErrors.description = "Opis jest wymagany.";
     if (!formData.event_date)
       newErrors.event_date = "Data wydarzenia jest wymagana.";
-    else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(formData.event_date)) {
-      newErrors.event_date =
-        "Niepoprawny format daty i czasu (YYYY-MM-DDTHH:MM).";
-    }
+    else if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(formData.event_date))
+      newErrors.event_date = "Niepoprawny format daty (YYYY-MM-DDTHH:MM).";
     if (!formData.location_id)
       newErrors.location_id = "Lokalizacja jest wymagana.";
+    if (formData.selectedCategoryIds.length === 0)
+      newErrors.categories = "Wybierz przynajmniej jedną kategorię."; // Example category validation
 
     if (
       formData.max_participants !== "" &&
       isNaN(parseInt(formData.max_participants, 10))
-    ) {
-      newErrors.max_participants =
-        "Maksymalna liczba uczestników musi być liczbą.";
-    } else if (
+    )
+      newErrors.max_participants = "Maks. liczba uczestników musi być liczbą.";
+    else if (
       formData.max_participants !== "" &&
       parseInt(formData.max_participants, 10) < 0
-    ) {
+    )
       newErrors.max_participants =
-        "Maksymalna liczba uczestników nie może być ujemna.";
-    }
+        "Maks. liczba uczestników nie może być ujemna.";
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleLocationCreated = (newLocation) => {
-    setLocations((prevLocations) => {
-      const existing = prevLocations.find((loc) => loc.id === newLocation.id);
-      return existing ? prevLocations : [...prevLocations, newLocation];
-    });
-    setFormData((prevData) => ({ ...prevData, location_id: newLocation.id }));
+    setLocations((prev) =>
+      [...prev.filter((loc) => loc.id !== newLocation.id), newLocation].sort(
+        (a, b) => a.name.localeCompare(b.name)
+      )
+    );
+    setFormData((prev) => ({ ...prev, location_id: newLocation.id }));
     setIsLocationModalOpen(false);
+  };
+
+  const handleCategoryChange = (categoryId) => {
+    setFormData((prev) => {
+      const newSelected = prev.selectedCategoryIds.includes(categoryId)
+        ? prev.selectedCategoryIds.filter((id) => id !== categoryId)
+        : [...prev.selectedCategoryIds, categoryId];
+      // Clear category-specific error if user interacts
+      if (errors.categories) setErrors((e) => ({ ...e, categories: null }));
+      return { ...prev, selectedCategoryIds: newSelected };
+    });
+  };
+
+  const handleCategoryCreated = (newCategory) => {
+    setAllCategories((prev) =>
+      [...prev.filter((cat) => cat.id !== newCategory.id), newCategory].sort(
+        (a, b) => a.name.localeCompare(b.name)
+      )
+    );
+    setFormData((prev) => ({
+      ...prev,
+      selectedCategoryIds: [...prev.selectedCategoryIds, newCategory.id],
+    }));
+    setIsCategoryModalOpen(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setServerError("");
-    setErrors({});
     if (!validateClientSide()) return;
 
-    setIsLoading(true);
+    setIsSubmitting(true);
+    setServerError("");
+    setErrors({});
 
-    const dataPayload = {
+    const payload = {
       title: formData.title,
       description: formData.description,
       event_date: new Date(formData.event_date).toISOString().slice(0, 16),
@@ -151,38 +225,62 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
         formData.max_participants === ""
           ? null
           : parseInt(formData.max_participants, 10),
-      ...(!isEditMode && { organizer_id: auth.currentUser.id }), // Add organizer_id only for new events
+      ...(!isEditMode && { organizer_id: auth.currentUser.id }),
     };
 
     try {
-      let responseData;
-      if (isEditMode && eventToEdit) {
-        responseData = await updateEvent(eventToEdit.id, dataPayload);
-        alert("Wydarzenie zostało pomyślnie zaktualizowane!");
+      let savedEvent;
+      if (isEditMode && eventDataForEdit) {
+        savedEvent = await updateEvent(eventDataForEdit.id, payload);
+        alert("Wydarzenie zaktualizowane pomyślnie!");
       } else {
-        responseData = await createNewEvent(dataPayload);
-        alert("Wydarzenie zostało pomyślnie utworzone!");
+        savedEvent = await createNewEvent(payload);
+        alert("Wydarzenie utworzone pomyślnie!");
       }
 
-      console.log(
-        isEditMode ? "Wydarzenie zaktualizowane:" : "Wydarzenie utworzone:",
-        responseData
+      // Manage category relations
+      const newCategoryIds = formData.selectedCategoryIds;
+      const oldRelations = isEditMode ? existingEventCategoryRelations : [];
+      const oldCategoryIds = oldRelations.map((rel) => rel.category_id);
+
+      const categoriesToAdd = newCategoryIds.filter(
+        (id) => !oldCategoryIds.includes(id)
       );
+      const relationsToRemove = oldRelations.filter(
+        (rel) => !newCategoryIds.includes(rel.category_id)
+      );
+
+      // Perform linking and unlinking operations
+      // These can be parallelized for better performance
+      const linkingPromises = categoriesToAdd.map((categoryId) =>
+        linkEventToCategory({
+          event_id: savedEvent.id,
+          category_id: categoryId,
+        })
+      );
+      const unlinkingPromises = relationsToRemove.map(
+        (relation) => unlinkEventFromCategory(relation.id) // Assumes relation object has its own ID
+      );
+
+      await Promise.all([...linkingPromises, ...unlinkingPromises]);
+      console.log("Category relations updated.");
+
       if (onSuccess) {
-        onSuccess(responseData);
+        onSuccess(savedEvent);
       } else {
-        // Default navigation if no onSuccess callback is provided
         navigate(
           isEditMode
-            ? `/events/${eventToEdit.id}`
-            : responseData.id
-            ? `/events/${responseData.id}`
+            ? `/events/${eventDataForEdit.id}`
+            : savedEvent.id
+            ? `/events/${savedEvent.id}`
             : "/events"
         );
       }
     } catch (error) {
       console.error(
-        `Błąd ${isEditMode ? "aktualizacji" : "tworzenia"} wydarzenia:`,
+        `Błąd ${
+          isEditMode ? "aktualizacji" : "tworzenia"
+        } wydarzenia lub kategorii:`,
         error
       );
       if (error.isValidationError && error.serverErrors) {
@@ -194,7 +292,7 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
         setServerError(error.message || "Wystąpił nieoczekiwany błąd.");
       }
     } finally {
-      setIsLoading(false);
+      setIsSubmitting(false);
     }
   };
 
@@ -203,11 +301,20 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
     label: formatLocation(loc),
   }));
 
-  if (auth.isLoadingAuth) return <p className={styles.message}>Ładowanie...</p>;
+  if (isLoadingData)
+    return <p className={styles.message}>Ładowanie danych formularza...</p>;
+  if (auth.isLoadingAuth)
+    return <p className={styles.message}>Ładowanie statusu użytkownika...</p>;
   if (!auth.isAuthenticated || !auth.currentUser) {
     navigate("/login", { replace: true });
     return null;
   }
+  if (isEditMode && !eventDataForEdit && !isLoadingData)
+    return (
+      <p className={styles.serverError}>
+        {serverError || "Nie udało się załadować wydarzenia do edycji."}
+      </p>
+    );
 
   return (
     <div className={styles.eventFormContainer}>
@@ -218,7 +325,6 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
           name="title"
           value={formData.title}
           onChange={handleChange}
-          placeholder="Podaj tytuł wydarzenia"
           error={errors.title}
           required
         />
@@ -227,7 +333,6 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
           name="description"
           value={formData.description}
           onChange={handleChange}
-          placeholder="Opisz szczegółowo swoje wydarzenie"
           error={errors.description}
           rows={6}
           required
@@ -258,13 +363,13 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
               type="button"
               onClick={() => setIsLocationModalOpen(true)}
               variant="outline"
-              className={styles.addLocationButton}
+              className={styles.addInlineButton}
             >
               Dodaj nową lokalizację
             </Button>
           </div>
         ) : (
-          <div className={styles.createLocationFormWrapper}>
+          <div className={styles.createFormWrapper}>
             <CreateLocation
               onSuccess={handleLocationCreated}
               onCancel={() => setIsLocationModalOpen(false)}
@@ -272,13 +377,48 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
           </div>
         )}
 
+        <div className={styles.categorySection}>
+          <label className={styles.label}>
+            Kategorie (wybierz przynajmniej jedną):
+          </label>
+          {errors.categories && (
+            <p className={styles.fieldError}>{errors.categories}</p>
+          )}
+          {allCategories.length === 0 && !isLoadingData && (
+            <p>Brak dostępnych kategorii. Kliknij poniżej, aby dodać.</p>
+          )}
+          <div className={styles.categoryCheckboxGroup}>
+            {allCategories.map((category) => (
+              <div key={category.id} className={styles.checkboxItem}>
+                <input
+                  type="checkbox"
+                  id={`category-${category.id}`}
+                  value={category.id}
+                  checked={formData.selectedCategoryIds.includes(category.id)}
+                  onChange={() => handleCategoryChange(category.id)}
+                />
+                <label htmlFor={`category-${category.id}`}>
+                  {category.name}
+                </label>
+              </div>
+            ))}
+          </div>
+          <Button
+            type="button"
+            onClick={() => setIsCategoryModalOpen(true)}
+            variant="outline"
+            className={styles.addInlineButton}
+          >
+            Dodaj nową kategorię
+          </Button>
+        </div>
+
         <Input
-          label="Maksymalna liczba uczestników (opcjonalne)"
+          label="Maks. liczba uczestników (opcjonalne)"
           type="number"
           name="max_participants"
           value={formData.max_participants}
           onChange={handleChange}
-          placeholder="Np. 50"
           min="0"
           error={errors.max_participants}
         />
@@ -286,10 +426,10 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
         <Button
           type="submit"
           variant="primary"
-          disabled={isLoading || isLocationModalOpen}
+          disabled={isSubmitting || isLocationModalOpen || isCategoryModalOpen}
           className={styles.submitButton}
         >
-          {isLoading
+          {isSubmitting
             ? isEditMode
               ? "Aktualizowanie..."
               : "Tworzenie..."
@@ -307,6 +447,17 @@ const EventForm = ({ eventToEdit, onSuccess }) => {
         <CreateLocation
           onSuccess={handleLocationCreated}
           onCancel={() => setIsLocationModalOpen(false)}
+        />
+      </Modal>
+
+      <Modal
+        isOpen={isCategoryModalOpen}
+        onClose={() => setIsCategoryModalOpen(false)}
+        title="Dodaj Nową Kategorię"
+      >
+        <CreateCategory
+          onSuccess={handleCategoryCreated}
+          onCancel={() => setIsCategoryModalOpen(false)}
         />
       </Modal>
     </div>

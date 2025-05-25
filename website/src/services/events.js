@@ -23,6 +23,16 @@ export const getUserEvents = async (userId) => {
 };
 
 /**
+ * Fetches events by category ID.
+ */
+export const getCategoryEvents = async (categoryId) => {
+  const response = await fetch(`${API_BASE_URL}/category/${categoryId}`, {
+    headers: getUserHeaders(),
+  });
+  return handleResponse(response);
+};
+
+/**
  * Fetches a single event by its ID.
  */
 export const getEventById = async (eventId) => {

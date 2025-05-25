@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import EventForm from "../../../components/Events/EventForm/EventForm";
-import { getEventById } from "../../../services/events";
 import { AuthContext } from "../../../contexts/AuthContext";
 import styles from "./EventEdit.module.css";
 
@@ -10,70 +9,69 @@ const EventEdit = () => {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
-  const [eventToEdit, setEventToEdit] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [pageLoading, setPageLoading] = useState(true);
+  const [accessError, setAccessError] = useState(null);
 
   useEffect(() => {
-    const fetchEvent = async () => {
-      if (!eventId) {
-        setError("Brak ID wydarzenia.");
-        setIsLoading(false);
-        return;
-      }
-      try {
-        setIsLoading(true);
-        const data = await getEventById(eventId);
-        if (auth.currentUser && data.organizer_id === auth.currentUser.id) {
-          setEventToEdit(data);
-        } else {
-          setError(
-            "Nie masz uprawnień do edycji tego wydarzenia lub wydarzenie nie istnieje."
-          );
-        }
-      } catch (err) {
-        console.error("Error fetching event for edit:", err);
-        setError(err.message || "Nie udało się załadować danych wydarzenia.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    console.log("EventEdit mounted/updated. eventId from URL:", eventId);
+    console.log(
+      "Auth state: isLoadingAuth:",
+      auth.isLoadingAuth,
+      "isAuthenticated:",
+      auth.isAuthenticated
+    );
 
-    if (auth.isAuthenticated) {
-      fetchEvent();
-    } else if (!auth.isLoadingAuth) {
-      navigate("/login");
+    if (auth.isLoadingAuth) {
+      setPageLoading(true);
+      return;
     }
-  }, [
-    eventId,
-    auth.isAuthenticated,
-    auth.currentUser,
-    navigate,
-    auth.isLoadingAuth,
-  ]);
+
+    if (!auth.isAuthenticated) {
+      navigate("/login", { replace: true });
+      return;
+    }
+
+    if (!eventId) {
+      setAccessError("Brak ID wydarzenia do edycji.");
+      setPageLoading(false);
+      return;
+    }
+
+    setPageLoading(false);
+    setAccessError(null);
+  }, [eventId, auth.isAuthenticated, auth.isLoadingAuth, navigate]);
 
   const handleSuccess = (updatedEvent) => {
     if (updatedEvent && updatedEvent.id) {
+      console.log(
+        "Event updated successfully, navigating to:",
+        `/events/${updatedEvent.id}`
+      );
       navigate(`/events/${updatedEvent.id}`);
     } else {
+      console.log(
+        "Event update successful, but no ID in response, navigating to /events"
+      );
       navigate("/events");
     }
   };
 
-  if (isLoading || auth.isLoadingAuth)
+  if (pageLoading || auth.isLoadingAuth) {
     return <p className={styles.message}>Ładowanie...</p>;
-  if (error) return <p className={styles.errorMessage}>Błąd: {error}</p>;
-  if (!eventToEdit)
-    return (
-      <p className={styles.message}>
-        Nie znaleziono wydarzenia do edycji lub brak uprawnień.
-      </p>
-    );
+  }
+
+  if (accessError) {
+    return <p className={styles.errorMessage}>Błąd: {accessError}</p>;
+  }
 
   return (
     <div className={styles.pageContainer}>
       <h1 className={styles.pageTitle}>Edytuj Wydarzenie</h1>
-      <EventForm eventToEdit={eventToEdit} onSuccess={handleSuccess} />
+      {eventId ? (
+        <EventForm eventToEditId={eventId} onSuccess={handleSuccess} />
+      ) : (
+        <p className={styles.errorMessage}>Błąd: Brak ID wydarzenia.</p>
+      )}
     </div>
   );
 };
