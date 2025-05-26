@@ -1,4 +1,4 @@
-"""Necessary Config class for Flask application"""
+﻿"""Necessary Config class for Flask application"""
 import os
 from dotenv import load_dotenv
 from flask import Request
@@ -20,4 +20,13 @@ class Config:
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_size": 20, "max_overflow": 10}
 
     DEBUG = bool(os.getenv('DEBUG', 'True').lower())
+
+    #Mail notification logic
+    MAIL_SERVER = 'smtp.gmail.com'
+    MAIL_PORT = 587
+    MAIL_USE_TLS = True
+    MAIL_USERNAME = 'twoj_email@gmail.com'  # <- zamień na swój
+    MAIL_PASSWORD = 'twoje_haslo_aplikacji'  # <- hasło aplikacji z Gmaila
+    MAIL_DEFAULT_SENDER = 'twoj_email@gmail.com'
+
 
