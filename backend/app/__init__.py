@@ -24,6 +24,7 @@ def create_app(config_class=Config):
 
     """Initialize db models"""
     extensions.db.init_app(app)
+    extensions.mail.init_app(app)
 
     with app.app_context():
         extensions.migrate(app, extensions.db)
