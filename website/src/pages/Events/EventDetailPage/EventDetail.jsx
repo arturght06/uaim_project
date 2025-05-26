@@ -30,56 +30,48 @@ const EventDetail = () => {
   const [isReservationProcessing, setIsReservationProcessing] = useState(false);
   const [isCheckingReservation, setIsCheckingReservation] = useState(true);
 
+  const fetchEventDetails = async () => {
+    if (!eventId) return;
+
+    setIsLoadingEvent(true);
+    setError(null);
+
+    try {
+      const eventData = await getEventById(eventId);
+      setEvent(eventData);
+    } catch (err) {
+      console.error("Error fetching event details:", err);
+      setError(
+        err.message ||
+          `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`
+      );
+    } finally {
+      setIsLoadingEvent(false);
+    }
+  };
+
   useEffect(() => {
     const fetchDetailsAndReservation = async () => {
-      if (!eventId) return;
+      await fetchEventDetails();
 
-      setIsLoadingEvent(true);
-      setIsCheckingReservation(true); // Start checking reservation status
-      setError(null);
-      setUserReservation(null); // Reset reservation status on event change
-
-      try {
-        // Fetch event details
-        const eventData = await getEventById(eventId);
-        setEvent(eventData);
-
-        // If user is authenticated and event data is loaded, check for their reservation
-        if (auth.isAuthenticated && auth.currentUser && eventData) {
-          try {
-            const allMyReservations = await getAllMyReservations();
-            const foundReservation = allMyReservations.find(
-              (res) =>
-                res.event_id === eventData.id &&
-                res.user_id === auth.currentUser.id
-            );
-            setUserReservation(foundReservation || null);
-          } catch (reservationError) {
-            console.error(
-              "Error fetching user reservations:",
-              reservationError
-            );
-            setUserReservation(null);
-          }
+      if (auth.isAuthenticated && auth.currentUser) {
+        try {
+          const allMyReservations = await getAllMyReservations();
+          const foundReservation = allMyReservations.find(
+            (res) =>
+              res.event_id === eventId && res.user_id === auth.currentUser.id
+          );
+          setUserReservation(foundReservation || null);
+        } catch (reservationError) {
+          console.error("Error fetching reservations:", reservationError);
+          setUserReservation(null);
         }
-      } catch (err) {
-        console.error("Error fetching event details:", err);
-        setError(
-          err.message ||
-            `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`
-        );
-        if (
-          err.status === 404 &&
-          err.data?.error?.toLowerCase().includes("event not found")
-        ) {
-          setError(`Wydarzenie o ID ${eventId} nie zostało znalezione.`);
-        }
-      } finally {
-        setIsLoadingEvent(false);
-        setIsCheckingReservation(false);
       }
+
+      setIsCheckingReservation(false);
     };
 
+    setIsCheckingReservation(true);
     fetchDetailsAndReservation();
   }, [eventId, auth.isAuthenticated, auth.currentUser]);
 
@@ -121,6 +113,8 @@ const EventDetail = () => {
         status: "confirmed",
         reserved_at: new Date().toISOString(),
       });
+
+      await fetchEventDetails(); // Refresh event info
     } catch (err) {
       console.error("Error creating reservation:", err);
       setError(
@@ -140,6 +134,7 @@ const EventDetail = () => {
     try {
       await deleteReservationById(userReservation.id);
       setUserReservation(null);
+      await fetchEventDetails(); // Refresh event info
     } catch (err) {
       console.error("Error deleting reservation:", err);
       setError(

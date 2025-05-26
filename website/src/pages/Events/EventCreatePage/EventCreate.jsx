@@ -17,10 +17,8 @@ const EventCreate = () => {
   return (
     <div className={styles.pageContainer}>
       {" "}
-      {/* Użyj własnej klasy dla kontenera strony */}
       <h1 className={styles.pageTitle}>Utwórz Nowe Wydarzenie</h1>
       <EventForm onSuccess={handleSuccess} />{" "}
-      {/* eventToEdit nie jest przekazywane -> tryb tworzenia */}
     </div>
   );
 };

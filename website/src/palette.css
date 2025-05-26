@@ -47,10 +47,11 @@
   --text-on-success: var(--white);
 
   /* Danger */
-  --danger-color: var(--tawny);
-  --danger-color-hover: #b84c00;
+  --danger-color: #cb3e3e;
+  --danger-color-hover: #b81f00;
   --danger-bg-light: #ffe8d6;
-  --text-on-danger: #ffe8d6;
+  --text-on-danger: var(--white);
+  --text-danger: #ff3636;
 
   /* Warning */
   --warning-color: var(--tawny);

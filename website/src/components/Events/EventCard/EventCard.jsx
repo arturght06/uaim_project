@@ -26,14 +26,6 @@ const EventCard = ({ event, disableLink }) => {
   const isOrganizer =
     auth.isAuthenticated && auth.currentUser.id === organizer_id;
 
-  // Truncate title and description if it's too long for the card
-  const shortTitle =
-    title && title.length > 50 ? `${title.substring(0, 47)}...` : title;
-  const shortDescription =
-    description && description.length > 90
-      ? `${description.substring(0, 87)}...`
-      : description;
-
   const date = formatDate(event_date);
 
   const children = (
@@ -45,10 +37,13 @@ const EventCard = ({ event, disableLink }) => {
           <strong>{formatUser(organizer_data)}</strong>
           <div className={styles.eventDate}>{formatDate(created_at)}</div>
         </div>
+        {Date.now() > new Date(event_date) && (
+          <strong className={styles.expired}>Minęło</strong>
+        )}
       </div>
 
       <div className={styles.cardBody}>
-        <h2 className={styles.activityTitle}>{shortTitle}</h2>
+        <h2 className={styles.activityTitle}>{title}</h2>
         <div className={styles.eventDetails}>
           <div className={styles.eventItem}>
             <span class="material-symbols-outlined">pin_drop</span>{" "}
@@ -59,7 +54,7 @@ const EventCard = ({ event, disableLink }) => {
             <span>{date}</span>
           </div>
           <div className={styles.eventItem}>
-            <p className={styles.descriptionText}>{shortDescription}</p>
+            <p className={styles.descriptionText}>{description}</p>
           </div>
         </div>
       </div>

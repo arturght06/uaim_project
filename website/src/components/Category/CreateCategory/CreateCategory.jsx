@@ -93,7 +93,6 @@ const CreateCategory = ({ onSuccess, onCancel }) => {
           onChange={handleChange}
           placeholder="Np. Muzyka, Teatr, Sztuka Wizualna"
           error={errors.name}
-          required
         />
         <Textarea
           label="Opis kategorii"
@@ -103,7 +102,6 @@ const CreateCategory = ({ onSuccess, onCancel }) => {
           placeholder="Krótki opis czego dotyczy kategoria..."
           error={errors.description}
           rows={4}
-          required
         />
         <div className={styles.formActions}>
           <Button

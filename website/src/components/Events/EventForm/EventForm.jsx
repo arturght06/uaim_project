@@ -335,7 +335,6 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
           onChange={handleChange}
           error={errors.description}
           rows={6}
-          required
         />
         <Input
           label="Data i godzina wydarzenia"
@@ -344,7 +343,6 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
           value={formData.event_date}
           onChange={handleChange}
           error={errors.event_date}
-          required
         />
 
         {!isLocationModalOpen ? (
@@ -357,7 +355,6 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
               error={errors.location_id}
               options={locationOptions}
               defaultOptionText="Wybierz istniejącą lokalizację..."
-              required
             />
             <Button
               type="button"
@@ -378,9 +375,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
         )}
 
         <div className={styles.categorySection}>
-          <label className={styles.label}>
-            Kategorie (wybierz przynajmniej jedną):
-          </label>
+          <label className={styles.label}>Kategorie:</label>
           {errors.categories && (
             <p className={styles.fieldError}>{errors.categories}</p>
           )}

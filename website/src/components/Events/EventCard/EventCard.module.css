@@ -24,6 +24,11 @@
   transform: translateY(-5px);
 }
 
+.expired {
+  color: var(--text-on-danger);
+  font-size: 0.9em;
+}
+
 /* .eventCardOwner {
   transform: translateY(-5px) scale(1.01);
 }
@@ -32,13 +37,16 @@
   transform: translateY(-8px) scale(1.01);
 } */
 
-.mainTitle {
+/* .mainTitle {
   font-family: "Georgia", Times, "Times New Roman", serif;
   font-size: 3em;
   letter-spacing: 1.5px;
   margin: 0;
   line-height: 1.1;
-}
+  width: 50px;
+  overflow: hidden;
+  text-overflow: 50%;
+} */
 
 .descriptionText {
   font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
@@ -85,6 +93,8 @@
 }
 
 .activityTitle {
+  overflow: hidden;
+  text-overflow: ellipsis;
   font-size: 1.25em;
   margin-bottom: 12px;
   font-weight: 600;
@@ -117,6 +127,9 @@
   line-height: 1.5;
   flex-grow: 1;
   margin-right: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   color: var(--text-muted);
 }
 
