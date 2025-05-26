@@ -4,6 +4,7 @@ from app.services.event.get_logic import get_all_events_logic, get_user_events_l
 from app.services.event.create_logic import create_event_logic
 from app.services.event.delete_logic import delete_event_logic
 from app.utils.wrappers import token_required
+from app.services.event.update_logic import update_event_logic
 
 event_bp = Blueprint("event", __name__, url_prefix="/api/events")
 
@@ -32,3 +33,9 @@ def create_event():
 @token_required
 def delete_event(event_id):
     return delete_event_logic(db, event_id)
+
+
+@event_bp.route("/<event_id>", methods=["PUT"])
+@token_required
+def update_event(current_user, event_id):
+    return update_event_logic(db, event_id, request)
