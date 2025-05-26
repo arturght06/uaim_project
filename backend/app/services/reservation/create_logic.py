@@ -1,5 +1,8 @@
 from flask import jsonify
 from app.models.reservation import Reservation
+from app.models.user import User
+from app.models.event import Event
+from app.utils.mailer import send_confirmation_email
 from sqlalchemy.exc import IntegrityError
 import uuid
 
@@ -12,14 +15,25 @@ def create_reservation_logic(db, request):
             if not data.get(field):
                 return jsonify({"error": f"Missing field: {field}"}), 400
 
+        user_id = uuid.UUID(data["user_id"])
+        event_id = uuid.UUID(data["event_id"])
+
+        # Create reservation
         new_reservation = Reservation(
-            user_id=uuid.UUID(data["user_id"]),
-            event_id=uuid.UUID(data["event_id"]),
+            user_id=user_id,
+            event_id=event_id,
             status=data["status"]
         )
 
         db.session.add(new_reservation)
         db.session.commit()
+
+        # Get user email and event name
+        user = db.session.get(User, user_id)
+        event = db.session.get(Event, event_id)
+
+        if user and event:
+            send_confirmation_email(user.email, event.name, is_reservation=True)
 
         return jsonify({
             "message": "Reservation created successfully",
