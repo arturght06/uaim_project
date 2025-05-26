@@ -90,11 +90,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             holder.joinBtn.setVisibility(View.VISIBLE);
             if ("confirmed".equals(event.reservationStatus)) {
                 holder.joinBtn.setImageResource(R.drawable.person_dash_fill);
-                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.tawny));
+                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.primary_color)); // Tawny - for deleting reservation
                 holder.joinBtn.setContentDescription("Wycofaj udział");
             } else {
                 holder.joinBtn.setImageResource(R.drawable.person_check_fill);
-                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.primary_color));
+                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.secondary_color)); // Hunter Green - for adding reservation
                 holder.joinBtn.setContentDescription("Weź udział");
             }
             holder.joinBtn.setOnClickListener(v -> listener.onJoin(event));
