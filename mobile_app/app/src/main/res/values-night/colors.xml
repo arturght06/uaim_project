@@ -6,6 +6,8 @@
     <color name="hunter_green">#3f6c51</color>
     <color name="black">#0a0908</color>
     <color name="white">#ffffff</color>
+    <color name="tawny_subtle">#4D3E34</color>
+    <color name="hunter_green_subtle">#303A34</color>
 
     <!-- Główne kolory -->
     <color name="primary_color">@color/tawny</color>
@@ -19,8 +21,11 @@
     <color name="bg_page">#181a1b</color>
     <color name="bg_content">#232625</color>
     <color name="bg_content_subtle">#232625</color>
+    <color name="bg_primary_subtle">@color/tawny_subtle</color>
+    <color name="bg_secondary_subtle">@color/hunter_green_subtle</color>
 
     <!-- Tekst -->
     <color name="text_main">@color/white</color>
+    <color name="text_primary">@color/tawny</color>
     <color name="text_secondary">@color/olivine</color>
 </resources>

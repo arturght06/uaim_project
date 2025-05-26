@@ -118,6 +118,7 @@ public class UserFragment extends Fragment {
                     try {
                         String userId = user.getUserId();
                         URL url = new URL(ApiConfig.BASE_URL + "users/" + userId);
+                        android.util.Log.d("UserFragment", "URL: " + url.toString());
                         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                         conn.setRequestMethod("GET");
                         String accessToken = com.example.event.data.TokenManager.getAccessToken();

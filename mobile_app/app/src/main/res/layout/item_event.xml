@@ -1,0 +1,198 @@
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    android:elevation="6dp"
+    android:foreground="?android:attr/selectableItemBackground"
+    android:clickable="true"
+    app:cardCornerRadius="12dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="0dp">
+
+        <!-- Góra: autor i data utworzenia -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_secondary_subtle"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="16dp"
+            android:paddingTop="10dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="10dp">
+
+            <TextView
+                android:id="@+id/text_event_author"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Imię Nazwisko"
+                android:textColor="@color/text_main"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <TextView
+                android:id="@+id/text_event_created"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24 maja 2025 18:29"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp" />
+        </LinearLayout>
+
+        <!-- Środkowa sekcja z innym tłem -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/bg_content_subtle"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp">
+
+            <TextView
+                android:id="@+id/text_event_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                android:textSize="20sp"
+                android:textColor="@color/text_main"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp" />
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="3dp"
+                    android:contentDescription="Lokalizacja"
+                    android:src="@drawable/geo_alt_fill"
+                    android:tint="@color/text_secondary"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/text_event_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="Polska, Warszawa, PW"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@+id/imageView"
+                    app:layout_constraintTop_toTopOf="@+id/imageView" />
+
+                <ImageView
+                    android:id="@+id/imageView2"
+                    android:layout_width="18dp"
+                    android:layout_height="18dp"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginTop="6dp"
+                    android:contentDescription="Data wydarzenia"
+                    android:src="@drawable/calendar_event"
+                    android:tint="@color/text_secondary"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView"
+                    tools:layout_editor_absoluteX="0dp" />
+
+                <TextView
+                    android:id="@+id/text_event_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:text="24 maja 2025 21:37"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="15sp"
+                    app:layout_constraintStart_toEndOf="@+id/imageView2"
+                    app:layout_constraintTop_toTopOf="@+id/imageView2" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <!-- Opis -->
+            <TextView
+                android:id="@+id/text_event_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="3"
+                android:paddingTop="8dp"
+                android:paddingBottom="2dp"
+                android:textColor="@color/text_main"
+                android:textSize="15sp" />
+        </LinearLayout>
+
+        <!-- Dolny pasek: przyciski i liczba rezerwacji -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_secondary_subtle"
+            android:gravity="start|center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="12dp"
+            android:paddingTop="10dp"
+            android:paddingRight="12dp"
+            android:paddingBottom="10dp">
+
+            <!-- Liczba rezerwacji + ikona -->
+            <ImageView
+                android:id="@+id/icon_participants"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:contentDescription="Liczba uczestników"
+                android:src="@drawable/people_fill"
+                android:tint="@color/text_secondary" />
+
+            <TextView
+                android:id="@+id/text_reservation_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:paddingRight="16dp"
+                android:text="0"
+                android:textColor="@color/text_main"
+                android:textSize="15sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/button_comment"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Komentuj"
+                android:padding="4dp"
+                android:src="@drawable/chat_right_text_fill"
+                android:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/button_join"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Weź udział"
+                android:padding="4dp"
+                android:src="@drawable/person_check_fill"
+                android:tint="@color/primary_color" />
+        </LinearLayout>
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

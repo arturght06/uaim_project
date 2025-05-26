@@ -17,6 +17,7 @@ public class RegisterDataSource {
 
         try {
             URL url = new URL(ApiConfig.BASE_URL + "auth/register");
+            Log.d("RegisterDataSource", "URL: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
