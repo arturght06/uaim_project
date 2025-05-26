@@ -7,8 +7,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -16,6 +14,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.event.R;
 import com.example.event.data.LoginRepository;
@@ -31,6 +31,9 @@ import java.util.List;
 public class HomeFragment extends Fragment {
 
     private FragmentHomeBinding binding;
+    private RecyclerView recyclerViewEvents;
+    private EventAdapter eventAdapter;
+    private List<Event> eventList = new ArrayList<>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class HomeFragment extends Fragment {
                 new ViewModelProvider(this).get(HomeViewModel.class);
 
         binding = FragmentHomeBinding.inflate(inflater, container, false);
-
+        
         return binding.getRoot();
     }
 
@@ -48,17 +51,41 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.d("HomeFragment", "onViewCreated called");
 
-        ListView listView = view.findViewById(R.id.list_events);
+        recyclerViewEvents = view.findViewById(R.id.recycler_view_events);
+        recyclerViewEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        loadEvents(listView, view);
+        eventAdapter = new EventAdapter(getContext(), eventList, new EventAdapter.OnEventActionListener() {
+            @Override
+            public void onComment(Event event) {
+                Log.d("HomeFragment", "onComment clicked for event: " + event.title);
+                Toast.makeText(getContext(), "Komentuj: " + event.title, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onJoin(Event event) {
+                Log.d("HomeFragment", "onJoin clicked for event: " + event.title);
+                handleJoinEvent(event, view);
+            }
+
+            @Override
+            public void onDetails(Event event) {
+                Log.d("HomeFragment", "onDetails clicked for event: " + event.title + " (id: " + event.id + ")");
+                Bundle args = new Bundle();
+                args.putString("event_id", event.id);
+                androidx.navigation.Navigation.findNavController(view).navigate(R.id.action_home_to_eventDetail, args);
+            }
+        });
+        recyclerViewEvents.setAdapter(eventAdapter);
+
+        loadEvents(view); 
     }
 
-    private void loadEvents(ListView listView, View rootView) {
+    private void loadEvents(View rootView) {
         new AsyncTask<Void, Void, List<Event>>() {
             @Override
             protected List<Event> doInBackground(Void... voids) {
                 Log.d("HomeFragment", "AsyncTask: doInBackground started");
-                List<Event> events = new ArrayList<>();
+                List<Event> fetchedEvents = new ArrayList<>();
                 try {
                     String accessToken = com.example.event.data.TokenManager.getAccessToken();
                     String userId = null;
@@ -126,7 +153,7 @@ public class HomeFragment extends Fragment {
                             String reservationId = eventIdToReservationId.get(eventId);
                             String reservationStatus = eventIdToReservationStatus.get(eventId);
                             String organizerId = obj.has("organizer_id") ? obj.optString("organizer_id", null) : null;
-                            events.add(new Event(
+                            fetchedEvents.add(new Event(
                                 eventId,
                                 obj.optString("title"),
                                 obj.optString("created_at"),
@@ -144,122 +171,109 @@ public class HomeFragment extends Fragment {
                                 organizerId
                             ));
                         }
-                        Log.d("HomeFragment", "Parsed " + events.size() + " events");
+                        Log.d("HomeFragment", "Parsed " + fetchedEvents.size() + " events"); 
                     }
                 } catch (Exception e) {
                     Log.e("HomeFragment", "Error fetching events", e);
                 }
-                return events;
+                return fetchedEvents; 
             }
 
             @Override
-            protected void onPostExecute(List<Event> events) {
-                Log.d("HomeFragment", "AsyncTask: onPostExecute, events count: " + events.size());
-                EventAdapter adapter = new EventAdapter(getContext(), events, new EventAdapter.OnEventActionListener() {
-                    @Override
-                    public void onComment(Event event) {
-                        Log.d("HomeFragment", "onComment clicked for event: " + event.title);
-                        Toast.makeText(getContext(), "Komentuj: " + event.title, Toast.LENGTH_SHORT).show();
-                    }
-                    @Override
-                    public void onJoin(Event event) {
-                        Log.d("HomeFragment", "onJoin clicked for event: " + event.title);
-                        if ("confirmed".equals(event.reservationStatus)) {
-                            new AsyncTask<Void, Void, Boolean>() {
-                                @Override
-                                protected Boolean doInBackground(Void... voids) {
-                                    try {
-                                        if (event.reservationId == null) return false;
-                                        String urlStr = com.example.event.data.ApiConfig.BASE_URL + "api/reservations/" + event.reservationId;
-                                        Log.d("HomeFragment", "DELETE reservation URL: " + urlStr);
-                                        java.net.URL url = new java.net.URL(urlStr);
-                                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                                        conn.setRequestMethod("DELETE");
-                                        String accessToken = com.example.event.data.TokenManager.getAccessToken();
-                                        if (accessToken != null) {
-                                            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-                                        }
-                                        int responseCode = conn.getResponseCode();
-                                        Log.d("HomeFragment", "DELETE reservation response code: " + responseCode);
-                                        return responseCode == java.net.HttpURLConnection.HTTP_OK;
-                                    } catch (Exception e) {
-                                        Log.e("HomeFragment", "Error deleting reservation", e);
-                                        return false;
-                                    }
-                                }
-                                @Override
-                                protected void onPostExecute(Boolean success) {
-                                    if (success) {
-                                        Log.d("HomeFragment", "Reservation deleted successfully for event: " + event.id);
-                                        Toast.makeText(getContext(), "Wycofano udział", Toast.LENGTH_SHORT).show();
-                                        loadEvents(listView, rootView);
-                                    } else {
-                                        Log.e("HomeFragment", "Reservation delete failed for event: " + event.id);
-                                        Toast.makeText(getContext(), "Błąd podczas wycofywania udziału", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }.execute();
-                        } else {
-                            new AsyncTask<Void, Void, Boolean>() {
-                                @Override
-                                protected Boolean doInBackground(Void... voids) {
-                                    try {
-                                        String urlStr = com.example.event.data.ApiConfig.BASE_URL + "api/reservations/";
-                                        Log.d("HomeFragment", "POST reservation URL: " + urlStr);
-                                        java.net.URL url = new java.net.URL(urlStr);
-                                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
-                                        conn.setRequestMethod("POST");
-                                        conn.setRequestProperty("Content-Type", "application/json");
-                                        String accessToken = com.example.event.data.TokenManager.getAccessToken();
-                                        if (accessToken != null) {
-                                            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-                                        }
-                                        conn.setDoOutput(true);
-                                        org.json.JSONObject json = new org.json.JSONObject();
-
-                                        String userId = com.example.event.data.LoginRepository.getInstance().getLoggedInUser().getUserId();
-                                        json.put("user_id", userId);
-                                        json.put("event_id", event.id);
-                                        json.put("status", "confirmed");
-                                        Log.d("HomeFragment", "POST reservation payload: " + json.toString());
-                                        java.io.OutputStream os = conn.getOutputStream();
-                                        os.write(json.toString().getBytes());
-                                        os.close();
-                                        int responseCode = conn.getResponseCode();
-                                        Log.d("HomeFragment", "POST reservation response code: " + responseCode);
-                                        return responseCode == java.net.HttpURLConnection.HTTP_CREATED;
-                                    } catch (Exception e) {
-                                        Log.e("HomeFragment", "Error creating reservation", e);
-                                        return false;
-                                    }
-                                }
-                                @Override
-                                protected void onPostExecute(Boolean success) {
-                                    if (success) {
-                                        Log.d("HomeFragment", "Reservation created successfully for event: " + event.id);
-                                        Toast.makeText(getContext(), "Zgłoszono udział", Toast.LENGTH_SHORT).show();
-                                        loadEvents(listView, rootView);
-                                    } else {
-                                        Log.e("HomeFragment", "Reservation create failed for event: " + event.id);
-                                        Toast.makeText(getContext(), "Błąd podczas zgłaszania udziału", Toast.LENGTH_SHORT).show();
-                                    }
-                                }
-                            }.execute();
-                        }
-                    }
-                    @Override
-                    public void onDetails(Event event) {
-                        Log.d("HomeFragment", "onDetails clicked for event: " + event.title + " (id: " + event.id + ")");
-                        
-                        Bundle args = new Bundle();
-                        args.putString("event_id", event.id);
-                        androidx.navigation.Navigation.findNavController(rootView).navigate(R.id.action_home_to_eventDetail, args);
-                    }
-                });
-                listView.setAdapter(adapter);
+            protected void onPostExecute(List<Event> fetchedEvents) {
+                Log.d("HomeFragment", "AsyncTask: onPostExecute, events count: " + fetchedEvents.size());
+                eventList.clear();
+                eventList.addAll(fetchedEvents);
+                eventAdapter.notifyDataSetChanged();
             }
         }.execute();
     }
+
+    private void handleJoinEvent(Event event, View rootView) {
+        if ("confirmed".equals(event.reservationStatus)) {
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try {
+                        if (event.reservationId == null) return false;
+                        String urlStr = com.example.event.data.ApiConfig.BASE_URL + "api/reservations/" + event.reservationId;
+                        Log.d("HomeFragment", "DELETE reservation URL: " + urlStr);
+                        java.net.URL url = new java.net.URL(urlStr);
+                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("DELETE");
+                        String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                        if (accessToken != null) {
+                            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                        }
+                        int responseCode = conn.getResponseCode();
+                        Log.d("HomeFragment", "DELETE reservation response code: " + responseCode);
+                        return responseCode == java.net.HttpURLConnection.HTTP_OK;
+                    } catch (Exception e) {
+                        Log.e("HomeFragment", "Error deleting reservation", e);
+                        return false;
+                    }
+                }
+                @Override
+                protected void onPostExecute(Boolean success) {
+                    if (success) {
+                        Log.d("HomeFragment", "Reservation deleted successfully for event: " + event.id);
+                        Toast.makeText(getContext(), "Wycofano udział", Toast.LENGTH_SHORT).show();
+                        loadEvents(rootView);
+                    } else {
+                        Log.e("HomeFragment", "Reservation delete failed for event: " + event.id);
+                        Toast.makeText(getContext(), "Błąd podczas wycofywania udziału", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }.execute();
+        } else {
+            new AsyncTask<Void, Void, Boolean>() {
+                @Override
+                protected Boolean doInBackground(Void... voids) {
+                    try {
+                        String urlStr = com.example.event.data.ApiConfig.BASE_URL + "api/reservations/";
+                        Log.d("HomeFragment", "POST reservation URL: " + urlStr);
+                        java.net.URL url = new java.net.URL(urlStr);
+                        java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("POST");
+                        conn.setRequestProperty("Content-Type", "application/json");
+                        String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                        if (accessToken != null) {
+                            conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                        }
+                        conn.setDoOutput(true);
+                        org.json.JSONObject json = new org.json.JSONObject();
+
+                        String userId = com.example.event.data.LoginRepository.getInstance().getLoggedInUser().getUserId();
+                        json.put("user_id", userId);
+                        json.put("event_id", event.id);
+                        json.put("status", "confirmed");
+                        Log.d("HomeFragment", "POST reservation payload: " + json.toString());
+                        java.io.OutputStream os = conn.getOutputStream();
+                        os.write(json.toString().getBytes());
+                        os.close();
+                        int responseCode = conn.getResponseCode();
+                        Log.d("HomeFragment", "POST reservation response code: " + responseCode);
+                        return responseCode == java.net.HttpURLConnection.HTTP_CREATED;
+                    } catch (Exception e) {
+                        Log.e("HomeFragment", "Error creating reservation", e);
+                        return false;
+                    }
+                }
+                @Override
+                protected void onPostExecute(Boolean success) {
+                    if (success) {
+                        Log.d("HomeFragment", "Reservation created successfully for event: " + event.id);
+                        Toast.makeText(getContext(), "Zgłoszono udział", Toast.LENGTH_SHORT).show();
+                        loadEvents(rootView);
+                    } else {
+                        Log.e("HomeFragment", "Reservation create failed for event: " + event.id);
+                        Toast.makeText(getContext(), "Błąd podczas zgłaszania udziału", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }.execute();
+        }
+    }
+
 
     @Override
     public void onDestroyView() {
