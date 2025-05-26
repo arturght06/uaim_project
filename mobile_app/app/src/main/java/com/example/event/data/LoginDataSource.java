@@ -9,7 +9,7 @@ import java.net.URL;
 import java.io.OutputStream;
 import java.io.InputStreamReader;
 import java.io.BufferedReader;
-import android.util.Log; // Dodano import logowania
+import android.util.Log;
 
 /**
  * Class that handles authentication w/ login credentials and retrieves user information.
@@ -20,6 +20,7 @@ public class LoginDataSource {
         Log.d("LoginDataSource", "Rozpoczynam logowanie: username=" + username);
         try {
             URL url = new URL(ApiConfig.BASE_URL + "auth/login");
+            Log.d("LoginDataSource", "URL: " + url.toString());
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
@@ -56,7 +57,6 @@ public class LoginDataSource {
                     String userId = user.getString("id");
                     String displayName = user.getString("username");
 
-                    // Save tokens locally (e.g., SharedPreferences)
                     String accessToken = responseJson.getJSONObject("tokens").getString("access_token");
                     String refreshToken = responseJson.getJSONObject("tokens").getString("refresh_token");
                     TokenManager.saveTokens(accessToken, refreshToken);
@@ -81,7 +81,6 @@ public class LoginDataSource {
     }
 
     public void logout() {
-        // Clear tokens locally
         TokenManager.clearTokens();
     }
 }

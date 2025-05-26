@@ -42,4 +42,12 @@
             app:destination="@id/navigation_user" />
     </fragment>
 
+    <fragment
+        android:id="@+id/eventDetailFragment"
+        android:name="com.example.event.ui.home.EventDetailFragment"
+        android:label="Szczegóły wydarzenia"
+        tools:layout="@layout/fragment_event_detail" />
+    <action
+        android:id="@+id/action_home_to_eventDetail"
+        app:destination="@id/eventDetailFragment" />
 </navigation>
