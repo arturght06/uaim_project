@@ -18,6 +18,8 @@ def create_location_logic(db, request):
         #     return jsonify({"error": "Not authorized"}), 401
 
         new_location: Location = create_new_location(db, data, request.user_id)
+        if new_location is None:
+            return jsonify({"error": "Location already exists"}), 409
         if not new_location:
             return jsonify({"error": "Failed to create location"}), 400
 
