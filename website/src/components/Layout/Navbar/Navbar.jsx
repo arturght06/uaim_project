@@ -106,7 +106,19 @@ const Navbar = () => {
                 </NavLink>
               </li>
               <li className={styles.navItem}>
-                <Link to="/">
+                {/* <Button
+                  onClick={() => {
+                    auth.logout();
+                    if (location.pathname == "/") {
+                      window.location.href = "/"; // force reload
+                    }
+                  }}
+                  variant="danger"
+                >
+                  <span className="material-symbols-outlined">logout</span>
+                  <span className={styles.linkText}>Wyloguj</span>
+                </Button> */}
+                <Link to="/login">
                   <Button onClick={auth.logout} variant="danger">
                     <span className="material-symbols-outlined">logout</span>
                     <span className={styles.linkText}>Wyloguj</span>

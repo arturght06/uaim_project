@@ -1,0 +1,57 @@
+.deleteGridContainer {
+  margin-top: 10px;
+  margin-bottom: 30px;
+  display: grid;
+  gap: 10px;
+}
+
+.gridHeader,
+.gridRow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  padding: 12px 15px;
+  background-color: var(--bg-content, #fff);
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-small, 0 1px 3px rgba(0, 0, 0, 0.1));
+  align-items: center;
+}
+
+.gridHeader {
+  background-color: var(--bg-page, #f8f9fa);
+  font-weight: 600;
+  font-size: 0.95em;
+  color: var(--text-main, #333);
+}
+
+.gridBody {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.actions {
+  text-align: right;
+}
+
+.deleteButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.deleteButton button,
+.deleteButton {
+  padding: 5px 10px !important;
+  font-size: 0.85em !important;
+}
+
+.message {
+  padding: 20px;
+  text-align: center;
+  color: var(--text-secondary, #666);
+  font-style: italic;
+}
+
+.errorMessage {
+  color: var(--danger-color, red);
+}

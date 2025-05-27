@@ -29,4 +29,4 @@ def create_location():
 @location_bp.route('/<uid>', methods=['DELETE'])
 @token_required
 def delete_location(uid):
-    return delete_location_logic(db, uid)
+    return delete_location_logic(db, uid, request)
