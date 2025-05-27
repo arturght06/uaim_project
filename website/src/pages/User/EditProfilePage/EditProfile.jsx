@@ -46,7 +46,7 @@ const EditProfile = () => {
     try {
       await updateUser(auth.currentUser.id, updatedData);
       auth.refreshAuthStatus();
-      showAlert("Profil został pomyślnie zaktualizowany!");
+      showAlert("Profil został pomyślnie zaktualizowany!", "success");
       navigate("/profile");
     } catch (error) {
       console.error("Błąd aktualizacji profilu:", error);

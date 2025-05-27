@@ -50,9 +50,9 @@ const EventEdit = () => {
       navigate(`/events/${updatedEvent.id}`);
     } else {
       console.log(
-        "Event update successful, but no ID in response, navigating to /events"
+        "Event update successful, but no ID in response, navigating to /"
       );
-      navigate("/events");
+      navigate("/");
     }
   };
 

@@ -37,5 +37,5 @@ def delete_event(event_id):
 
 @event_bp.route("/<event_id>", methods=["PUT"])
 @token_required
-def update_event(current_user, event_id):
+def update_event(event_id):
     return update_event_logic(db, event_id, request)

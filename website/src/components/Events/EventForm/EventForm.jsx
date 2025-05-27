@@ -220,6 +220,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
     setErrors({});
 
     const payload = {
+      id: eventDataForEdit.id,
       title: formData.title,
       description: formData.description,
       event_date: new Date(formData.event_date).toISOString().slice(0, 16),
@@ -234,7 +235,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
     try {
       let savedEvent;
       if (isEditMode && eventDataForEdit) {
-        savedEvent = await updateEvent(eventDataForEdit.id, payload);
+        savedEvent = await updateEvent(payload);
         showAlert("Wydarzenie zaktualizowane pomyślnie!", "success");
       } else {
         savedEvent = await createNewEvent(payload);
@@ -257,7 +258,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       // These can be parallelized for better performance
       const linkingPromises = categoriesToAdd.map((categoryId) =>
         linkEventToCategory({
-          event_id: savedEvent.id,
+          event_id: eventDataForEdit.id,
           category_id: categoryId,
         })
       );
