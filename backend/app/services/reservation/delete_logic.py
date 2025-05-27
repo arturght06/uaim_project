@@ -21,7 +21,7 @@ def delete_reservation_logic(db, reservation_id):
         db.session.commit()
 
         if user and event:
-            send_confirmation_email(user.email, event.name, is_reservation=False)
+            send_confirmation_email(user.email, event.title, is_reservation=False)
 
         return jsonify({"message": "Reservation deleted successfully"}), 200
 

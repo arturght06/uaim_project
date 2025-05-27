@@ -33,7 +33,7 @@ def create_reservation_logic(db, request):
         event = db.session.get(Event, event_id)
 
         if user and event:
-            send_confirmation_email(user.email, event.name, is_reservation=True)
+            send_confirmation_email(user.email, event.title, is_reservation=True)
 
         return jsonify({
             "message": "Reservation created successfully",
