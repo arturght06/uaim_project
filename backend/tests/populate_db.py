@@ -207,6 +207,17 @@ def create_event(event, location_id, category_ids, token, organizer_id):
         return resp.json().get("id")
     return None
 
+def create_event_category_relation(event_id, category_id, token):
+    url = f"{BASE_API_URL}/api/event-category/"
+    headers = {"Authorization": f"Bearer {token}"}
+    data = {
+        "event_id": event_id,
+        "category_id": category_id
+    }
+    resp = requests.post(url, json=data, headers=headers)
+    print("Create event-category relation:", event_id, category_id, resp.status_code, resp.text)
+    return resp.ok
+
 def main():
     # login user
     token, organizer_id = login_user()
@@ -237,7 +248,11 @@ def main():
             loc_id = location_key_to_id[loc_key]
         # Map event categories to ids
         event_cat_ids = [category_name_to_id[cat] for cat in event["categories_list"] if cat in category_name_to_id]
-        create_event(event, loc_id, event_cat_ids, token, organizer_id)
+        event_id = create_event(event, loc_id, event_cat_ids, token, organizer_id)
+        # Now create event-category relations
+        if event_id:
+            for cat_id in event_cat_ids:
+                create_event_category_relation(event_id, cat_id, token)
 
 
 if __name__ == "__main__":
