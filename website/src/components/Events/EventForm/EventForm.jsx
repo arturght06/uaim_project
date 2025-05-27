@@ -258,7 +258,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       // These can be parallelized for better performance
       const linkingPromises = categoriesToAdd.map((categoryId) =>
         linkEventToCategory({
-          event_id: eventDataForEdit.id,
+          event_id: isEditMode && eventDataForEdit ? eventDataForEdit.id : savedEvent.id,
           category_id: categoryId,
         })
       );
