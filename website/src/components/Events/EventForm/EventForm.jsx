@@ -220,15 +220,15 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
     setErrors({});
 
     const payload = {
-      id: eventDataForEdit.id,
+      id: eventDataForEdit && eventDataForEdit.id,
       title: formData.title,
       description: formData.description,
       event_date: new Date(formData.event_date).toISOString().slice(0, 16),
       location_id: formData.location_id,
       max_participants:
-        formData.max_participants === ""
-          ? null
-          : parseInt(formData.max_participants, 10),
+      formData.max_participants === ""
+        ? null
+        : parseInt(formData.max_participants, 10),
       ...(!isEditMode && { organizer_id: auth.currentUser.id }),
     };
 
