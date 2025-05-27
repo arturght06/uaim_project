@@ -95,6 +95,7 @@
 .activityTitle {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 1.25em;
   margin-bottom: 12px;
   font-weight: 600;

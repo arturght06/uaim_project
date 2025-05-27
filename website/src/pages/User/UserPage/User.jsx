@@ -12,6 +12,7 @@ import CreateCategory from "../../../components/Category/CreateCategory/CreateCa
 import { getUserLocations, removeLocation } from "../../../services/location";
 import { getAllCategories, deleteCategory } from "../../../services/category";
 import { formatLocation } from "../../../services/format";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const User = () => {
   const auth = useContext(AuthContext);
@@ -26,6 +27,8 @@ const User = () => {
 
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
   const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+
+  const { showAlert } = useAlert();
 
   // Fetch user's locations and categories
   const fetchUserSpecificData = async () => {
@@ -92,10 +95,11 @@ const User = () => {
     try {
       await removeLocation(locationId); // From locationService
       setUserLocations((prev) => prev.filter((loc) => loc.id !== locationId));
-      alert("Lokalizacja usunięta pomyślnie.");
+      showAlert("Lokalizacja usunięta pomyślnie.", "success");
     } catch (err) {
-      alert(
-        `Błąd usuwania lokalizacji. Może być wykorzystywana przez isntniejące wydarzenie.`
+      showAlert(
+        `Błąd usuwania lokalizacji. Może być wykorzystywana przez isntniejące wydarzenie.`,
+        "error"
       );
       throw err;
     }
@@ -104,10 +108,11 @@ const User = () => {
     try {
       await deleteCategory(categoryId); // From categoryService
       setUserCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
-      alert("Kategoria usunięta pomyślnie.");
+      showAlert("Kategoria usunięta pomyślnie.", "success");
     } catch (err) {
-      alert(
-        `Błąd usuwania kategorii. Może być wykorzystywana przez isntniejące wydarzenie.`
+      showAlert(
+        `Błąd usuwania kategorii. Może być wykorzystywana przez isntniejące wydarzenie.`,
+        "error"
       );
       throw err;
     }

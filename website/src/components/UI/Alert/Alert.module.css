@@ -1,0 +1,88 @@
+.alertContainer {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  z-index: 2050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.alertContainerFallback {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 2050;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.alertItem {
+  padding: 14px 20px;
+  border-radius: var(--border-radius-medium, 8px);
+  box-shadow: var(--shadow-large, 0 5px 15px rgba(0, 0, 0, 0.15));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-on-primary, white);
+  width: auto;
+  min-width: 280px;
+  max-width: 400px;
+  animation: slideInFromRight 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(50px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.message {
+  flex-grow: 1;
+  margin-right: 15px;
+  font-size: 0.95em;
+  line-height: 1.4;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: inherit;
+  opacity: 0.7;
+  font-size: 1.6em;
+  line-height: 1;
+  padding: 0;
+  margin-left: 10px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  align-self: flex-start;
+}
+
+.closeButton:hover {
+  opacity: 1;
+}
+
+.info {
+  background-color: var(--info-color, #17a2b8);
+  color: var(--text-on-info, white);
+}
+.success {
+  background-color: var(--success-color, #28a745);
+  color: var(--text-on-success, white);
+}
+.error {
+  background-color: var(--danger-color, #dc3545);
+  color: var(--text-on-danger, white);
+}
+.warning {
+  background-color: var(--warning-color, #ffc107);
+  color: var(--text-on-warning, #212529);
+}

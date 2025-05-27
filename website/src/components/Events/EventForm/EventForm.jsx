@@ -22,6 +22,7 @@ import {
   getAllEventCategoryRelations,
 } from "../../../services/eventCategory";
 import { formatLocation } from "../../../services/format";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const EventForm = ({ eventToEditId, onSuccess }) => {
   const navigate = useNavigate();
@@ -50,6 +51,8 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
   const [isLoadingData, setIsLoadingData] = useState(isEditMode); // Loading initial event/category data
   const [isSubmitting, setIsSubmitting] = useState(false); // For form submission process
   const [serverError, setServerError] = useState("");
+
+  const { showAlert } = useAlert();
 
   const resetFormState = useCallback(() => {
     setFormData({
@@ -232,10 +235,10 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       let savedEvent;
       if (isEditMode && eventDataForEdit) {
         savedEvent = await updateEvent(eventDataForEdit.id, payload);
-        alert("Wydarzenie zaktualizowane pomyślnie!");
+        showAlert("Wydarzenie zaktualizowane pomyślnie!", "success");
       } else {
         savedEvent = await createNewEvent(payload);
-        alert("Wydarzenie utworzone pomyślnie!");
+        showAlert("Wydarzenie utworzone pomyślnie!", "success");
       }
 
       // Manage category relations

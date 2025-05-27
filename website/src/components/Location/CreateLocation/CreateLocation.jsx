@@ -4,6 +4,7 @@ import Input from "../../UI/Input/Input";
 import Button from "../../UI/Button/Button";
 import Textarea from "../../UI/Textarea/Textarea";
 import { createNewLocation } from "../../../services/location";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const CreateLocation = ({ onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -17,6 +18,8 @@ const CreateLocation = ({ onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+
+  const { showAlert } = useAlert();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,6 +52,7 @@ const CreateLocation = ({ onSuccess, onCancel }) => {
     try {
       const newLocation = await createNewLocation(locationDataToSubmit);
       console.log("Lokalizacja utworzona (formularz):", newLocation);
+      showAlert("Lokalizacja utworzona pomyślnie!", "success");
       if (onSuccess) {
         onSuccess(newLocation);
       }

@@ -14,6 +14,7 @@ import {
   formatLocation,
   formatUser,
 } from "../../../services/format";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const EventDetail = () => {
   const { eventId } = useParams();
@@ -29,6 +30,8 @@ const EventDetail = () => {
   const [userReservation, setUserReservation] = useState(null);
   const [isReservationProcessing, setIsReservationProcessing] = useState(false);
   const [isCheckingReservation, setIsCheckingReservation] = useState(true);
+
+  const { showAlert } = useAlert();
 
   const fetchEventDetails = async () => {
     if (!eventId) return;
@@ -85,7 +88,7 @@ const EventDetail = () => {
     setIsDeletingEvent(true);
     try {
       await removeEvent(event.id);
-      alert("Wydarzenie zostało pomyślnie usunięte.");
+      showAlert("Wydarzenie zostało pomyślnie usunięte.", "success");
       navigate("/events");
     } catch (err) {
       console.error("Error deleting event:", err);

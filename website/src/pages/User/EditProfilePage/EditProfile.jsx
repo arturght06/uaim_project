@@ -4,6 +4,7 @@ import styles from "./EditProfile.module.css";
 import UserForm from "../../../components/User/UserForm/UserForm";
 import { AuthContext } from "../../../contexts/AuthContext";
 import { updateUser } from "../../../services/user";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const EditProfile = () => {
   const navigate = useNavigate();
@@ -13,6 +14,8 @@ const EditProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [serverError, setServerError] = useState("");
   const [formErrors, setFormErrors] = useState({});
+
+  const { showAlert } = useAlert();
 
   useEffect(() => {
     const fetchCurrentUser = async () => {
@@ -43,7 +46,7 @@ const EditProfile = () => {
     try {
       await updateUser(auth.currentUser.id, updatedData);
       auth.refreshAuthStatus();
-      alert("Profil został pomyślnie zaktualizowany!");
+      showAlert("Profil został pomyślnie zaktualizowany!");
       navigate("/profile");
     } catch (error) {
       console.error("Błąd aktualizacji profilu:", error);

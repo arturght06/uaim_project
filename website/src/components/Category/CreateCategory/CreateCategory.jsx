@@ -4,6 +4,7 @@ import Input from "../../UI/Input/Input";
 import Textarea from "../../UI/Textarea/Textarea";
 import Button from "../../UI/Button/Button";
 import { createCategory as createNewCategoryService } from "../../../services/category";
+import { useAlert } from "../../../contexts/AlertContext";
 
 const CreateCategory = ({ onSuccess, onCancel }) => {
   const [formData, setFormData] = useState({
@@ -13,6 +14,7 @@ const CreateCategory = ({ onSuccess, onCancel }) => {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const { showAlert } = useAlert();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,10 +49,11 @@ const CreateCategory = ({ onSuccess, onCancel }) => {
     try {
       const newCategory = await createNewCategoryService(formData); // Pass formData directly
       console.log("Kategoria utworzona (formularz):", newCategory);
-      alert(
+      showAlert(
         `Kategoria "${
           newCategory.name || formData.name
-        }" została pomyślnie utworzona!`
+        }" została pomyślnie utworzona!`,
+        "success"
       );
       if (onSuccess) {
         onSuccess({

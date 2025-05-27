@@ -5,12 +5,15 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import "./palette.css";
 import { AuthProvider } from "./contexts/AuthContext";
+import { AlertProvider } from "./contexts/AlertContext";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <BrowserRouter>
       <AuthProvider>
-        <App />
+        <AlertProvider>
+          <App />
+        </AlertProvider>
       </AuthProvider>
     </BrowserRouter>
   </React.StrictMode>
