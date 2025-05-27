@@ -1,6 +1,5 @@
 .profileContainer {
   padding: 20px;
-  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -86,4 +85,11 @@
   color: var(--text-main, #333);
   margin-bottom: 20px;
   font-size: 1.5em;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
 }
