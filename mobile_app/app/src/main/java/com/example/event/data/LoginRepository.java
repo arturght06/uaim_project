@@ -8,6 +8,7 @@ public class LoginRepository {
 
     private LoginDataSource dataSource;
 
+    // user object is now more detailed
     private LoggedInUser user = null;
 
     private LoginRepository(LoginDataSource dataSource) {
@@ -42,6 +43,12 @@ public class LoginRepository {
 
     private void setLoggedInUser(LoggedInUser user) {
         this.user = user;
+    }
+
+    public void updateLoggedInUserDetails(String firstName, String lastName, String email, String birthDate, String countryCode, String phoneNumber, String username) {
+        if (this.user != null) {
+            this.user.setUserDetails(firstName, lastName, email, birthDate, countryCode, phoneNumber);
+        }
     }
 
     public Result<LoggedInUser> login(String username, String password) {

@@ -16,90 +16,157 @@
             android:id="@+id/user_profile_container"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            android:visibility="gone"
             app:cardCornerRadius="12dp"
             app:cardElevation="6dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toTopOf="parent"
+            tools:visibility="visible">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="20dp">
+                android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/text_profile_title"
-                    android:layout_width="wrap_content"
+                <RelativeLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Twój Profil"
-                    android:textStyle="bold"
-                    android:textSize="26sp"
-                    android:textColor="?attr/colorPrimary"
-                    android:layout_gravity="center_horizontal"
-                    android:paddingBottom="20dp"/>
+                    android:padding="8dp"
+                    android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/text_profile_data_title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Dane osobowe"
-                    android:textStyle="bold"
-                    android:textSize="20sp"
-                    android:textColor="?attr/colorSecondary"
-                    android:paddingBottom="12dp"/>
+                    <TextView
+                        android:id="@+id/text_profile_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerHorizontal="true"
+                        android:text="Twój profil"
+                        android:textColor="?attr/colorPrimary"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/text_profile_username"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:paddingBottom="8dp"
-                    android:text="Nazwa użytkownika: "/>
+                </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/text_profile_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:paddingBottom="8dp"
-                    android:text="Email: "/>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/text_profile_firstname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:paddingBottom="8dp"
-                    android:text="Imię: "/>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="16dp"
+                        android:orientation="vertical"
+                        android:visibility="visible">
 
-                <TextView
-                    android:id="@+id/text_profile_lastname"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:paddingBottom="8dp"
-                    android:text="Nazwisko: "/>
+                        <TextView
+                            android:id="@+id/text_profile_fullname"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingBottom="4dp"
+                            android:text="Imię Nazwisko"
+                            android:textColor="?android:attr/textColorPrimary"
+                            android:textSize="20sp"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
 
-                <TextView
-                    android:id="@+id/text_profile_birthdate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="16sp"
-                    android:textColor="?android:attr/textColorPrimary"
-                    android:paddingBottom="16dp"
-                    android:text="Data urodzenia: "/>
+                        <TextView
+                            android:id="@+id/text_profile_username"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="username"
+                            android:textColor="?android:attr/textColorSecondary"
+                            android:textSize="16sp"
+                            android:visibility="visible" />
+
+                    </LinearLayout>
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="0dp"
+                        android:layout_height="1dp"
+                        android:layout_weight="1" />
+
+                    <ImageView
+                        android:id="@+id/button_edit_profile"
+                        android:layout_width="32dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginEnd="16dp"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Edytuj profil"
+                        android:padding="4dp"
+                        android:src="@drawable/pencil_square"
+                        android:visibility="visible"
+                        app:tint="?attr/colorPrimary" />
+
+                </LinearLayout>
 
             </LinearLayout>
+
         </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/text_my_events_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/my_events_title"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_profile_container"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_user_events"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_my_events_title"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@+id/text_my_reservations_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/my_reservations_title"
+            android:textColor="?attr/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/recycler_view_user_events"
+            tools:visibility="visible" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_reserved_events"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:nestedScrollingEnabled="false"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_my_reservations_title"
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/text_user_prompt"
@@ -109,38 +176,44 @@
             android:layout_marginEnd="32dp"
             android:text="@string/user_login_prompt"
             android:textAlignment="center"
-            android:textSize="18sp"
             android:textColor="?android:attr/textColorSecondary"
+            android:textSize="18sp"
+            android:visibility="visible"
             app:layout_constraintBottom_toTopOf="@+id/user_buttons_container"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_chainStyle="packed" />
+            app:layout_constraintVertical_chainStyle="packed"
+            tools:visibility="gone" />
 
         <LinearLayout
             android:id="@+id/user_buttons_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
             android:layout_marginTop="24dp"
-            app:layout_constraintTop_toBottomOf="@+id/text_user_prompt"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/text_user_prompt"
+            tools:visibility="gone">
 
             <Button
                 android:id="@+id/button_login"
                 android:layout_width="200dp"
                 android:layout_height="wrap_content"
-                android:text="Zaloguj się"
+                android:layout_marginBottom="8dp"
                 android:backgroundTint="?attr/colorSecondary"
-                android:textColor="?attr/colorOnSecondary"
                 android:paddingStart="32dp"
-                android:paddingEnd="32dp"
                 android:paddingTop="12dp"
+                android:paddingEnd="32dp"
                 android:paddingBottom="12dp"
-                android:layout_marginBottom="8dp"/>
+                android:text="Zaloguj się"
+                android:textColor="?attr/colorOnSecondary"
+                android:visibility="visible"
+                tools:visibility="gone" />
 
             <Button
                 android:id="@+id/button_register"
@@ -153,7 +226,9 @@
                 android:paddingEnd="32dp"
                 android:paddingBottom="12dp"
                 android:text="Zarejestruj się"
-                android:textColor="?attr/colorOnSecondary" />
+                android:textColor="?attr/colorOnSecondary"
+                android:visibility="visible"
+                tools:visibility="gone" />
         </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
