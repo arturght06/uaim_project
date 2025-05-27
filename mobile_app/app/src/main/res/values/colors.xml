@@ -47,8 +47,8 @@
     <color name="success_color_hover">@color/hunter_green_hover</color>
     <color name="success_bg_light">#eef3ea</color>
     <color name="text_on_success">@color/white</color>
-    <color name="danger_color">@color/tawny</color>
-    <color name="danger_color_hover">#b84c00</color>
+    <color name="danger_color">#cb3e3e</color>
+    <color name="danger_color_hover">#C82C2C</color>
     <color name="danger_bg_light">#ffe8d6</color>
     <color name="text_on_danger">@color/black</color>
     <color name="warning_color">@color/tawny</color>

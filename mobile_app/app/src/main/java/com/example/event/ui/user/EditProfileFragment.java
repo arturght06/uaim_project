@@ -192,13 +192,12 @@ public class EditProfileFragment extends Fragment {
 
                 JSONObject jsonPayload = new JSONObject();
                 jsonPayload.put("username", username);
-                jsonPayload.put("name", firstName); // Map to backend field name
-                jsonPayload.put("surname", lastName); // Map to backend field name
+                jsonPayload.put("name", firstName);
+                jsonPayload.put("surname", lastName);
                 if (!TextUtils.isEmpty(birthDate)) jsonPayload.put("birthday", birthDate);
                 jsonPayload.put("email", email);
                 if (!TextUtils.isEmpty(countryCode)) jsonPayload.put("phone_country_code", countryCode);
                 if (!TextUtils.isEmpty(phoneNumber)) jsonPayload.put("phone_number", phoneNumber);
-                // Password is not updated here
 
                 Log.d(TAG, "UpdateUserTask JSON Payload: " + jsonPayload.toString());
 

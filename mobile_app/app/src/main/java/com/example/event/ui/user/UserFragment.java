@@ -80,6 +80,7 @@ public class UserFragment extends Fragment {
         // Organized Events UI
         textViewMyEventsTitle = view.findViewById(R.id.text_my_events_title);
         recyclerViewOrganizedEvents = view.findViewById(R.id.recycler_view_user_events);
+        recyclerViewOrganizedEvents.setHasFixedSize(false); // Add this line
         recyclerViewOrganizedEvents.setLayoutManager(new LinearLayoutManager(getContext()));
         organizedEventAdapter = new EventAdapter(getContext(), organizedEventList, new EventAdapter.OnEventActionListener() {
             @Override
@@ -108,6 +109,7 @@ public class UserFragment extends Fragment {
         // Reserved Events UI
         textViewMyReservationsTitle = view.findViewById(R.id.text_my_reservations_title);
         recyclerViewReservedEvents = view.findViewById(R.id.recycler_view_reserved_events);
+        recyclerViewReservedEvents.setHasFixedSize(false); // Add this line
         recyclerViewReservedEvents.setLayoutManager(new LinearLayoutManager(getContext()));
         reservedEventAdapter = new EventAdapter(getContext(), reservedEventList, new EventAdapter.OnEventActionListener() {
             @Override
@@ -259,10 +261,15 @@ public class UserFragment extends Fragment {
         binding.textUserPrompt.setVisibility(View.GONE);
         binding.userButtonsContainer.setVisibility(View.GONE);
 
-        if (textViewMyEventsTitle != null) textViewMyEventsTitle.setVisibility(View.VISIBLE);
-        if (recyclerViewOrganizedEvents != null) recyclerViewOrganizedEvents.setVisibility(View.VISIBLE);
-        if (textViewMyReservationsTitle != null) textViewMyReservationsTitle.setVisibility(View.VISIBLE);
-        if (recyclerViewReservedEvents != null) recyclerViewReservedEvents.setVisibility(View.VISIBLE);
+        // The visibility of event-related sections (titles and RecyclerViews)
+        // will be managed by loadAndCategorizeUserEvents().onPostExecute based on list content,
+        // or by showLoginPromptView() which hides them.
+        // They are initially GONE as per XML.
+        // Old lines that were removed/commented:
+        // if (textViewMyEventsTitle != null) textViewMyEventsTitle.setVisibility(View.VISIBLE);
+        // if (recyclerViewOrganizedEvents != null) recyclerViewOrganizedEvents.setVisibility(View.VISIBLE);
+        // if (textViewMyReservationsTitle != null) textViewMyReservationsTitle.setVisibility(View.VISIBLE);
+        // if (recyclerViewReservedEvents != null) recyclerViewReservedEvents.setVisibility(View.VISIBLE);
     }
 
     private void showLoginPromptView() {
@@ -578,14 +585,25 @@ public class UserFragment extends Fragment {
                     return;
                 }
                 
+                Log.d(TAG, "Current organizedEventList size before clear: " + organizedEventList.size());
                 organizedEventList.clear();
+                Log.d(TAG, "organizedEventList cleared. Size now: " + organizedEventList.size());
+                Log.d(TAG, "Current reservedEventList size before clear: " + reservedEventList.size());
                 reservedEventList.clear();
+                Log.d(TAG, "reservedEventList cleared. Size now: " + reservedEventList.size());
 
                 LoggedInUser loggedInUser = LoginRepository.getInstance().getLoggedInUser();
                 if (loggedInUser == null) {
                     Log.w(TAG, "LoadEventsTask onPostExecute: LoggedInUser is null. Cannot categorize events.");
-                    organizedEventAdapter.notifyDataSetChanged();
-                    reservedEventAdapter.notifyDataSetChanged();
+                    // Ensure adapters are notified of cleared lists
+                    if (organizedEventAdapter != null) organizedEventAdapter.notifyDataSetChanged();
+                    if (reservedEventAdapter != null) reservedEventAdapter.notifyDataSetChanged();
+                    
+                    // Ensure views are hidden if user is no longer logged in
+                    if (textViewMyEventsTitle != null) textViewMyEventsTitle.setVisibility(View.GONE);
+                    if (recyclerViewOrganizedEvents != null) recyclerViewOrganizedEvents.setVisibility(View.GONE);
+                    if (textViewMyReservationsTitle != null) textViewMyReservationsTitle.setVisibility(View.GONE);
+                    if (recyclerViewReservedEvents != null) recyclerViewReservedEvents.setVisibility(View.GONE);
                     return;
                 }
                 String currentUserId = loggedInUser.getUserId();
@@ -598,12 +616,58 @@ public class UserFragment extends Fragment {
                         reservedEventList.add(event);
                     }
                 }
-                Log.d(TAG, "Categorized events: " + organizedEventList.size() + " organized, " + reservedEventList.size() + " reserved.");
-                organizedEventAdapter.notifyDataSetChanged();
-                reservedEventAdapter.notifyDataSetChanged();
+                Log.d(TAG, "Added " + organizedEventList.size() + " events to organizedEventList.");
+                Log.d(TAG, "Added " + reservedEventList.size() + " events to reservedEventList.");
 
-                textViewMyEventsTitle.setVisibility(organizedEventList.isEmpty() ? View.GONE : View.VISIBLE);
-                textViewMyReservationsTitle.setVisibility(reservedEventList.isEmpty() ? View.GONE : View.VISIBLE);
+                Log.d(TAG, "Categorized events: " + organizedEventList.size() + " organized, " + reservedEventList.size() + " reserved.");
+
+                if (organizedEventList.isEmpty()) {
+                    Log.d(TAG, "Organized event list is empty after categorization.");
+                } else {
+                    for(Event e : organizedEventList) {
+                        Log.d(TAG, "Organized Event in list: " + e.title + ", ID: " + e.id + ", OrganizerID: " + e.organizerId);
+                    }
+                }
+                if (reservedEventList.isEmpty()) {
+                    Log.d(TAG, "Reserved event list is empty after categorization.");
+                } else {
+                    for(Event e : reservedEventList) {
+                        Log.d(TAG, "Reserved Event in list: " + e.title + ", ID: " + e.id + ", ResStatus: " + e.reservationStatus + ", ResID: " + e.reservationId);
+                    }
+                }
+
+                if (organizedEventAdapter != null) {
+                    organizedEventAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "organizedEventAdapter.notifyDataSetChanged() called.");
+                }
+                if (reservedEventAdapter != null) {
+                    reservedEventAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "reservedEventAdapter.notifyDataSetChanged() called.");
+                }
+
+
+                // Update visibility of titles AND RecyclerViews based on list content
+                boolean organizedEventsExist = !organizedEventList.isEmpty();
+                if (textViewMyEventsTitle != null) {
+                    textViewMyEventsTitle.setVisibility(organizedEventsExist ? View.VISIBLE : View.GONE);
+                }
+                if (recyclerViewOrganizedEvents != null) {
+                    recyclerViewOrganizedEvents.setVisibility(organizedEventsExist ? View.VISIBLE : View.GONE);
+                    if (organizedEventsExist) {
+                        recyclerViewOrganizedEvents.requestLayout(); // Force re-measure
+                    }
+                }
+
+                boolean reservedEventsExist = !reservedEventList.isEmpty();
+                if (textViewMyReservationsTitle != null) {
+                    textViewMyReservationsTitle.setVisibility(reservedEventsExist ? View.VISIBLE : View.GONE);
+                }
+                if (recyclerViewReservedEvents != null) {
+                    recyclerViewReservedEvents.setVisibility(reservedEventsExist ? View.VISIBLE : View.GONE);
+                    if (reservedEventsExist) {
+                        recyclerViewReservedEvents.requestLayout(); // Force re-measure
+                    }
+                }
             }
         }.execute(userId);
     }
@@ -647,7 +711,7 @@ public class UserFragment extends Fragment {
                 protected void onPostExecute(Boolean success) {
                     if (!isAdded()) return;
                     if (success) {
-                        Log.d(TAG, "Reservation deleted successfully for event: " + event.id);
+                        Log.d(TAG, "Reservation deleted successfully for event: " + event.id + ". Reloading events.");
                         Toast.makeText(getContext(), "Wycofano udział", Toast.LENGTH_SHORT).show();
                         loadAndCategorizeUserEvents(currentUserId); 
                     } else {

@@ -28,4 +28,23 @@
     <color name="text_main">@color/white</color>
     <color name="text_primary">@color/tawny</color>
     <color name="text_secondary">@color/olivine</color>
+
+
+    <!-- Info -->
+    <color name="success_color">@color/hunter_green</color>
+    <color name="success_color_hover">@color/hunter_green</color>
+    <color name="success_bg_light">#232625</color>
+    <color name="text_on_success">@color/white</color>
+    <color name="danger_color">#9E3030</color>
+    <color name="danger_color_hover">#922121</color>
+    <color name="danger_bg_light">#232625</color>
+    <color name="text_on_danger">@color/white</color>
+    <color name="warning_color">@color/tawny</color>
+    <color name="warning_color_hover">@color/tawny_active</color>
+    <color name="warning_bg_light">#232625</color>
+    <color name="text_on_warning">@color/white</color>
+    <color name="info_color">@color/olivine</color>
+    <color name="info_color_hover">@color/olivine</color>
+    <color name="info_bg_light">#232625</color>
+    <color name="text_on_info">@color/white</color>
 </resources>

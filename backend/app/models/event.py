@@ -22,8 +22,8 @@ class Event(db.Model):
     # Describe relationships
     organizer = relationship("User", back_populates="organized_events")
     location = relationship("Location", back_populates="events")
-    categories = relationship("EventCategory", back_populates="event")
-    reservations = relationship("Reservation", back_populates="event")
+    categories = relationship("EventCategory", back_populates="event", passive_deletes=True)
+    reservations = relationship("Reservation", back_populates="event", passive_deletes=True)
 
     def __repr__(self):
         return f"<Event(id={self.id}, title='{self.title}', event_date='{self.event_date}')>"

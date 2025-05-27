@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment {
         new AsyncTask<Void, Void, List<Event>>() {
             @Override
             protected List<Event> doInBackground(Void... voids) {
-                Log.d("HomeFragment", "AsyncTask: doInBackground started");
+                Log.d("HomeFragment", "AsyncTask: doInBackground started for loadEvents");
                 List<Event> fetchedEvents = new ArrayList<>();
                 try {
                     String accessToken = com.example.event.data.TokenManager.getAccessToken();
@@ -117,14 +117,18 @@ public class HomeFragment extends Fragment {
                                     if (eventId != null && reservationId != null) {
                                         eventIdToReservationId.put(eventId, reservationId);
                                         eventIdToReservationStatus.put(eventId, status);
+                                        Log.d("HomeFragment", "Cached reservation for event " + eventId + ": id=" + reservationId + ", status=" + status);
                                     }
                                 }
+                            } else {
+                                Log.e("HomeFragment", "Failed to fetch reservations, HTTP " + resCode);
                             }
                         } catch (Exception e) {
                             Log.e("HomeFragment", "Error fetching reservations", e);
                         }
                     }
 
+                    Log.d("HomeFragment", "Attempting to fetch events from API.");
                     java.net.URL url = new java.net.URL(com.example.event.data.ApiConfig.BASE_URL + "api/events/");
                     Log.d("HomeFragment", "URL: " + url.toString());
                     java.net.HttpURLConnection conn = (java.net.HttpURLConnection) url.openConnection();
@@ -153,7 +157,8 @@ public class HomeFragment extends Fragment {
                             String reservationId = eventIdToReservationId.get(eventId);
                             String reservationStatus = eventIdToReservationStatus.get(eventId);
                             String organizerId = obj.has("organizer_id") ? obj.optString("organizer_id", null) : null;
-                            fetchedEvents.add(new Event(
+                            
+                            Event currentEvent = new Event(
                                 eventId,
                                 obj.optString("title"),
                                 obj.optString("created_at"),
@@ -169,22 +174,45 @@ public class HomeFragment extends Fragment {
                                 obj.has("max_participants") && !obj.isNull("max_participants") ? obj.optInt("max_participants", 0) : 0,
                                 reservationId,
                                 organizerId
-                            ));
+                            );
+                            Log.d("HomeFragment", "Fetched event: " + currentEvent.title + " (ID: " + currentEvent.id + ", ResStatus: " + currentEvent.reservationStatus + ")");
+                            fetchedEvents.add(currentEvent);
                         }
-                        Log.d("HomeFragment", "Parsed " + fetchedEvents.size() + " events"); 
+                        Log.d("HomeFragment", "Parsed " + fetchedEvents.size() + " events from API response.");
+                    } else {
+                        Log.e("HomeFragment", "Failed to fetch events, HTTP " + responseCode);
                     }
                 } catch (Exception e) {
-                    Log.e("HomeFragment", "Error fetching events", e);
+                    Log.e("HomeFragment", "Error fetching events in doInBackground", e);
                 }
+                Log.d("HomeFragment", "AsyncTask: doInBackground finished. Total fetched events: " + fetchedEvents.size());
                 return fetchedEvents; 
             }
 
             @Override
             protected void onPostExecute(List<Event> fetchedEvents) {
-                Log.d("HomeFragment", "AsyncTask: onPostExecute, events count: " + fetchedEvents.size());
+                Log.d("HomeFragment", "AsyncTask: onPostExecute started. Received " + fetchedEvents.size() + " events.");
+                if (getContext() == null) { // Check if fragment is still attached
+                    Log.w("HomeFragment", "onPostExecute: Context is null, fragment likely detached. Aborting UI update.");
+                    return;
+                }
+                
+                Log.d("HomeFragment", "Current eventList size before clear: " + eventList.size());
                 eventList.clear();
+                Log.d("HomeFragment", "eventList cleared. Size now: " + eventList.size());
                 eventList.addAll(fetchedEvents);
+                Log.d("HomeFragment", "Added fetched events to eventList. Size now: " + eventList.size());
+                if (eventList.isEmpty()) {
+                    Log.d("HomeFragment", "Event list is empty after fetch. No events to display or error occurred.");
+                    // Optionally, show a message to the user if the list is empty
+                    // Toast.makeText(getContext(), "No events found.", Toast.LENGTH_SHORT).show();
+                } else {
+                    for(Event e : eventList) {
+                        Log.d("HomeFragment", "Event in list: " + e.title + ", ID: " + e.id + ", ResStatus: " + e.reservationStatus + ", ResID: " + e.reservationId);
+                    }
+                }
                 eventAdapter.notifyDataSetChanged();
+                Log.d("HomeFragment", "eventAdapter.notifyDataSetChanged() called.");
             }
         }.execute();
     }
@@ -216,7 +244,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 protected void onPostExecute(Boolean success) {
                     if (success) {
-                        Log.d("HomeFragment", "Reservation deleted successfully for event: " + event.id);
+                        Log.d("HomeFragment", "Reservation deleted successfully for event: " + event.id + ". Reloading events.");
                         Toast.makeText(getContext(), "Wycofano udział", Toast.LENGTH_SHORT).show();
                         loadEvents(rootView);
                     } else {
@@ -262,7 +290,7 @@ public class HomeFragment extends Fragment {
                 @Override
                 protected void onPostExecute(Boolean success) {
                     if (success) {
-                        Log.d("HomeFragment", "Reservation created successfully for event: " + event.id);
+                        Log.d("HomeFragment", "Reservation created successfully for event: " + event.id + ". Reloading events.");
                         Toast.makeText(getContext(), "Zgłoszono udział", Toast.LENGTH_SHORT).show();
                         loadEvents(rootView);
                     } else {
