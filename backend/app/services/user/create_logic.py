@@ -1,7 +1,7 @@
 ﻿from flask import jsonify
 from app.models.user import User, UserRoleEnum
 from sqlalchemy.exc import IntegrityError
-from werkzeug.security import generate_password_hash
+from app.utils.auth.password import hash_password
 import uuid
 
 
@@ -32,7 +32,8 @@ def create_user_logic(db, request):
         salt = uuid.uuid4().hex
 
         # Hashowanie hasła (z wykorzystaniem soli jako prefiksu)
-        password_hash = generate_password_hash(salt + data["password"])
+        password_hash = hash_password(data["password"], salt.encode("utf-8"))
+
 
         new_user = User(
             username=data["username"],
