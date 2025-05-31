@@ -3,7 +3,7 @@ from app.models.comment import Comment
 from datetime import datetime
 import uuid
 
-def create_comment_logic(db, request, current_user):
+def create_comment_logic(db, request):
     data = request.get_json()
     content = data.get("content")
     event_id = data.get("event_id")
@@ -14,7 +14,7 @@ def create_comment_logic(db, request, current_user):
     new_comment = Comment(
         id=uuid.uuid4(),
         event_id=uuid.UUID(event_id),
-        user_id=current_user.id,
+        user_id=request.user_id,
         content=content,
         created_at=datetime.utcnow()
     )

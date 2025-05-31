@@ -21,6 +21,7 @@ const EventCard = ({ event, disableLink }) => {
     organizer_data,
     reservation,
     reservation_count,
+    comment_count
   } = event || {};
 
   const isOrganizer =
@@ -69,11 +70,11 @@ const EventCard = ({ event, disableLink }) => {
             <span class="material-symbols-outlined">thumb_up</span>
             50
           </div>
+          */}
           <div className={styles.action}>
             <span class="material-symbols-outlined">comment</span>
-            10
+            {comment_count}
           </div>
-          */}
         </div>
         {isOrganizer && (
           <div className={styles.footerOwner}>Twoje wydarzenie</div>

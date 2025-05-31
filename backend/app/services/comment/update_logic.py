@@ -2,7 +2,7 @@ from flask import jsonify
 from app.models.comment import Comment
 import uuid
 
-def update_comment_logic(db, comment_id, request, current_user):
+def update_comment_logic(db, comment_id, request):
     data = request.get_json()
     content = data.get("content")
 
@@ -14,7 +14,7 @@ def update_comment_logic(db, comment_id, request, current_user):
     if not comment:
         return jsonify({"error": "Comment not found"}), 404
 
-    if comment.user_id != current_user.id:
+    if str(comment.user_id) != request.user_id:
         return jsonify({"error": "Unauthorized"}), 403
 
     comment.content = content

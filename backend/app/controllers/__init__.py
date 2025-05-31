@@ -6,6 +6,7 @@ from .event_category import event_category_bp
 from .event import event_bp
 from .notifications import notification_bp
 from .reservation import reservation_bp
+from .comment import comment_bp
 from .category import category_bp  
 
 def register_blueprints(app):
@@ -17,4 +18,5 @@ def register_blueprints(app):
     app.register_blueprint(event_bp)
     app.register_blueprint(notification_bp)
     app.register_blueprint(reservation_bp)
+    app.register_blueprint(comment_bp)
     app.register_blueprint(category_bp)  

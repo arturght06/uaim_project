@@ -7,6 +7,12 @@ import {
   deleteReservationById,
   getAllMyReservations,
 } from "../../../services/reservation";
+import {
+  getCommentsByEventId,
+  createComment,
+  updateComment,
+  deleteComment,
+} from "../../../services/comment";
 import { AuthContext } from "../../../contexts/AuthContext";
 import Button from "../../../components/UI/Button/Button";
 import {
@@ -15,6 +21,7 @@ import {
   formatUser,
 } from "../../../services/format";
 import { useAlert } from "../../../contexts/AlertContext";
+import Textarea from "../../../components/UI/Textarea/Textarea";
 
 const EventDetail = () => {
   const { eventId } = useParams();
@@ -26,10 +33,15 @@ const EventDetail = () => {
   const [error, setError] = useState(null);
   const [isDeletingEvent, setIsDeletingEvent] = useState(false);
 
-  // State for reservation
   const [userReservation, setUserReservation] = useState(null);
   const [isReservationProcessing, setIsReservationProcessing] = useState(false);
   const [isCheckingReservation, setIsCheckingReservation] = useState(true);
+
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+  const [isCommentSubmitting, setIsCommentSubmitting] = useState(false);
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText, setEditingText] = useState("");
 
   const { showAlert } = useAlert();
 
@@ -44,25 +56,28 @@ const EventDetail = () => {
       setEvent(eventData);
     } catch (err) {
       console.error("Error fetching event details:", err);
-      setError(
-        err.message ||
-          `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`
-      );
+      setError(err.message || `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`);
     } finally {
       setIsLoadingEvent(false);
     }
   };
 
   useEffect(() => {
-    const fetchDetailsAndReservation = async () => {
+    const fetchDetailsAndData = async () => {
       await fetchEventDetails();
+
+      try {
+        const commentData = await getCommentsByEventId(eventId);
+        setComments(commentData || []);
+      } catch (err) {
+        console.error("Error fetching comments:", err);
+      }
 
       if (auth.isAuthenticated && auth.currentUser) {
         try {
           const allMyReservations = await getAllMyReservations();
           const foundReservation = allMyReservations.find(
-            (res) =>
-              res.event_id === eventId && res.user_id === auth.currentUser.id
+            (res) => res.event_id === eventId && res.user_id === auth.currentUser.id
           );
           setUserReservation(foundReservation || null);
         } catch (reservationError) {
@@ -75,14 +90,11 @@ const EventDetail = () => {
     };
 
     setIsCheckingReservation(true);
-    fetchDetailsAndReservation();
+    fetchDetailsAndData();
   }, [eventId, auth.isAuthenticated, auth.currentUser]);
 
   const handleDeleteEvent = async () => {
-    if (
-      !event ||
-      !window.confirm(`Czy na pewno chcesz usunąć wydarzenie "${event.title}"?`)
-    ) {
+    if (!event || !window.confirm(`Czy na pewno chcesz usunąć wydarzenie "${event.title}"?`)) {
       return;
     }
     setIsDeletingEvent(true);
@@ -116,52 +128,84 @@ const EventDetail = () => {
         status: "confirmed",
         reserved_at: new Date().toISOString(),
       });
-
-      await fetchEventDetails(); // Refresh event info
+      await fetchEventDetails();
     } catch (err) {
       console.error("Error creating reservation:", err);
-      setError(
-        err.data?.error || err.message || "Nie udało się utworzyć rezerwacji."
-      );
+      setError(err.data?.error || err.message || "Nie udało się utworzyć rezerwacji.");
     } finally {
       setIsReservationProcessing(false);
     }
   };
 
   const handleDeleteReservation = async () => {
-    if (!userReservation || !userReservation.id) {
-      return;
-    }
+    if (!userReservation || !userReservation.id) return;
     setIsReservationProcessing(true);
     setError(null);
     try {
       await deleteReservationById(userReservation.id);
       setUserReservation(null);
-      await fetchEventDetails(); // Refresh event info
+      await fetchEventDetails();
     } catch (err) {
       console.error("Error deleting reservation:", err);
-      setError(
-        err.data?.error || err.message || "Nie udało się anulować rezerwacji."
-      );
+      setError(err.data?.error || err.message || "Nie udało się anulować rezerwacji.");
     } finally {
       setIsReservationProcessing(false);
     }
   };
 
+  const handleCommentSubmit = async () => {
+    if (!newComment.trim() || !auth.currentUser) return;
+    setIsCommentSubmitting(true);
+    try {
+      const commentData = {
+        event_id: eventId,
+        user_id: auth.currentUser.id,
+        content: newComment.trim(),
+      };
+      await createComment(commentData);
+      const updated = await getCommentsByEventId(eventId);
+      setComments(updated || []);
+      setNewComment("");
+    } catch (err) {
+      console.error("Error creating comment:", err);
+      showAlert("Nie udało się dodać komentarza.", "error");
+    } finally {
+      setIsCommentSubmitting(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm("Czy na pewno chcesz usunąć ten komentarz?")) return;
+    try {
+      await deleteComment(commentId);
+      const updated = await getCommentsByEventId(eventId);
+      setComments(updated || []);
+    } catch (err) {
+      console.error("Error deleting comment:", err);
+      showAlert("Nie udało się usunąć komentarza.", "error");
+    }
+  };
+
+  const handleEditComment = async (commentId) => {
+    try {
+      await updateComment(commentId, { content: editingText });
+      const updated = await getCommentsByEventId(eventId);
+      setComments(updated || []);
+      setEditingCommentId(null);
+      setEditingText("");
+    } catch (err) {
+      console.error("Error updating comment:", err);
+      showAlert("Nie udało się edytować komentarza.", "error");
+    }
+  };
+
   if (isLoadingEvent) {
-    // Main loading state for event data
-    return (
-      <p className={styles.loadingMessage}>
-        Ładowanie szczegółów wydarzenia...
-      </p>
-    );
+    return <p className={styles.loadingMessage}>Ładowanie szczegółów wydarzenia...</p>;
   }
   if (error && !event) {
-    // If there's a critical error and no event data
     return <p className={styles.errorMessage}>Błąd: {error}</p>;
   }
   if (!event) {
-    // Fallback if event is still null after loading and no specific error
     return <p className={styles.errorMessage}>Nie znaleziono wydarzenia.</p>;
   }
 
@@ -195,12 +239,7 @@ const EventDetail = () => {
               onClick={() => navigate(`/events/edit/${event.id}`)}
               className={styles.actionButtonSmall}
             >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "1.2em", marginRight: "5px" }}
-              >
-                edit
-              </span>
+              <span className="material-symbols-outlined">edit</span>
               Edytuj
             </Button>
             <Button
@@ -209,12 +248,7 @@ const EventDetail = () => {
               disabled={isDeletingEvent}
               className={styles.actionButtonSmall}
             >
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "1.2em", marginRight: "5px" }}
-              >
-                delete
-              </span>
+              <span className="material-symbols-outlined">delete</span>
               {isDeletingEvent ? "Usuwanie..." : "Usuń"}
             </Button>
           </div>
@@ -225,16 +259,14 @@ const EventDetail = () => {
         <div className={styles.metaItem}>
           <span className="material-symbols-outlined">person</span>
           <span>
-            Organizator:{" "}
-            <strong>{formatUser(organizer_data) || "Nieznany"}</strong>
+            Organizator: <strong>{formatUser(organizer_data) || "Nieznany"}</strong>
           </span>
         </div>
         <div className={styles.metaItem}>
           <span className="material-symbols-outlined">schedule</span>
           <span>
             Opublikowano:{" "}
-            {formatDate(created_at, { hour: undefined, minute: undefined }) ||
-              "Nieznana"}
+            {formatDate(created_at, { hour: undefined, minute: undefined }) || "Nieznana"}
           </span>
         </div>
       </div>
@@ -270,18 +302,14 @@ const EventDetail = () => {
                 <strong>Liczba rezerwacji:</strong>
                 <p>
                   {reservation_count}
-                  {max_participants !== null &&
-                    max_participants !== undefined &&
+                  {max_participants !== null && max_participants !== undefined &&
                     `/${max_participants}`}
-                  {/* Only show spots left if it's not infinity and not initial check */}
-                  {!isCheckingReservation &&
-                    spotsLeft < Infinity &&
+                  {!isCheckingReservation && spotsLeft < Infinity &&
                     ` (Pozostało: ${spotsLeft})`}
                 </p>
               </div>
             </div>
 
-            {/* --- Reservation Actions --- */}
             {auth.isAuthenticated && !isOwner && (
               <>
                 {isCheckingReservation ? (
@@ -295,15 +323,8 @@ const EventDetail = () => {
                     onClick={handleDeleteReservation}
                     disabled={isReservationProcessing}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ marginRight: "8px" }}
-                    >
-                      event_busy
-                    </span>
-                    {isReservationProcessing
-                      ? "Anulowanie..."
-                      : "Anuluj Rezerwację"}
+                    <span className="material-symbols-outlined">event_busy</span>
+                    {isReservationProcessing ? "Anulowanie..." : "Anuluj Rezerwację"}
                   </Button>
                 ) : canReserve ? (
                   <Button
@@ -312,22 +333,11 @@ const EventDetail = () => {
                     onClick={handleCreateReservation}
                     disabled={isReservationProcessing}
                   >
-                    <span
-                      className="material-symbols-outlined"
-                      style={{ marginRight: "8px" }}
-                    >
-                      how_to_reg
-                    </span>
-                    {isReservationProcessing
-                      ? "Rezerwowanie..."
-                      : "Zarezerwuj Miejsce"}
+                    <span className="material-symbols-outlined">how_to_reg</span>
+                    {isReservationProcessing ? "Rezerwowanie..." : "Zarezerwuj Miejsce"}
                   </Button>
                 ) : (
-                  <Button
-                    variant="secondary"
-                    className={styles.primaryActionButton}
-                    disabled
-                  >
+                  <Button variant="secondary" className={styles.primaryActionButton} disabled>
                     Brak wolnych miejsc
                   </Button>
                 )}
@@ -340,6 +350,78 @@ const EventDetail = () => {
             )}
           </div>
         </aside>
+      </div>
+
+      {/* Comments Section */}
+      <div className={styles.commentsSection}>
+        <h2 className={styles.sectionTitle}>Komentarze</h2>
+
+        {auth.isAuthenticated ? (
+          <div className={styles.commentForm}>
+            <Textarea
+              placeholder="Dodaj komentarz..."
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              rows={3}
+            />
+            <Button onClick={handleCommentSubmit} disabled={isCommentSubmitting} variant="success">
+              {isCommentSubmitting ? "Dodawanie..." : "Dodaj Komentarz"}
+            </Button>
+          </div>
+        ) : (
+          <p>
+            <Link to="/login">Zaloguj się</Link>, aby dodać komentarz.
+          </p>
+        )}
+
+        <ul className={styles.commentList}>
+          {comments.map((comment) => (
+            <li key={comment.id} className={styles.commentItem}>
+              <div className={styles.commentHeader}>
+                <strong>{formatUser(comment.user_data)}</strong>{" "}
+                <span>{formatDate(comment.created_at)}</span>
+              </div>
+              {editingCommentId === comment.id ? (
+                <Textarea
+                  value={editingText}
+                  onChange={(e) => setEditingText(e.target.value)}
+                  rows={2}
+                />
+              ) : (
+                <p className={styles.commentContent}>{comment.content}</p>
+              )}
+              {auth.currentUser?.id === comment.user_id && (
+                <div className={styles.commentActions}>
+                  {editingCommentId === comment.id ? (
+                    <>
+                      <Button variant="primary" onClick={() => handleEditComment(comment.id)}>
+                        Zapisz
+                      </Button>
+                      <Button variant="secondary" onClick={() => setEditingCommentId(null)}>
+                        Anuluj
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setEditingCommentId(comment.id);
+                          setEditingText(comment.content);
+                        }}
+                      >
+                        Edytuj
+                      </Button>
+                      <Button variant="danger" onClick={() => handleDeleteComment(comment.id)}>
+                        Usuń
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   );

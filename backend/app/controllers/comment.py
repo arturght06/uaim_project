@@ -10,8 +10,8 @@ comment_bp = Blueprint("comment", __name__, url_prefix="/api/comments")
 
 @comment_bp.route("/", methods=["POST"])
 @token_required
-def create_comment(current_user):
-    return create_comment_logic(db, request, current_user)
+def create_comment():
+    return create_comment_logic(db, request)
 
 @comment_bp.route("/<event_id>", methods=["GET"])
 def get_comments(event_id):
@@ -19,11 +19,12 @@ def get_comments(event_id):
 
 @comment_bp.route("/<comment_id>", methods=["DELETE"])
 @token_required
-def delete_comment(current_user, comment_id):
-    return delete_comment_logic(db, comment_id, current_user)
+def delete_comment(comment_id):
+    print("DEL")
+    return delete_comment_logic(db, comment_id, request)
 
 @comment_bp.route("/<comment_id>", methods=["PUT"])
 @token_required
-def delete_comment(current_user, comment_id):
-    return delete_comment_logic(db, comment_id, current_user)
+def update_comment(comment_id):
+    return update_comment_logic(db, comment_id, request)
 

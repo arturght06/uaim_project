@@ -4,6 +4,7 @@ from app.models.user import User
 from app.models.location import Location
 from app.models.reservation import Reservation
 from app.models.event_category import EventCategory
+from app.models.comment import Comment
 from sqlalchemy.exc import SQLAlchemyError
 
 # Add extra data to event object to improve performance
@@ -20,6 +21,8 @@ def add_event_data(db, event):
         res = db.session.query(Reservation).filter_by(user_id=uuid, event_id=event.id).first()
         if res:
             d.update({"reservation": res.status})
+    com_count = db.session.query(Comment).filter_by(event_id=event.id).count()
+    d.update({"comment_count": com_count})
     return d
 
 def get_all_events_logic(db):
