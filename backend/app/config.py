@@ -1,10 +1,11 @@
 ﻿"""Necessary Config class for Flask application"""
-import os
 from dotenv import load_dotenv
+import os
 from flask import Request
 
-# Load environment variables from .env file
-load_dotenv()
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
+
 
 
 class Config:
@@ -21,12 +22,11 @@ class Config:
 
     DEBUG = bool(os.getenv('DEBUG', 'True').lower())
 
-    #Mail notification logic
-    MAIL_SERVER = 'smtp.gmail.com'
-    MAIL_PORT = 587
-    MAIL_USE_TLS = True
-    MAIL_USERNAME = 'twoj_email@gmail.com'  # <- zamień na swój
-    MAIL_PASSWORD = 'twoje_haslo_aplikacji'  # <- hasło aplikacji z Gmaila
-    MAIL_DEFAULT_SENDER = 'twoj_email@gmail.com'
+    MAIL_SERVER = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    MAIL_PORT = int(os.getenv('MAIL_PORT', 587))
+    MAIL_USE_TLS = os.getenv('MAIL_USE_TLS', 'True').lower() in ['true', '1', 'yes']
+    MAIL_USERNAME = os.getenv('MAIL_USERNAME')
+    MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
+    MAIL_DEFAULT_SENDER = os.getenv('MAIL_DEFAULT_SENDER')
 
 

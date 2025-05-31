@@ -43,3 +43,8 @@ gunicorn~=23.0.0
 PyJWT~=2.10.1
 cryptography~=44.0.2
 pycparser~=2.22
+Flask
+Flask-Migrate
+Flask-Mail
+Flask-SQLAlchemy
+python-dotenv
