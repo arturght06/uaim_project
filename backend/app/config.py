@@ -1,10 +1,11 @@
 ﻿"""Necessary Config class for Flask application"""
-import os
 from dotenv import load_dotenv
+import os
 from flask import Request
 
-# Load environment variables from .env file
-load_dotenv()
+
+load_dotenv(dotenv_path=os.path.join(os.path.dirname(__file__), '.env'))
+
 
 
 class Config:
