@@ -178,11 +178,10 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
   };
 
   const handleLocationCreated = (newLocation) => {
-    setLocations((prev) =>
-      [...prev.filter((loc) => loc.id !== newLocation.id), newLocation].sort(
-        (a, b) => a.name.localeCompare(b.name)
-      )
-    );
+    setLocations((prev) => [
+      ...prev.filter((loc) => loc.id !== newLocation.id),
+      newLocation,
+    ]);
     setFormData((prev) => ({ ...prev, location_id: newLocation.id }));
     setIsLocationModalOpen(false);
   };
@@ -226,9 +225,9 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       event_date: new Date(formData.event_date).toISOString().slice(0, 16),
       location_id: formData.location_id,
       max_participants:
-      formData.max_participants === ""
-        ? null
-        : parseInt(formData.max_participants, 10),
+        formData.max_participants === ""
+          ? null
+          : parseInt(formData.max_participants, 10),
       ...(!isEditMode && { organizer_id: auth.currentUser.id }),
     };
 
@@ -258,7 +257,10 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       // These can be parallelized for better performance
       const linkingPromises = categoriesToAdd.map((categoryId) =>
         linkEventToCategory({
-          event_id: isEditMode && eventDataForEdit ? eventDataForEdit.id : savedEvent.id,
+          event_id:
+            isEditMode && eventDataForEdit
+              ? eventDataForEdit.id
+              : savedEvent.id,
           category_id: categoryId,
         })
       );
@@ -369,14 +371,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
               Dodaj nową lokalizację
             </Button>
           </div>
-        ) : (
-          <div className={styles.createFormWrapper}>
-            <CreateLocation
-              onSuccess={handleLocationCreated}
-              onCancel={() => setIsLocationModalOpen(false)}
-            />
-          </div>
-        )}
+        ) : null}
 
         <div className={styles.categorySection}>
           <label className={styles.label}>Kategorie:</label>
