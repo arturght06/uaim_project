@@ -4,125 +4,227 @@ from datetime import datetime, date
 import uuid
 import requests
 
+# Multiple users data
+users_data = [
+    {
+        "username": "user1",
+        "name": "Anna",
+        "surname": "Kowalska",
+        "birthday": "1985-03-15",
+        "email": "anna.kowalska@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "501234567",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user2", 
+        "name": "Piotr",
+        "surname": "Nowak",
+        "birthday": "1990-07-22",
+        "email": "piotr.nowak@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "502345678",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user3",
+        "name": "Maria",
+        "surname": "Wiśniewska",
+        "birthday": "1988-11-08",
+        "email": "maria.wisniewska@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "503456789",
+        "password": "Haslo1234."
+    }
+]
+
 events_data = [
     {
         "title": "Wieczór Jazzowy z Trio Nowoczesnym",
         "description": "Zapraszamy na niezapomniany wieczór pełen improwizacji i jazzowych standardów w wykonaniu utalentowanego Trio Nowoczesnego. Ich muzyka to połączenie klasyki z nutą awangardy. Idealna propozycja na relaksujący wieczór.",
-        "event_date_str": "27.05.2025 20:00",
+        "event_date_str": "07.06.2025 20:00", # Zmieniona data
         "location_name": "Klub Muzyczny \"Harmonia\"",
         "location_address": "ul. Jazzowa 5",
         "location_city": "Warszawa",
         "location_country": "Polska",
         "categories_list": ["Muzyka", "Koncert"],
-        "max_participants": 150,
+        "max_participants": 40, # Zmniejszona liczba uczestników
     },
     {
         "title": "Abstrakcje Rzeczywistości - Wystawa Malarstwa",
         "description": "Galeria Sztuki Współczesnej prezentuje wystawę prac Anny Kowalskiej. Artystka w swoich płótnach bada granice percepcji i abstrakcyjnego postrzegania świata. Kurator zaprasza na wernisaż, podczas którego będzie można porozmawiać z twórczynią.",
-        "event_date_str": "26.05.2025 18:00",
+        "event_date_str": "06.06.2025 18:00", # Zmieniona data
         "location_name": "Galeria Sztuki \"Nowa Przestrzeń\"",
         "location_address": "Rynek Główny 10",
         "location_city": "Kraków",
         "location_country": "Polska",
         "categories_list": ["Sztuka", "Wystawa"],
-        "max_participants": 100,
+        "max_participants": 35, # Zmniejszona liczba uczestników
     },
     {
         "title": "Festiwal Filmów Niezależnych \"Krótkie Formy\"",
         "description": "Przegląd najciekawszych krótkometrażowych filmów niezależnych z kraju i zagranicy. Dyskusje z twórcami po seansach. Nie przegapcie okazji, by odkryć nowe talenty kina! Festiwal potrwa 3 dni.",
-        "event_date_str": "28.05.2025 17:00",
+        "event_date_str": "10.06.2025 17:00", # Zmieniona data
         "location_name": "Kino \"Awangarda\"",
         "location_address": "ul. Filmowa 1",
         "location_city": "Łódź",
         "location_country": "Polska",
         "categories_list": ["Film", "Festiwal"],
-        "max_participants": 200,
+        "max_participants": 40, # Zmniejszona liczba uczestników
     },
     {
         "title": "Slam Poetycki \"Słowo Przeciw Słowu\"",
         "description": "Emocjonujący turniej poetycki, gdzie publiczność decyduje o zwycięzcy! Przyjdź, posłuchaj, zagłosuj lub sam stań na scenie. Otwarty mikrofon dla odważnych w pierwszej części wieczoru.",
-        "event_date_str": "25.05.2025 19:00",
+        "event_date_str": "05.06.2025 19:00", # Zmieniona data
         "location_name": "Kawiarnia Literacka \"Metafora\"",
         "location_address": "ul. Wieszczów 3",
         "location_city": "Gdańsk",
         "location_country": "Polska",
         "categories_list": ["Literatura", "Performance"],
-        "max_participants": 80,
+        "max_participants": 30, # Zmniejszona liczba uczestników
     },
     {
         "title": "Recital Fortepianowy: Chopin i Współcześni",
         "description": "Młody, utalentowany pianista Jan Nowak zaprezentuje utwory Fryderyka Chopina oraz kompozycje współczesnych polskich twórców. Wieczór pełen wirtuozerii i muzycznych odkryć. Zapraszamy melomanów na to wyjątkowe spotkanie z muzyką klasyczną.",
-        "event_date_str": "27.05.2025 19:30",
+        "event_date_str": "12.06.2025 19:30", # Zmieniona data
         "location_name": "Filharmonia Miejska, Sala Kameralna",
         "location_address": "ul. Symfoniczna 1",
         "location_city": "Wrocław",
         "location_country": "Polska",
         "categories_list": ["Muzyka", "Koncert", "Klasyka"],
-        "max_participants": 250,
+        "max_participants": 40, # Zmniejszona liczba uczestników
     },
     {
         "title": "Premiera Komedii \"Nieporozumienie w Akcie Drugim\"",
         "description": "Teatr \"Scena Absurdu\" zaprasza na premierę nowej, błyskotliwej komedii omyłek. Salwy śmiechu gwarantowane! Reżyseria: Ewa Malinowska. Obsada: znakomici aktorzy scen warszawskich.",
-        "event_date_str": "29.05.2025 19:00",
+        "event_date_str": "15.06.2025 19:00", # Zmieniona data
         "location_name": "Teatr \"Scena Absurdu\"",
         "location_address": "ul. Komiczna 7",
         "location_city": "Poznań",
         "location_country": "Polska",
         "categories_list": ["Teatr", "Spektakl", "Komedia"],
-        "max_participants": 300,
+        "max_participants": 40, # Zmniejszona liczba uczestników
     },
     {
         "title": "Warsztaty Tańców Ludowych: Mazurek i Oberek",
         "description": "Odkryj radość polskich tańców ludowych! Warsztaty dla początkujących i średniozaawansowanych. Nauczymy się podstawowych kroków mazurka i oberka pod okiem doświadczonych instruktorów. Nie jest wymagane wcześniejsze doświadczenie, jedynie chęć do dobrej zabawy.",
-        "event_date_str": "24.05.2025 11:00",
+        "event_date_str": "03.06.2025 11:00", # Zmieniona data
         "location_name": "Dom Kultury \"Korzenie\"",
         "location_address": "ul. Folklorystyczna 2",
         "location_city": "Zakopane",
         "location_country": "Polska",
         "categories_list": ["Taniec", "Warsztaty", "Folklor"],
-        "max_participants": 30,
+        "max_participants": 25, # Zmniejszona liczba uczestników (już było <=40, ale zmniejszono)
     },
     {
         "title": "Wykład: \"Tajemnice Średniowiecznych Zamków Polski\"",
         "description": "Prof. dr hab. Adam Historyk opowie o fascynujących historiach i sekretach kryjących się w murach polskich zamków. Prezentacja multimedialna wzbogaci wykład o niepublikowane dotąd zdjęcia i mapy. Wstęp wolny, po wykładzie przewidziana sesja pytań i odpowiedzi.",
-        "event_date_str": "30.05.2025 18:30",
+        "event_date_str": "18.06.2025 18:30", # Zmieniona data
         "location_name": "Muzeum Regionalne, Aula Główna",
         "location_address": "ul. Historyczna 15",
         "location_city": "Toruń",
         "location_country": "Polska",
         "categories_list": ["Edukacja", "Wykład", "Historia"],
-        "max_participants": 100,
+        "max_participants": 38, # Zmniejszona liczba uczestników
     },
     {
         "title": "Wernisaż Fotografii \"Pejzaże Duszy\"",
         "description": "Zapraszamy na otwarcie wystawy fotografii autorstwa Marty Obiektyw. Artystka prezentuje cykl intymnych pejzaży, które są odzwierciedleniem jej wewnętrznych przeżyć i podróży. Możliwość spotkania z autorką i zakupu prac. Lampka wina dla gości.",
-        "event_date_str": "27.05.2025 18:30",
+        "event_date_str": "08.06.2025 18:30", # Zmieniona data
         "location_name": "Galeria Fotografii \"Focus\"",
         "location_address": "ul. Światłoczuła 9",
         "location_city": "Sopot",
         "location_country": "Polska",
         "categories_list": ["Sztuka", "Wystawa", "Fotografia"],
-        "max_participants": 70,
+        "max_participants": 30, # Zmniejszona liczba uczestników
     },
     {
         "title": "Wieczór Stand-up: Śmiech To Zdrowie!",
         "description": "Najlepsi komicy polskiej sceny stand-upowej rozbawią Was do łez! Nowe materiały i sprawdzone żarty, które nikogo nie pozostawią obojętnym. Przygotujcie się na solidną dawkę humoru bez cenzury. Program tylko dla dorosłych.",
-        "event_date_str": "30.05.2025 20:30",
+        "event_date_str": "20.06.2025 20:30", # Zmieniona data
         "location_name": "Klub Komediowy \"Chichot\"",
         "location_address": "Al. Uśmiechu 4",
         "location_city": "Katowice",
         "location_country": "Polska",
         "categories_list": ["Rozrywka", "Stand-up"],
-        "max_participants": 120,
+        "max_participants": 40, # Zmniejszona liczba uczestników
+    },
+    # Dodatkowe eventy dla mniejszej liczby osób
+    {
+        "title": "Kameralne Warsztaty Ceramiczne",
+        "description": "Stwórz własne, unikatowe naczynie ceramiczne pod okiem doświadczonego artysty. Zapewniamy wszystkie materiały i narzędzia. Idealne dla początkujących, którzy chcą spróbować swoich sił w nowej dziedzinie sztuki.",
+        "event_date_str": "11.06.2025 16:00",
+        "location_name": "Pracownia \"Gliniana Chata\"",
+        "location_address": "ul. Rękodzielnicza 12",
+        "location_city": "Wrocław",
+        "location_country": "Polska",
+        "categories_list": ["Sztuka", "Warsztaty"],
+        "max_participants": 10, # Mała grupa
+    },
+    {
+        "title": "Spotkanie Autorskie z Poetą - Edycja Limitowana",
+        "description": "Intymne spotkanie z poetą Janem Wierszem, który opowie o swojej najnowszej twórczości i inspiracjach. Możliwość zadawania pytań i zdobycia dedykacji. Tylko dla wąskiego grona miłośników poezji.",
+        "event_date_str": "19.06.2025 19:00",
+        "location_name": "Antykwariat \"Stare Księgi\"",
+        "location_address": "ul. Książkowa 1",
+        "location_city": "Kraków",
+        "location_country": "Polska",
+        "categories_list": ["Literatura", "Spotkanie"], # Użycie istniejącej kategorii "Literatura"
+        "max_participants": 15, # Mała grupa
+    },
+    {
+        "title": "Degustacja Win z Sommelierem - Kurs Podstawowy",
+        "description": "Poznaj tajniki degustacji win pod okiem profesjonalnego sommeliera. Naucz się rozpoznawać aromaty i smaki. Degustacja 5 rodzajów win w małej, kameralnej grupie.",
+        "event_date_str": "25.06.2025 18:30",
+        "location_name": "Winiarnia \"Bachus\"",
+        "location_address": "ul. Winogronowa 8",
+        "location_city": "Zielona Góra",
+        "location_country": "Polska",
+        "categories_list": ["Edukacja", "Rozrywka"], # Użycie istniejących kategorii
+        "max_participants": 12, # Mała grupa
     }
 ]
 
+# Możesz teraz użyć `events_data_updated`
+# print(events_data_updated)
+
 BASE_API_URL = "https://uaim-api.karoada.ovh"
 
+# Updated user data to match one of the registered users
 USER_DATA = {
-    "login": "karoada",
+    "login": "user1",
     "password": "Haslo1234."
 }
+
+def register_user(user_data):
+    """Register a single user via the registration endpoint"""
+    url = f"{BASE_API_URL}/auth/register"
+    resp = requests.post(url, json=user_data)
+    print(f"Register user {user_data['username']}: {resp.status_code} {resp.text}")
+    return resp.ok
+
+def register_all_users():
+    """Register all users"""
+    registered_users = []
+    for user_data in users_data:
+        if register_user(user_data):
+            registered_users.append(user_data["username"])
+    return registered_users
+
+def login_user_by_username(username):
+    """Login a specific user and return token and user_id"""
+    url = f"{BASE_API_URL}/auth/login"
+    data = {
+        "login": username,
+        "password": "Haslo1234."
+    }
+    resp = requests.post(url, json=data)
+    print(f"Login {username}:", resp.status_code, resp.text)
+    if resp.ok:
+        tokens = resp.json().get("tokens", {})
+        user = resp.json().get("user", {})
+        return tokens.get("access_token"), user.get("id")
+    return None, None
 
 def login_user():
     url = f"{BASE_API_URL}/auth/login"
@@ -219,11 +321,25 @@ def create_event_category_relation(event_id, category_id, token):
     return resp.ok
 
 def main():
-    # login user
-    token, organizer_id = login_user()
-    if not token or not organizer_id:
-        print("Failed to get token or organizer_id, aborting.")
+    # Register all users first
+    print("Registering users...")
+    registered_users = register_all_users()
+    print(f"Successfully registered users: {registered_users}")
+    
+    # Login all users to get their tokens and IDs
+    user_credentials = {}
+    for username in ["user1", "user2", "user3"]:
+        token, user_id = login_user_by_username(username)
+        if token and user_id:
+            user_credentials[username] = {"token": token, "id": user_id}
+    
+    if not user_credentials:
+        print("Failed to login any users, aborting.")
         return
+    
+    # Use first available user for creating categories and locations
+    first_user = list(user_credentials.values())[0]
+    token = first_user["token"]
 
     # Create all categories
     all_categories = set()
@@ -236,23 +352,34 @@ def main():
         if cat_id:
             category_name_to_id[cat] = cat_id
 
-    # Create locations and events
+    # Create locations and events with different organizers
     location_key_to_id = {}
-    for event in events_data:
+    user_list = list(user_credentials.keys())
+    
+    for i, event in enumerate(events_data):
+        # Distribute events among users (round-robin)
+        current_user = user_list[i % len(user_list)]
+        organizer_token = user_credentials[current_user]["token"]
+        organizer_id = user_credentials[current_user]["id"]
+        
+        print(f"Creating event '{event['title']}' with organizer: {current_user}")
+        
         loc_key = (event["location_name"], event["location_address"], event["location_city"], event["location_country"])
         if loc_key not in location_key_to_id:
-            loc_id = create_location(event, token)
+            loc_id = create_location(event, organizer_token)
             if loc_id:
                 location_key_to_id[loc_key] = loc_id
         else:
             loc_id = location_key_to_id[loc_key]
+        
         # Map event categories to ids
         event_cat_ids = [category_name_to_id[cat] for cat in event["categories_list"] if cat in category_name_to_id]
-        event_id = create_event(event, loc_id, event_cat_ids, token, organizer_id)
+        event_id = create_event(event, loc_id, event_cat_ids, organizer_token, organizer_id)
+        
         # Now create event-category relations
         if event_id:
             for cat_id in event_cat_ids:
-                create_event_category_relation(event_id, cat_id, token)
+                create_event_category_relation(event_id, cat_id, organizer_token)
 
 
 if __name__ == "__main__":
