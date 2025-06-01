@@ -39,4 +39,60 @@
     <string name="notification_delete_confirm">Czy na pewno chcesz usunąć to powiadomienie?</string>
     <string name="notification_deleted">Powiadomienie zostało usunięte</string>
     <string name="notification_delete_failed">Nie udało się usunąć powiadomienia</string>
+
+    
+    <!-- Event form strings -->
+    <string name="title_add_event">Dodaj wydarzenie</string>
+    <string name="title_edit_event">Edytuj wydarzenie</string>
+    <string name="hint_event_title">Tytuł wydarzenia</string>
+    <string name="hint_event_description">Opis wydarzenia</string>
+    <string name="hint_event_date">Data wydarzenia (RRRR-MM-DD HH:MM)</string>
+    <string name="hint_country">Kraj</string>
+    <string name="hint_city">Miasto</string>
+    <string name="hint_address">Adres</string>
+    <string name="hint_max_participants">Maksymalna liczba uczestników (opcjonalne)</string>
+    <string name="action_save_event">Zapisz wydarzenie</string>
+    <string name="event_create_success">Wydarzenie zostało utworzone</string>
+    <string name="event_create_failed">Nie udało się utworzyć wydarzenia</string>
+    <string name="event_update_success">Wydarzenie zostało zaktualizowane</string>
+    <string name="event_update_failed">Nie udało się zaktualizować wydarzenia</string>
+    <string name="event_delete_success">Wydarzenie zostało usunięte</string>
+    <string name="event_delete_failed">Nie udało się usunąć wydarzenia</string>
+    <string name="event_delete_confirm">Czy na pewno chcesz usunąć to wydarzenie?</string>
+    <string name="validation_title_required">Tytuł jest wymagany</string>
+    <string name="validation_description_required">Opis jest wymagany</string>
+    <string name="validation_date_required">Data wydarzenia jest wymagana</string>
+    <string name="validation_country_required">Kraj jest wymagany</string>
+    <string name="validation_city_required">Miasto jest wymagane</string>
+    <string name="validation_address_required">Adres jest wymagany</string>
+    <string name="validation_date_format">Nieprawidłowy format daty</string>
+    <string name="hint_location_name">Nazwa lokalizacji</string>
+    <string name="hint_postal_code">Kod pocztowy (opcjonalne)</string>
+    <string name="hint_location_description">Opis lokalizacji (opcjonalne)</string>
+    <string name="validation_location_name_required">Nazwa lokalizacji jest wymagana</string>
+    
+    <!-- User join event messages -->
+    <string name="message_join_event_success">Zgłoszono udział</string>
+    <string name="message_leave_event_success">Wycofano udział</string>
+    <string name="message_join_event_error">Błąd podczas zgłaszania udziału</string>
+    <string name="message_leave_event_error">Błąd podczas wycofywania udziału</string>
+    <string name="message_own_event_join_error">Nie możesz dołączyć do własnego wydarzenia</string>
+    <string name="message_login_required_join">Musisz być zalogowany, aby dołączyć</string>
+    <string name="message_login_required_comment">Musisz być zalogowany, aby komentować</string>
+    <string name="message_login_required_add_event">Musisz być zalogowany, aby dodać wydarzenie</string>
+    <string name="message_comment_added">Komentarz dodany</string>
+    <string name="message_comment_add_error">Błąd podczas dodawania komentarza</string>
+    <string name="message_no_events_selected_categories">Brak wydarzeń dla wybranych kategorii</string>
+    
+    <!-- Button text -->
+    <string name="button_cancel">Anuluj</string>
+    <string name="button_delete">Usuń</string>
+    
+    <!-- Comment editing strings -->
+    <string name="message_comment_updated">Komentarz zaktualizowany</string>
+    <string name="message_comment_deleted">Komentarz usunięty</string>
+    <string name="message_comment_update_error">Błąd podczas aktualizacji komentarza</string>
+    <string name="message_comment_delete_error">Błąd podczas usuwania komentarza</string>
+    <string name="comment_delete_confirm">Czy na pewno chcesz usunąć ten komentarz?</string>
+    <string name="hint_edit_comment">Edytuj komentarz...</string>
 </resources>

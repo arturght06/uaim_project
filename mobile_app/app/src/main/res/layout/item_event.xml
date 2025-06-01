@@ -155,7 +155,7 @@
                 android:layout_height="22dp"
                 android:contentDescription="Liczba uczestników"
                 android:src="@drawable/people_fill"
-                android:tint="@color/text_secondary" />
+                app:tint="@color/text_secondary" />
 
             <TextView
                 android:id="@+id/text_reservation_count"
@@ -233,12 +233,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:background="@android:drawable/edit_text"
+                    android:background="?android:attr/editTextBackground"
                     android:hint="Napisz komentarz..."
                     android:inputType="textMultiLine|textCapSentences"
                     android:maxLines="3"
                     android:padding="8dp"
-                    android:textSize="14sp" />
+                    android:textSize="14sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorHint="?android:attr/textColorHint" />
 
                 <ImageView
                     android:id="@+id/button_send_comment"

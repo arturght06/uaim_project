@@ -24,6 +24,7 @@ import com.example.event.R;
 import com.example.event.data.ApiConfig;
 import com.example.event.data.LoginRepository;
 import com.example.event.data.TokenManager;
+import com.example.event.data.model.LoggedInUser;
 import com.example.event.databinding.FragmentHomeBinding;
 import com.example.event.ui.filter.FilterFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -68,9 +69,8 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         Log.d("HomeFragment", "onViewCreated called");
 
-        recyclerViewEvents = binding.recyclerViewEvents; // Use binding
-        fabFilterEvents = binding.fabFilterEvents; // Use binding
-        // fabAddEvent can also be accessed via binding.fabAddEvent if needed
+        recyclerViewEvents = binding.recyclerViewEvents;
+        fabFilterEvents = binding.fabFilterEvents;
 
         recyclerViewEvents.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -100,6 +100,18 @@ public class HomeFragment extends Fragment {
             public void onSendComment(Event event, String commentText) {
                 Log.d("HomeFragment", "onSendComment for event: " + event.title + ", comment: " + commentText);
                 sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onEditComment(Comment comment, String newContent) {
+                Log.d("HomeFragment", "onEditComment for comment: " + comment.id);
+                editComment(comment, newContent);
+            }
+
+            @Override
+            public void onDeleteComment(Comment comment) {
+                Log.d("HomeFragment", "onDeleteComment for comment: " + comment.id);
+                deleteComment(comment);
             }
 
             @Override
@@ -137,6 +149,18 @@ public class HomeFragment extends Fragment {
             }
         });
 
+        // Add event FAB click listener
+        binding.fabAddEvent.setOnClickListener(v -> {
+            LoggedInUser user = LoginRepository.getInstance().getLoggedInUser();
+            if (user != null) {
+                Log.d("HomeFragment", "Navigating to AddEventFragment");
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_home_to_addEvent);
+            } else {
+                Toast.makeText(getContext(), getString(R.string.message_login_required_add_event), Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.navigation_login);
+            }
+        });
+        
         updateFilterFabAppearance();
         loadEvents(view); 
     }
@@ -369,7 +393,7 @@ public class HomeFragment extends Fragment {
 
     private void handleJoinEvent(Event event, View rootView) {
         if (LoginRepository.getInstance().getLoggedInUser() == null) {
-            Toast.makeText(getContext(), "Musisz być zalogowany, aby dołączyć.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.message_login_required_join), Toast.LENGTH_SHORT).show();
             Log.w("HomeFragment", "handleJoinEvent: User not logged in.");
             return;
         }
@@ -401,11 +425,13 @@ public class HomeFragment extends Fragment {
                 protected void onPostExecute(Boolean success) {
                     if (success) {
                         Log.d("HomeFragment", "Reservation deleted successfully for event: " + event.id + ". Reloading events.");
-                        Toast.makeText(getContext(), "Wycofano udział", Toast.LENGTH_SHORT).show();
-                        loadEvents(rootView); // Use the member field rootView or pass getView()
+                        Toast.makeText(getContext(), getString(R.string.message_leave_event_success), Toast.LENGTH_SHORT).show();
+                        loadEvents(rootView);
+                        // Update notification badge
+                        updateNotificationBadge();
                     } else {
                         Log.e("HomeFragment", "Reservation delete failed for event: " + event.id);
-                        Toast.makeText(getContext(), "Błąd podczas wycofywania udziału", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.message_leave_event_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             }.execute();
@@ -447,11 +473,13 @@ public class HomeFragment extends Fragment {
                 protected void onPostExecute(Boolean success) {
                     if (success) {
                         Log.d("HomeFragment", "Reservation created successfully for event: " + event.id + ". Reloading events.");
-                        Toast.makeText(getContext(), "Zgłoszono udział", Toast.LENGTH_SHORT).show();
-                        loadEvents(rootView); // Use the member field rootView or pass getView()
+                        Toast.makeText(getContext(), getString(R.string.message_join_event_success), Toast.LENGTH_SHORT).show();
+                        loadEvents(rootView);
+                        // Update notification badge
+                        updateNotificationBadge();
                     } else {
                         Log.e("HomeFragment", "Reservation create failed for event: " + event.id);
-                        Toast.makeText(getContext(), "Błąd podczas zgłaszania udziału", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), getString(R.string.message_join_event_error), Toast.LENGTH_SHORT).show();
                     }
                 }
             }.execute();
@@ -460,7 +488,7 @@ public class HomeFragment extends Fragment {
 
     private void sendCommentToEvent(Event event, String commentText) {
         if (LoginRepository.getInstance().getLoggedInUser() == null) {
-            Toast.makeText(getContext(), "Musisz być zalogowany, aby komentować.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), getString(R.string.message_login_required_comment), Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -497,13 +525,109 @@ public class HomeFragment extends Fragment {
             @Override
             protected void onPostExecute(Boolean success) {
                 if (success) {
-                    Toast.makeText(getContext(), "Komentarz dodany", Toast.LENGTH_SHORT).show();
-                    loadEvents(getView()); // Reload to update comment count
+                    Toast.makeText(getContext(), getString(R.string.message_comment_added), Toast.LENGTH_SHORT).show();
+                    loadEvents(getView());
                 } else {
-                    Toast.makeText(getContext(), "Błąd podczas dodawania komentarza", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), getString(R.string.message_comment_add_error), Toast.LENGTH_SHORT).show();
                 }
             }
         }.execute();
+    }
+
+    private void editComment(Comment comment, String newContent) {
+        new EditCommentTask().execute(comment.id, newContent);
+    }
+
+    private void deleteComment(Comment comment) {
+        new DeleteCommentTask().execute(comment.id);
+    }
+
+    private class EditCommentTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String commentId = params[0];
+                String newContent = params[1];
+                
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + commentId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+                conn.setDoOutput(true);
+
+                JSONObject json = new JSONObject();
+                json.put("content", newContent);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(json.toString().getBytes());
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                Log.e("HomeFragment", "Error editing comment", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (getContext() == null) return;
+            
+            if (success) {
+                Toast.makeText(getContext(), "Komentarz zaktualizowany", Toast.LENGTH_SHORT).show();
+                loadEvents(getView());
+            } else {
+                Toast.makeText(getContext(), "Błąd podczas aktualizacji komentarza", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class DeleteCommentTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String commentId = params[0];
+                
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + commentId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("DELETE");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+
+                int responseCode = conn.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                Log.e("HomeFragment", "Error deleting comment", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (getContext() == null) return;
+            
+            if (success) {
+                Toast.makeText(getContext(), "Komentarz usunięty", Toast.LENGTH_SHORT).show();
+                loadEvents(getView());
+            } else {
+                Toast.makeText(getContext(), "Błąd podczas usuwania komentarza", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void updateNotificationBadge() {
+        if (getActivity() instanceof com.example.event.MainActivity) {
+            ((com.example.event.MainActivity) getActivity()).updateNotificationBadgeFromFragment();
+        }
     }
 
     @Override

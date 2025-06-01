@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginBottom="6dp"
@@ -51,5 +52,85 @@
             android:textColor="@color/text_main"
             android:layout_marginTop="6dp"
             android:text="To jest przykładowy komentarz..." />
+
+        <LinearLayout
+            android:id="@+id/comment_actions_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:id="@+id/button_edit_comment"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Edytuj komentarz"
+                android:padding="4dp"
+                android:src="@drawable/pencil_square"
+                app:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/button_delete_comment"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Usuń komentarz"
+                android:padding="4dp"
+                android:src="@drawable/trash_fill"
+                app:tint="@color/text_secondary" />
+
+        </LinearLayout>
+
+        <!-- Edit comment input (initially hidden) -->
+        <LinearLayout
+            android:id="@+id/edit_comment_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <EditText
+                android:id="@+id/edit_text_comment"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/edit_text_background"
+                android:hint="Edytuj komentarz..."
+                android:maxLines="3"
+                android:padding="8dp"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/button_save_comment"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="8dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Zapisz zmiany"
+                android:padding="4dp"
+                android:src="@drawable/check"
+                app:tint="@color/text_secondary" />
+
+            <ImageView
+                android:id="@+id/button_cancel_edit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="4dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="Anuluj edycję"
+                android:padding="4dp"
+                android:src="@drawable/x"
+                app:tint="@color/text_secondary" />
+
+        </LinearLayout>
+
     </LinearLayout>
 </androidx.cardview.widget.CardView>
