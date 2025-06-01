@@ -25,10 +25,78 @@ def add_event_data(db, event):
     d.update({"comment_count": com_count})
     return d
 
-def get_all_events_logic(db):
+def get_all_events_logic(db, categories=None, sort_by=None, sort_order='asc'):
     try:
-        events = db.session.query(Event).all()
-
+        if categories and sort_by in ['comments', 'participants']:
+            category_filtered_events = db.session.query(Event.id)\
+                .join(EventCategory, Event.id == EventCategory.event_id)\
+                .filter(EventCategory.category_id.in_(categories))\
+                .distinct().subquery()
+            
+            if sort_by == 'comments':
+                comment_counts = db.session.query(
+                    Event.id,
+                    db.func.coalesce(db.func.count(Comment.id), 0).label('count')
+                ).filter(Event.id.in_(db.session.query(category_filtered_events.c.id)))\
+                 .outerjoin(Comment, Event.id == Comment.event_id)\
+                 .group_by(Event.id).subquery()
+                
+                query = db.session.query(Event)\
+                    .join(comment_counts, Event.id == comment_counts.c.id)
+                
+                if sort_order == 'desc':
+                    query = query.order_by(comment_counts.c.count.desc())
+                else:
+                    query = query.order_by(comment_counts.c.count.asc())
+                    
+            elif sort_by == 'participants':
+                reservation_counts = db.session.query(
+                    Event.id,
+                    db.func.coalesce(db.func.count(Reservation.id), 0).label('count')
+                ).filter(Event.id.in_(db.session.query(category_filtered_events.c.id)))\
+                 .outerjoin(Reservation, Event.id == Reservation.event_id)\
+                 .group_by(Event.id).subquery()
+                
+                query = db.session.query(Event)\
+                    .join(reservation_counts, Event.id == reservation_counts.c.id)
+                
+                if sort_order == 'desc':
+                    query = query.order_by(reservation_counts.c.count.desc())
+                else:
+                    query = query.order_by(reservation_counts.c.count.asc())
+        else:
+            query = db.session.query(Event)
+            
+            if categories:
+                query = query.join(EventCategory, Event.id == EventCategory.event_id)\
+                            .filter(EventCategory.category_id.in_(categories))\
+                            .distinct()
+            
+            if sort_by == 'date':
+                if sort_order == 'desc':
+                    query = query.order_by(Event.event_date.desc())
+                else:
+                    query = query.order_by(Event.event_date.asc())
+            elif sort_by == 'comments':
+                comment_count = db.session.query(Comment.event_id, db.func.count(Comment.id).label('count'))\
+                                        .group_by(Comment.event_id).subquery()
+                query = query.outerjoin(comment_count, Event.id == comment_count.c.event_id)
+                if sort_order == 'desc':
+                    query = query.order_by(db.func.coalesce(comment_count.c.count, 0).desc())
+                else:
+                    query = query.order_by(db.func.coalesce(comment_count.c.count, 0).asc())
+            elif sort_by == 'participants':
+                reservation_count = db.session.query(Reservation.event_id, db.func.count(Reservation.id).label('count'))\
+                                             .group_by(Reservation.event_id).subquery()
+                query = query.outerjoin(reservation_count, Event.id == reservation_count.c.event_id)
+                if sort_order == 'desc':
+                    query = query.order_by(db.func.coalesce(reservation_count.c.count, 0).desc())
+                else:
+                    query = query.order_by(db.func.coalesce(reservation_count.c.count, 0).asc())
+            else:
+                query = query.order_by(Event.event_date.asc())
+        
+        events = query.all()
         return jsonify([add_event_data(db, event) for event in events]), 200
 
     except SQLAlchemyError as e:

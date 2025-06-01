@@ -1,0 +1,21 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:height="24dp"
+    android:viewportHeight="16.0"
+    android:viewportWidth="16.0"
+    android:width="24dp"
+    tools:ignore="NewApi">
+  <!-- The circle -->
+  <path
+      android:fillAlpha="0.5"
+      android:fillColor="#191919"
+      android:pathData="M8,8m-8,0a8,8 0,1 1,16 0a8,8 0,1 1,-16 0"
+      android:strokeColor="#00000000"
+      android:strokeWidth="1"/>
+  <!-- The sort up arrow -->
+  <path
+      android:fillColor="#FFFFFF"
+      android:pathData="M4.518,11.268a0.375,0.375,0,0,1,-0.75,0L3.768,4.673L2.884,5.283a0.375,0.375,0,1,1,-0.531,-0.531l1.5,-1.499,0.005,-0.005a0.375,0.375,0,0,1,0.525,0.004l1.5,1.5a0.375,0.375,0,1,1,-0.53,0.531L4.518,4.673zM7.573,4.57a0.375,0.375,0,0,1,0.375,-0.375h5.25a0.375,0.375,0,0,1,0,0.75h-5.25a0.375,0.375,0,0,1,-0.375,-0.75M7.679,6.07a0.375,0.375,0,0,0,0,0.75h3.75a0.375,0.375,0,0,0,0,-0.75zM7.679,8.32a0.375,0.375,0,0,0,0,0.75h2.25a0.375,0.375,0,0,0,0,-0.75zM7.679,10.57a0.375,0.375,0,0,0,0,0.75h0.75a0.375,0.375,0,0,0,0,-0.75z"
+      android:strokeColor="#00000000"
+      android:strokeWidth="1"/>
+</vector>

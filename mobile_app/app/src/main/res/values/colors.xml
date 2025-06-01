@@ -1,11 +1,14 @@
 <resources>
     <!-- Paleta -->
     <color name="olivine">#9dc183</color>
+    <color name="olivine_muted">#AEC7A2</color>
+    <color name="olivine_active">#B2DF85</color>
     <color name="tawny">#cc5500</color>
     <color name="tawny_hover">#af4900</color>
     <color name="tawny_active">#a34300</color>
     <color name="tawny_light">#ff8c40</color>
     <color name="hunter_green_disabled">#808C86</color>
+    <color name="hunter_green_muted">#4E886B</color>
     <color name="hunter_green">#3f6c51</color>
     <color name="hunter_green_hover">#355e45</color>
     <color name="hunter_green_active">#2b4f3a</color>
@@ -13,13 +16,15 @@
     <color name="white">#ffffff</color>
     <color name="tawny_subtle">#FFEAD0</color>
     <color name="hunter_green_subtle">#E4F2D8</color>
+    <color name="grey_300">#E0E0E0</color>
 
     <!-- Główne kolory -->
     <color name="primary_color">@color/tawny</color>
     <color name="primary_color_variant">@color/tawny_active</color>
     <color name="on_primary">@color/white</color>
     <color name="secondary_color">@color/hunter_green</color>
-    <color name="secondary_color_variant">@color/hunter_green_active</color>
+    <color name="secondary_color_muted">@color/olivine_muted</color>
+    <color name="secondary_color_variant">@color/olivine_active</color>
     <color name="secondary_color_disabled">@color/hunter_green_disabled</color>
     <color name="on_secondary">@color/white</color>
 

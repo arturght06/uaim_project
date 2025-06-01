@@ -292,12 +292,12 @@
             android:contentDescription="Usuń wydarzenie"
             android:src="@drawable/trash_fill"
             app:backgroundTint="@color/danger_color"
-            app:fabSize="mini"
+            app:fabSize="normal"
             app:tint="@android:color/white" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fab_edit_event"
-            android:layout_width="64dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"

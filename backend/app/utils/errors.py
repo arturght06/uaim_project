@@ -17,3 +17,12 @@ def handle_creation_error():
     response = jsonify({'error': "Creation error"})
     response.status_code = 500
     return response
+
+
+def handle_database_error(details=None):
+    response_data = {'error': "Database error"}
+    if details:
+        response_data['details'] = str(details)
+    response = jsonify(response_data)
+    response.status_code = 500
+    return response

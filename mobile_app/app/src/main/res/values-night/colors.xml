@@ -4,6 +4,7 @@
     <color name="tawny">#cc5500</color>
     <color name="tawny_active">#a34300</color>
     <color name="hunter_green">#3f6c51</color>
+    <color name="hunter_green_muted">#355642</color>
     <color name="black">#0a0908</color>
     <color name="white">#ffffff</color>
     <color name="tawny_subtle">#4D3E34</color>
@@ -14,6 +15,7 @@
     <color name="primary_color_variant">@color/tawny_active</color>
     <color name="on_primary">@color/white</color>
     <color name="secondary_color">@color/olivine</color>
+    <color name="secondary_color_muted">@color/olivine_muted</color>
     <color name="secondary_color_variant">@color/hunter_green</color>
     <color name="on_secondary">@color/black</color>
 

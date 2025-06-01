@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_home_to_eventDetail"
             app:destination="@id/eventDetailFragment" />
+        <action
+            android:id="@+id/action_home_to_filterFragment"
+            app:destination="@id/filterFragment" />
     </fragment>
 
     <fragment
@@ -64,4 +67,10 @@
         android:name="com.example.event.ui.user.EditProfileFragment"
         android:label="@string/title_edit_profile"
         tools:layout="@layout/fragment_edit_profile" />
+
+    <fragment
+        android:id="@+id/filterFragment"
+        android:name="com.example.event.ui.filter.FilterFragment"
+        android:label="Filtruj"
+        tools:layout="@layout/fragment_filter" />
 </navigation>

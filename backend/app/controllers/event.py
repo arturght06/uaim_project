@@ -10,7 +10,12 @@ event_bp = Blueprint("event", __name__, url_prefix="/api/events")
 
 @event_bp.route("/", methods=["GET"])
 def get_all_events():
-    return get_all_events_logic(db)
+    
+    categories = request.args.getlist('category')  # Accepts multiple category IDs
+    sort_by = request.args.get('sort_by')  # date, comments, participants
+    sort_order = request.args.get('sort_order', 'asc')  # asc or desc
+    
+    return get_all_events_logic(db, categories=categories, sort_by=sort_by, sort_order=sort_order)
 
 @event_bp.route("/user/<user_id>", methods=["GET"])
 def get_user_events(user_id):
