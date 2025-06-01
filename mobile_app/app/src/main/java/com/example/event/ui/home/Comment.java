@@ -9,7 +9,8 @@ public class Comment {
     public String authorFirstName;
     public String authorLastName;
 
-    public Comment(String id, String eventId, String userId, String content, String createdAt, String authorFirstName, String authorLastName) {
+    public Comment(String id, String eventId, String userId, String content, String createdAt, 
+                   String authorFirstName, String authorLastName) {
         this.id = id;
         this.eventId = eventId;
         this.userId = userId;

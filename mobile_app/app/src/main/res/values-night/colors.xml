@@ -49,4 +49,13 @@
     <color name="info_color_hover">@color/olivine</color>
     <color name="info_bg_light">#232625</color>
     <color name="text_on_info">@color/white</color>
+
+    <!-- Dark mode chip colors -->
+    <color name="chip_background_unselected_light">#2A2A2A</color>
+    <color name="chip_background_selected_light">@color/primary_color</color>
+    
+    <color name="chip_text_unselected_light">#E0E0E0</color>
+    <color name="chip_text_selected_light">@color/on_primary</color>
+    
+    <!-- Dark mode surface colors -->
 </resources>

@@ -1,111 +1,226 @@
 package com.example.event.ui.home;
 
-import android.app.AlertDialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.navigation.fragment.NavHostFragment;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.event.R;
 import com.example.event.data.ApiConfig;
 import com.example.event.data.LoginRepository;
 import com.example.event.data.TokenManager;
 import com.example.event.data.model.LoggedInUser;
+import com.example.event.databinding.FragmentEventDetailBinding;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class EventDetailFragment extends Fragment {
+
     private static final String TAG = "EventDetailFragment";
-
-    private TextView textTitle, textOrganizer, textCreatedAt, textDescription, textEventDate, textLocation, textReservations;
-    private LinearLayout fabActionsContainer;
-    private FloatingActionButton fabEditEvent, fabDeleteEvent;
+    private FragmentEventDetailBinding binding;
     private String eventId;
-    private String organizerId;
+    private Event currentEvent;
+    private CommentAdapter commentAdapter;
+    private List<Comment> commentList = new ArrayList<>();
+    
+    // Action buttons
+    private View fabActionsContainer;
+    private FloatingActionButton fabEditEvent;
+    private FloatingActionButton fabDeleteEvent;
 
-    @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_event_detail, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        binding = FragmentEventDetailBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        textTitle = view.findViewById(R.id.text_event_detail_title);
-        textOrganizer = view.findViewById(R.id.text_event_detail_organizer);
-        textCreatedAt = view.findViewById(R.id.text_event_detail_created_at);
-        textDescription = view.findViewById(R.id.text_event_detail_description);
-        textEventDate = view.findViewById(R.id.text_event_detail_event_date);
-        textLocation = view.findViewById(R.id.text_event_detail_location);
-        textReservations = view.findViewById(R.id.text_event_detail_reservations);
-        
-        fabActionsContainer = view.findViewById(R.id.fab_actions_container); // Updated ID
-        fabEditEvent = view.findViewById(R.id.fab_edit_event); // Updated ID
-        fabDeleteEvent = view.findViewById(R.id.fab_delete_event); // Updated ID
-
+        // Get event ID from arguments
         if (getArguments() != null) {
             eventId = getArguments().getString("event_id");
         }
 
         if (eventId == null) {
-            Toast.makeText(getContext(), "Error: Event ID not found.", Toast.LENGTH_LONG).show();
-            Log.e(TAG, "Event ID is null.");
-            NavHostFragment.findNavController(this).popBackStack();
+            Toast.makeText(getContext(), "Błąd: Brak ID wydarzenia", Toast.LENGTH_SHORT).show();
+            NavHostFragment.findNavController(this).navigateUp();
             return;
         }
 
-        fetchEventDetails(eventId);
+        // Initialize action buttons
+        fabActionsContainer = view.findViewById(R.id.fab_actions_container);
+        fabEditEvent = view.findViewById(R.id.fab_edit_event);
+        fabDeleteEvent = view.findViewById(R.id.fab_delete_event);
 
-        fabEditEvent.setOnClickListener(v -> {
-            // Navigate to edit event fragment or show a dialog
-            Toast.makeText(getContext(), "Edit event: " + eventId, Toast.LENGTH_SHORT).show();
-            // Example navigation:
-            // Bundle args = new Bundle();
-            // args.putString("event_id", eventId);
-            // NavHostFragment.findNavController(this).navigate(R.id.action_eventDetail_to_editEvent, args);
+        // Setup comments RecyclerView
+        RecyclerView recyclerViewComments = view.findViewById(R.id.recycler_view_comments);
+        recyclerViewComments.setLayoutManager(new LinearLayoutManager(getContext()));
+        commentAdapter = new CommentAdapter(getContext(), commentList, new CommentAdapter.OnCommentActionListener() {
+            @Override
+            public void onEditComment(Comment comment, String newContent) {
+                editComment(comment, newContent);
+            }
+
+            @Override
+            public void onDeleteComment(Comment comment) {
+                deleteComment(comment);
+            }
+        });
+        recyclerViewComments.setAdapter(commentAdapter);
+
+        // Setup comment input
+        setupCommentInput();
+
+        // Load event details
+        loadEventDetails();
+    }
+
+    private void setupCommentInput() {
+        binding.buttonSendComment.setOnClickListener(v -> {
+            LoggedInUser user = LoginRepository.getInstance().getLoggedInUser();
+            if (user == null) {
+                Toast.makeText(getContext(), "Musisz być zalogowany, aby komentować", Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(this).navigate(R.id.navigation_login);
+                return;
+            }
+
+            String commentText = binding.editTextComment.getText().toString().trim();
+            if (!commentText.isEmpty()) {
+                sendComment(commentText);
+            }
         });
 
-        fabDeleteEvent.setOnClickListener(v -> showDeleteConfirmationDialog());
+        // Update comment input visibility
+        updateCommentInputVisibility();
     }
 
-    private void fetchEventDetails(String eventId) {
-        new FetchEventTask().execute(eventId);
+    private void updateCommentInputVisibility() {
+        LoggedInUser user = LoginRepository.getInstance().getLoggedInUser();
+        boolean isLoggedIn = (user != null);
+        
+        if (isLoggedIn) {
+            binding.commentInputLayout.setVisibility(View.VISIBLE);
+            binding.textLoginPrompt.setVisibility(View.GONE);
+        } else {
+            binding.commentInputLayout.setVisibility(View.GONE);
+            binding.textLoginPrompt.setVisibility(View.VISIBLE);
+            binding.textLoginPrompt.setOnClickListener(v -> 
+                NavHostFragment.findNavController(this).navigate(R.id.navigation_login)
+            );
+        }
     }
 
-    private class FetchEventTask extends AsyncTask<String, Void, JSONObject> {
+    private void loadEventDetails() {
+        new LoadEventDetailsTask().execute(eventId);
+    }
+
+    private void updateActionButtonsVisibility() {
+        LoggedInUser loggedInUser = LoginRepository.getInstance().getLoggedInUser();
+        boolean isLoggedIn = (loggedInUser != null);
+        boolean isMyEvent = isLoggedIn && currentEvent != null && 
+                          loggedInUser.getUserId().equals(currentEvent.organizerId);
+
+        if (fabActionsContainer != null) {
+            if (isMyEvent) {
+                fabActionsContainer.setVisibility(View.VISIBLE);
+                
+                // Set up edit button
+                fabEditEvent.setOnClickListener(v -> {
+                    Log.d(TAG, "Edit event button clicked for event: " + currentEvent.id);
+                    Bundle args = new Bundle();
+                    args.putString("event_id", currentEvent.id);
+                    NavHostFragment.findNavController(EventDetailFragment.this)
+                            .navigate(R.id.action_eventDetail_to_editEvent, args);
+                });
+                
+                // Set up delete button
+                fabDeleteEvent.setOnClickListener(v -> {
+                    Log.d(TAG, "Delete event button clicked for event: " + currentEvent.id);
+                    showDeleteConfirmationDialog();
+                });
+            } else {
+                fabActionsContainer.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void showDeleteConfirmationDialog() {
+        new android.app.AlertDialog.Builder(requireContext())
+                .setTitle("Usuń wydarzenie")
+                .setMessage(getString(R.string.event_delete_confirm))
+                .setPositiveButton(getString(R.string.button_delete), (dialog, which) -> deleteEvent())
+                .setNegativeButton(getString(R.string.button_cancel), null)
+                .show();
+    }
+
+    private void deleteEvent() {
+        if (currentEvent == null) return;
+        
+        new DeleteEventTask().execute(currentEvent.id);
+    }
+
+    private void sendComment(String commentText) {
+        new SendCommentTask().execute(commentText);
+    }
+
+    private void loadComments() {
+        new LoadCommentsTask().execute(eventId);
+    }
+
+    private String formatDate(String dateString, String pattern) {
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
+            Date date = inputFormat.parse(dateString);
+            
+            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, new Locale("pl", "PL"));
+            outputFormat.setTimeZone(TimeZone.getDefault());
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            Log.e(TAG, "Error formatting date: " + dateString, e);
+            return dateString;
+        }
+    }
+
+    private class LoadEventDetailsTask extends AsyncTask<String, Void, Event> {
         @Override
-        protected JSONObject doInBackground(String... params) {
-            String id = params[0];
-            Log.d(TAG, "Fetching event details for ID: " + id);
+        protected Event doInBackground(String... params) {
             try {
-                URL url = new URL(ApiConfig.BASE_URL + "api/events/" + id);
+                String eventId = params[0];
+                URL url = new URL(ApiConfig.BASE_URL + "api/events/" + eventId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("GET");
-                // Add Authorization header if needed for this endpoint, though typically GETs for public data might not.
-                // String accessToken = TokenManager.getAccessToken();
-                // if (accessToken != null) {
-                //     conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-                // }
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
 
                 int responseCode = conn.getResponseCode();
                 if (responseCode == HttpURLConnection.HTTP_OK) {
@@ -116,122 +231,155 @@ public class EventDetailFragment extends Fragment {
                         response.append(line);
                     }
                     in.close();
-                    Log.d(TAG, "Successfully fetched event data: " + response.toString());
-                    return new JSONObject(response.toString());
-                } else {
-                    Log.e(TAG, "Failed to fetch event data. HTTP Error: " + responseCode + " for URL: " + url);
+                    
+                    JSONObject obj = new JSONObject(response.toString());
+                    JSONObject loc = obj.optJSONObject("location_data");
+                    JSONObject org = obj.optJSONObject("organizer_data");
+                    
+                    return new Event(
+                        obj.optString("id"),
+                        obj.optString("title"),
+                        obj.optString("created_at"),
+                        obj.optString("event_date"),
+                        loc != null ? loc.optString("country", "") : "",
+                        loc != null ? loc.optString("city", "") : "",
+                        loc != null ? loc.optString("address", "") : "",
+                        obj.optString("description"),
+                        org != null ? org.optString("name", "") : "",
+                        org != null ? org.optString("surname", "") : "",
+                        obj.optString("reservation_status", null),
+                        obj.optInt("reservation_count", 0),
+                        obj.has("max_participants") && !obj.isNull("max_participants") ? obj.optInt("max_participants", 0) : 0,
+                        obj.optString("reservation_id", null),
+                        obj.optString("organizer_id", null),
+                        obj.optInt("comment_count", 0)
+                    );
                 }
             } catch (Exception e) {
-                Log.e(TAG, "Error fetching event details", e);
+                Log.e(TAG, "Error loading event details", e);
             }
             return null;
         }
 
         @Override
-        protected void onPostExecute(JSONObject eventJson) {
-            if (!isAdded() || eventJson == null) {
-                Log.e(TAG, "Fragment not added or eventJson is null. Cannot populate UI.");
-                if (isAdded()) {
-                    Toast.makeText(getContext(), "Failed to load event details.", Toast.LENGTH_SHORT).show();
-                }
-                return;
+        protected void onPostExecute(Event event) {
+            if (!isAdded() || event == null) return;
+
+            currentEvent = event;
+            
+            // Populate UI elements
+            binding.textEventTitle.setText(event.title);
+            binding.textEventDescription.setText(event.description);
+            binding.textEventDate.setText(formatDate(event.eventDate, "dd.MM.yyyy, HH:mm"));
+            
+            String location = event.country;
+            if (!event.city.isEmpty()) location += ", " + event.city;
+            if (!event.address.isEmpty()) location += ", " + event.address;
+            binding.textEventLocation.setText(location);
+            
+            binding.textEventOrganizer.setText(event.organizerFirstName + " " + event.organizerLastName);
+            
+            String reservationText;
+            if (event.maxParticipants > 0) {
+                reservationText = event.reservationCount + "/" + event.maxParticipants;
+            } else {
+                reservationText = String.valueOf(event.reservationCount);
             }
-
-            try {
-                textTitle.setText(eventJson.optString("title", "N/A"));
-                textDescription.setText(eventJson.optString("description", "N/A"));
-
-                organizerId = eventJson.optString("organizer_id", null);
-                JSONObject organizerData = eventJson.optJSONObject("organizer_data");
-                if (organizerData != null) {
-                    String organizerName = organizerData.optString("name", "") + " " + organizerData.optString("surname", "");
-                    textOrganizer.setText(organizerName.trim().isEmpty() ? "N/A" : organizerName.trim());
-                } else {
-                    textOrganizer.setText("N/A");
-                }
-
-                textCreatedAt.setText(formatDisplayDate(eventJson.optString("created_at")));
-                textEventDate.setText(formatDisplayDate(eventJson.optString("event_date")));
-
-                JSONObject locationData = eventJson.optJSONObject("location_data");
-                if (locationData != null) {
-                    String country = locationData.optString("country", "");
-                    String city = locationData.optString("city", "");
-                    String address = locationData.optString("address", "");
-                    String fullLocation = "";
-                    if (!country.isEmpty()) fullLocation += country;
-                    if (!city.isEmpty()) fullLocation += (fullLocation.isEmpty() ? "" : ", ") + city;
-                    if (!address.isEmpty()) fullLocation += (fullLocation.isEmpty() ? "" : ", ") + address;
-                    textLocation.setText(fullLocation.isEmpty() ? "N/A" : fullLocation);
-                } else {
-                    textLocation.setText("N/A");
-                }
-
-                int reservationCount = eventJson.optInt("reservation_count", 0);
-                int maxParticipants = eventJson.optInt("max_participants", 0);
-                if (maxParticipants > 0) {
-                    int remaining = maxParticipants - reservationCount;
-                    textReservations.setText(String.format(Locale.getDefault(), "%d/%d (Pozostało: %d)", reservationCount, maxParticipants, remaining < 0 ? 0 : remaining));
-                } else {
-                    textReservations.setText(String.valueOf(reservationCount));
-                }
-
-                updateActionButtonsVisibility();
-
-            } catch (Exception e) {
-                Log.e(TAG, "Error parsing event JSON or populating UI", e);
-                Toast.makeText(getContext(), "Error displaying event details.", Toast.LENGTH_SHORT).show();
-            }
+            binding.textReservationCount.setText(reservationText);
+            
+            // Update action buttons visibility
+            updateActionButtonsVisibility();
+            
+            // Load comments
+            loadComments();
         }
     }
 
-    private void updateActionButtonsVisibility() {
-        LoggedInUser currentUser = LoginRepository.getInstance().getLoggedInUser();
-        if (currentUser != null && organizerId != null && organizerId.equals(currentUser.getUserId())) {
-            fabActionsContainer.setVisibility(View.VISIBLE);
-        } else {
-            fabActionsContainer.setVisibility(View.GONE);
-        }
-    }
-
-    private void showDeleteConfirmationDialog() {
-        if (getContext() == null) return;
-        new AlertDialog.Builder(getContext())
-                .setTitle("Potwierdź usunięcie")
-                .setMessage("Czy na pewno chcesz usunąć to wydarzenie? Tej operacji nie można cofnąć.")
-                .setPositiveButton("Usuń", (dialog, which) -> deleteEvent())
-                .setNegativeButton("Anuluj", null)
-                .setIcon(R.drawable.trash_fill) // Consider adding a proper drawable
-                .show();
-    }
-
-    private void deleteEvent() {
-        new DeleteEventTask().execute(eventId);
-    }
-
-    private class DeleteEventTask extends AsyncTask<String, Void, Boolean> {
+    private class LoadCommentsTask extends AsyncTask<String, Void, List<Comment>> {
         @Override
-        protected Boolean doInBackground(String... params) {
-            String id = params[0];
-            Log.d(TAG, "Attempting to delete event ID: " + id);
-            String accessToken = TokenManager.getAccessToken();
-            if (accessToken == null) {
-                Log.e(TAG, "Cannot delete event: Access token is null.");
-                return false;
-            }
-
+        protected List<Comment> doInBackground(String... params) {
+            List<Comment> comments = new ArrayList<>();
             try {
-                URL url = new URL(ApiConfig.BASE_URL + "api/events/" + id);
+                String eventId = params[0];
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + eventId);
                 HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                conn.setRequestMethod("DELETE");
-                conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                conn.setRequestMethod("GET");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
 
                 int responseCode = conn.getResponseCode();
-                Log.d(TAG, "Delete event response code: " + responseCode);
-                
-                return responseCode == HttpURLConnection.HTTP_OK || responseCode == HttpURLConnection.HTTP_NO_CONTENT;
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+                    in.close();
+
+                    JSONArray commentsArray = new JSONArray(response.toString());
+                    for (int i = 0; i < commentsArray.length(); i++) {
+                        JSONObject commentObj = commentsArray.getJSONObject(i);
+                        JSONObject userObj = commentObj.optJSONObject("user_data");
+                        
+                        comments.add(new Comment(
+                            commentObj.optString("id"),
+                            commentObj.optString("event_id"),
+                            commentObj.optString("user_id"),
+                            commentObj.optString("content"),
+                            commentObj.optString("created_at"),
+                            userObj != null ? userObj.optString("name", "") : "",
+                            userObj != null ? userObj.optString("surname", "") : ""
+                        ));
+                    }
+                }
             } catch (Exception e) {
-                Log.e(TAG, "Error deleting event", e);
+                Log.e(TAG, "Error loading comments", e);
+            }
+            return comments;
+        }
+
+        @Override
+        protected void onPostExecute(List<Comment> comments) {
+            if (!isAdded()) return;
+            
+            commentList.clear();
+            commentList.addAll(comments);
+            commentAdapter.notifyDataSetChanged();
+        }
+    }
+
+    private class SendCommentTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String commentText = params[0];
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/");
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("POST");
+                conn.setRequestProperty("Content-Type", "application/json");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+                conn.setDoOutput(true);
+
+                JSONObject json = new JSONObject();
+                json.put("event_id", eventId);
+                json.put("content", commentText);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(json.toString().getBytes());
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_CREATED;
+            } catch (Exception e) {
+                Log.e(TAG, "Error sending comment", e);
                 return false;
             }
         }
@@ -239,32 +387,161 @@ public class EventDetailFragment extends Fragment {
         @Override
         protected void onPostExecute(Boolean success) {
             if (!isAdded()) return;
+            
             if (success) {
-                Toast.makeText(getContext(), "Wydarzenie usunięte pomyślnie.", Toast.LENGTH_SHORT).show();
-                Log.d(TAG, "Event deleted successfully. Navigating back.");
-                NavHostFragment.findNavController(EventDetailFragment.this).popBackStack();
+                Toast.makeText(getContext(), "Komentarz dodany", Toast.LENGTH_SHORT).show();
+                binding.editTextComment.setText("");
+                loadComments(); // Reload comments
             } else {
-                Toast.makeText(getContext(), "Nie udało się usunąć wydarzenia.", Toast.LENGTH_SHORT).show();
-                Log.e(TAG, "Failed to delete event.");
+                Toast.makeText(getContext(), "Błąd podczas dodawania komentarza", Toast.LENGTH_SHORT).show();
             }
         }
     }
 
-    private String formatDisplayDate(String apiDateString) {
-        if (apiDateString == null || apiDateString.isEmpty() || apiDateString.equals("null")) {
-            return "N/A";
-        }
-        try {
-            // Input format from API: "EEE, dd MMM yyyy HH:mm:ss z"
-            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-            Date date = inputFormat.parse(apiDateString);
+    private class DeleteEventTask extends AsyncTask<String, Void, Boolean> {
+        private String errorMessage = "";
 
-            // Desired output format: "d MMMM yyyy HH:mm"
-            SimpleDateFormat outputFormat = new SimpleDateFormat("d MMMM yyyy HH:mm", new Locale("pl", "PL"));
-            return outputFormat.format(date);
-        } catch (Exception e) {
-            Log.e(TAG, "Error formatting date: " + apiDateString, e);
-            return apiDateString; // Fallback to original string if parsing fails
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String eventId = params[0];
+                URL url = new URL(ApiConfig.BASE_URL + "api/events/" + eventId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("DELETE");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+
+                int responseCode = conn.getResponseCode();
+                Log.d(TAG, "Delete event response code: " + responseCode);
+                
+                if (responseCode != HttpURLConnection.HTTP_OK) {
+                    BufferedReader errorReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
+                    StringBuilder errorResponse = new StringBuilder();
+                    String line;
+                    while ((line = errorReader.readLine()) != null) {
+                        errorResponse.append(line);
+                    }
+                    errorReader.close();
+                    errorMessage = errorResponse.toString();
+                }
+                
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting event", e);
+                errorMessage = e.getMessage();
+                return false;
+            }
         }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (!isAdded()) return;
+
+            if (success) {
+                Toast.makeText(getContext(), getString(R.string.event_delete_success), Toast.LENGTH_SHORT).show();
+                NavHostFragment.findNavController(EventDetailFragment.this).navigateUp();
+            } else {
+                Toast.makeText(getContext(), getString(R.string.event_delete_failed) + ": " + errorMessage, Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private class EditCommentTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String commentId = params[0];
+                String newContent = params[1];
+                
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + commentId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("PUT");
+                conn.setRequestProperty("Content-Type", "application/json");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+                conn.setDoOutput(true);
+
+                JSONObject json = new JSONObject();
+                json.put("content", newContent);
+
+                OutputStream os = conn.getOutputStream();
+                os.write(json.toString().getBytes());
+                os.close();
+
+                int responseCode = conn.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                Log.e(TAG, "Error editing comment", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (!isAdded()) return;
+            
+            if (success) {
+                Toast.makeText(getContext(), "Komentarz zaktualizowany", Toast.LENGTH_SHORT).show();
+                loadComments(); // Reload comments
+            } else {
+                Toast.makeText(getContext(), "Błąd podczas aktualizacji komentarza", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private class DeleteCommentTask extends AsyncTask<String, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(String... params) {
+            try {
+                String commentId = params[0];
+                
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + commentId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("DELETE");
+                
+                String accessToken = TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+
+                int responseCode = conn.getResponseCode();
+                return responseCode == HttpURLConnection.HTTP_OK;
+            } catch (Exception e) {
+                Log.e(TAG, "Error deleting comment", e);
+                return false;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean success) {
+            if (!isAdded()) return;
+            
+            if (success) {
+                Toast.makeText(getContext(), "Komentarz usunięty", Toast.LENGTH_SHORT).show();
+                loadComments(); // Reload comments
+            } else {
+                Toast.makeText(getContext(), "Błąd podczas usuwania komentarza", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void deleteComment(Comment comment) {
+        new DeleteCommentTask().execute(comment.id);
+    }
+
+    private void editComment(Comment comment, String newContent) {
+        new EditCommentTask().execute(comment.id, newContent);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

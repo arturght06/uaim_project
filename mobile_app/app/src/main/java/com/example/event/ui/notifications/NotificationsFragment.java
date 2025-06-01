@@ -102,8 +102,8 @@ public class NotificationsFragment extends Fragment implements NotificationAdapt
         new AlertDialog.Builder(getContext())
                 .setTitle("Usuń powiadomienie")
                 .setMessage(R.string.notification_delete_confirm)
-                .setPositiveButton("Usuń", (dialog, which) -> deleteNotification(notification))
-                .setNegativeButton("Anuluj", null)
+                .setPositiveButton(getString(R.string.button_delete), (dialog, which) -> deleteNotification(notification))
+                .setNegativeButton(getString(R.string.button_cancel), null)
                 .show();
     }
 
@@ -227,6 +227,14 @@ public class NotificationsFragment extends Fragment implements NotificationAdapt
 
                 if (notifications.isEmpty()) {
                     showEmptyState();
+                }
+
+                // Update badge in MainActivity after deletion
+                if (getActivity() instanceof MainActivity) {
+                    ((MainActivity) getActivity()).runOnUiThread(() -> {
+                        // Trigger badge update
+                        ((MainActivity) getActivity()).updateNotificationBadgeFromFragment();
+                    });
                 }
 
                 Toast.makeText(getContext(), R.string.notification_deleted, Toast.LENGTH_SHORT).show();

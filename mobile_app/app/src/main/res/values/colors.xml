@@ -67,4 +67,12 @@
 
     <!-- Badge -->
     <color name="badge_color">@color/tawny</color>
+
+    <!-- Chip background color state list -->
+    <color name="chip_background_unselected_light">#F5F5F5</color>
+    <color name="chip_background_selected_light">@color/primary_color</color>
+
+    <!-- Chip text color state list -->
+    <color name="chip_text_unselected_light">@color/text_main</color>
+    <color name="chip_text_selected_light">@color/on_primary</color>
 </resources>

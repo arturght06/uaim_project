@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_home_to_filterFragment"
             app:destination="@id/filterFragment" />
+        <action
+            android:id="@+id/action_home_to_addEvent"
+            app:destination="@id/addEventFragment" />
     </fragment>
 
     <fragment
@@ -60,7 +63,11 @@
         android:id="@+id/eventDetailFragment"
         android:name="com.example.event.ui.home.EventDetailFragment"
         android:label="Szczegóły wydarzenia"
-        tools:layout="@layout/fragment_event_detail" />
+        tools:layout="@layout/fragment_event_detail">
+        <action
+            android:id="@+id/action_eventDetail_to_editEvent"
+            app:destination="@id/editEventFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/navigation_edit_profile"
@@ -73,4 +80,16 @@
         android:name="com.example.event.ui.filter.FilterFragment"
         android:label="Filtruj"
         tools:layout="@layout/fragment_filter" />
+
+    <fragment
+        android:id="@+id/addEventFragment"
+        android:name="com.example.event.ui.events.AddEventFragment"
+        android:label="@string/title_add_event"
+        tools:layout="@layout/fragment_add_event" />
+
+    <fragment
+        android:id="@+id/editEventFragment"
+        android:name="com.example.event.ui.events.EditEventFragment"
+        android:label="@string/title_edit_event"
+        tools:layout="@layout/fragment_edit_event" />
 </navigation>

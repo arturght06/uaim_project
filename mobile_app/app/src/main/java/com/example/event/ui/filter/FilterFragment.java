@@ -159,8 +159,14 @@ public class FilterFragment extends Fragment {
         dateChip.setTag("date");
         dateChip.setCheckable(true);
         dateChip.setCheckedIconVisible(false);
-        if (chipBackgroundColorStateList != null) dateChip.setChipBackgroundColor(chipBackgroundColorStateList);
-        if (chipTextColorStateList != null) dateChip.setTextColor(chipTextColorStateList);
+        if (chipBackgroundColorStateList != null) {
+            dateChip.setChipBackgroundColor(chipBackgroundColorStateList);
+        }
+        if (chipTextColorStateList != null) {
+            dateChip.setTextColor(chipTextColorStateList);
+        }
+        // Force refresh of colors
+        dateChip.refreshDrawableState();
         dateChip.setOnClickListener(v -> handleSortChipClick("date", dateChip));
         chipGroupSorting.addView(dateChip);
 
@@ -170,8 +176,13 @@ public class FilterFragment extends Fragment {
         commentsChip.setTag("comments");
         commentsChip.setCheckable(true);
         commentsChip.setCheckedIconVisible(false);
-        if (chipBackgroundColorStateList != null) commentsChip.setChipBackgroundColor(chipBackgroundColorStateList);
-        if (chipTextColorStateList != null) commentsChip.setTextColor(chipTextColorStateList);
+        if (chipBackgroundColorStateList != null) {
+            commentsChip.setChipBackgroundColor(chipBackgroundColorStateList);
+        }
+        if (chipTextColorStateList != null) {
+            commentsChip.setTextColor(chipTextColorStateList);
+        }
+        commentsChip.refreshDrawableState();
         commentsChip.setOnClickListener(v -> handleSortChipClick("comments", commentsChip));
         chipGroupSorting.addView(commentsChip);
 
@@ -181,8 +192,13 @@ public class FilterFragment extends Fragment {
         participantsChip.setTag("participants");
         participantsChip.setCheckable(true);
         participantsChip.setCheckedIconVisible(false);
-        if (chipBackgroundColorStateList != null) participantsChip.setChipBackgroundColor(chipBackgroundColorStateList);
-        if (chipTextColorStateList != null) participantsChip.setTextColor(chipTextColorStateList);
+        if (chipBackgroundColorStateList != null) {
+            participantsChip.setChipBackgroundColor(chipBackgroundColorStateList);
+        }
+        if (chipTextColorStateList != null) {
+            participantsChip.setTextColor(chipTextColorStateList);
+        }
+        participantsChip.refreshDrawableState();
         participantsChip.setOnClickListener(v -> handleSortChipClick("participants", participantsChip));
         chipGroupSorting.addView(participantsChip);
 

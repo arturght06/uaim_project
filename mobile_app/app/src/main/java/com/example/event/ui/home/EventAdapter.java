@@ -43,7 +43,9 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onJoin(Event event);
         void onDetails(Event event);
         void onSendComment(Event event, String commentText);
-        void onLoginRequired(); // Add this method
+        void onEditComment(Comment comment, String newContent);
+        void onDeleteComment(Comment comment);
+        void onLoginRequired();
     }
 
     public EventAdapter(Context context, List<Event> events, OnEventActionListener listener) {
@@ -298,7 +300,25 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         @Override
         protected void onPostExecute(List<Comment> comments) {
             if (holder.commentsRecycler != null) {
-                CommentAdapter commentAdapter = new CommentAdapter(context, comments);
+                CommentAdapter commentAdapter = new CommentAdapter(context, comments, new CommentAdapter.OnCommentActionListener() {
+                    @Override
+                    public void onEditComment(Comment comment, String newContent) {
+                        if (listener != null) {
+                            listener.onEditComment(comment, newContent);
+                            // Reload comments after edit
+                            new LoadCommentsTask(eventId, holder).execute();
+                        }
+                    }
+
+                    @Override
+                    public void onDeleteComment(Comment comment) {
+                        if (listener != null) {
+                            listener.onDeleteComment(comment);
+                            // Reload comments after delete
+                            new LoadCommentsTask(eventId, holder).execute();
+                        }
+                    }
+                });
                 holder.commentsRecycler.setLayoutManager(new LinearLayoutManager(context));
                 holder.commentsRecycler.setAdapter(commentAdapter);
             }

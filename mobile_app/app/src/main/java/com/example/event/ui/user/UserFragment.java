@@ -30,6 +30,7 @@ import com.example.event.data.model.LoggedInUser;
 import com.example.event.databinding.FragmentUserBinding;
 import com.example.event.ui.home.Event;
 import com.example.event.ui.home.EventAdapter;
+import com.example.event.ui.home.Comment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -97,7 +98,7 @@ public class UserFragment extends Fragment {
                 // The adapter should hide the join button for these events.
                 Log.d(TAG, "onJoin clicked for organized event (no action): " + event.title);
                 // Optionally show a message that they can't join their own event
-                Toast.makeText(getContext(), "Nie możesz dołączyć do własnego wydarzenia", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), getString(R.string.message_own_event_join_error), Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -112,6 +113,18 @@ public class UserFragment extends Fragment {
             public void onSendComment(Event event, String commentText) {
                 Log.d(TAG, "onSendComment for organized event: " + event.title + ", comment: " + commentText);
                 sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onEditComment(Comment comment, String newContent) {
+                Log.d(TAG, "onEditComment for organized event comment: " + comment.id);
+                editComment(comment, newContent);
+            }
+
+            @Override
+            public void onDeleteComment(Comment comment) {
+                Log.d(TAG, "onDeleteComment for organized event comment: " + comment.id);
+                deleteComment(comment);
             }
 
             @Override
@@ -152,6 +165,18 @@ public class UserFragment extends Fragment {
             public void onSendComment(Event event, String commentText) {
                 Log.d(TAG, "onSendComment for reserved event: " + event.title + ", comment: " + commentText);
                 sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onEditComment(Comment comment, String newContent) {
+                Log.d(TAG, "onEditComment for reserved event comment: " + comment.id);
+                editComment(comment, newContent);
+            }
+
+            @Override
+            public void onDeleteComment(Comment comment) {
+                Log.d(TAG, "onDeleteComment for reserved event comment: " + comment.id);
+                deleteComment(comment);
             }
 
             @Override
@@ -802,6 +827,89 @@ public class UserFragment extends Fragment {
                     }
                 } else {
                     Toast.makeText(getContext(), "Błąd podczas dodawania komentarza", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
+    }
+
+    private void editComment(com.example.event.ui.home.Comment comment, String newContent) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + comment.id);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("PUT");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                    if (accessToken != null) {
+                        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                    }
+                    conn.setDoOutput(true);
+
+                    JSONObject json = new JSONObject();
+                    json.put("content", newContent);
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(json.toString().getBytes());
+                    os.close();
+
+                    int responseCode = conn.getResponseCode();
+                    return responseCode == HttpURLConnection.HTTP_OK;
+                } catch (Exception e) {
+                    Log.e(TAG, "Error editing comment", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (!isAdded()) return;
+                if (success) {
+                    Toast.makeText(getContext(), "Komentarz zaktualizowany", Toast.LENGTH_SHORT).show();
+                    LoggedInUser currentUser = LoginRepository.getInstance().getLoggedInUser();
+                    if (currentUser != null) {
+                        loadAndCategorizeUserEvents(currentUser.getUserId());
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Błąd podczas aktualizacji komentarza", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
+    }
+
+    private void deleteComment(com.example.event.ui.home.Comment comment) {
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + comment.id);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("DELETE");
+                    String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                    if (accessToken != null) {
+                        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                    }
+
+                    int responseCode = conn.getResponseCode();
+                    return responseCode == HttpURLConnection.HTTP_OK;
+                } catch (Exception e) {
+                    Log.e(TAG, "Error deleting comment", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (!isAdded()) return;
+                if (success) {
+                    Toast.makeText(getContext(), "Komentarz usunięty", Toast.LENGTH_SHORT).show();
+                    LoggedInUser currentUser = LoginRepository.getInstance().getLoggedInUser();
+                    if (currentUser != null) {
+                        loadAndCategorizeUserEvents(currentUser.getUserId());
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Błąd podczas usuwania komentarza", Toast.LENGTH_SHORT).show();
                 }
             }
         }.execute();
