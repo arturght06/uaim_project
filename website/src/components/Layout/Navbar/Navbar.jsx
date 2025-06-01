@@ -1,11 +1,12 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import styles from "./Navbar.module.css";
-import { AuthContext } from "../../../contexts/AuthContext";
+import { useAuth } from "../../../contexts/AuthContext";
 import Button from "../../UI/Button/Button";
+import NotificationDropdown from "../../Notifications/NotificationDropdown/NotificationDropdown";
 
 const Navbar = () => {
-  const auth = useContext(AuthContext);
+  const auth = useAuth();
   const location = useLocation();
 
   const isHomePage = location.pathname === "/";
@@ -14,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const handleStateChange = () => {
       if (isHomePage) {
-        setShowSolidBackground(window.scrollY > 200);
+        setShowSolidBackground(window.scrollY > 50);
       } else {
         setShowSolidBackground(true);
       }
@@ -40,14 +41,61 @@ const Navbar = () => {
     ? styles.backgroundVisible
     : styles.backgroundHidden;
 
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationIconRef = useRef(null);
+  const notificationDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationDropdownRef.current &&
+        !notificationDropdownRef.current.contains(event.target) &&
+        notificationIconRef.current &&
+        !notificationIconRef.current.contains(event.target)
+      ) {
+        setShowNotifications(false);
+      }
+    };
+
+    if (showNotifications) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showNotifications]);
+
+  const toggleNotifications = () => {
+    setShowNotifications((prev) => !prev);
+  };
+
+  const handleMarkAsSeenAndCloseDropdown = async (notificationId) => {
+    try {
+      await auth.markNotificationAsSeen(notificationId);
+      auth.fetchNotifications();
+    } catch (error) {
+      console.error("Navbar: Error marking notification as seen", error);
+    }
+    // setShowNotifications(false);
+  };
+
   if (auth.isLoadingAuth) {
     return (
-      <nav className={`${styles.navbar} ${styles.navbarSolidState}`}>
+      <nav
+        className={`${styles.navbar} ${styles.navbarSolidState} ${styles.noTransition}`}
+      >
+        {" "}
         <div className={styles.container}>
           <ul className={styles.navList}>
             <li className={styles.navItem}>
               <Link to="/" className={styles.brand}>
-                EVE.NT
+                <img
+                  src="/logo-long.png"
+                  alt="Logo EVE.NT"
+                  className={styles.logoLong}
+                />
               </Link>
             </li>
           </ul>
@@ -65,7 +113,7 @@ const Navbar = () => {
             <Link to="/" className={styles.brand}>
               <img
                 src="/logo-long.png"
-                alt="Logo"
+                alt="Logo EVE.NT"
                 className={styles.logoLong}
               />
             </Link>
@@ -82,6 +130,7 @@ const Navbar = () => {
             </NavLink>
           </li>
         </ul>
+
         <ul className={styles.navList}>
           {auth.isAuthenticated ? (
             <>
@@ -102,24 +151,51 @@ const Navbar = () => {
                   <span className="material-symbols-outlined">
                     account_circle
                   </span>
-                  <span className={styles.linkText}>Mój profil</span>
+                  <span className={styles.linkText}>Mój Profil</span>
                 </NavLink>
               </li>
-              <li className={styles.navItem}>
-                {/* <Button
-                  onClick={() => {
-                    auth.logout();
-                    if (location.pathname == "/") {
-                      window.location.href = "/"; // force reload
-                    }
-                  }}
-                  variant="danger"
+
+              <li
+                className={`${styles.navItem} ${styles.notificationNavItem}`}
+                ref={notificationIconRef}
+              >
+                <button
+                  onClick={toggleNotifications}
+                  className={styles.iconButton}
+                  aria-label="Powiadomienia"
                 >
-                  <span className="material-symbols-outlined">logout</span>
-                  <span className={styles.linkText}>Wyloguj</span>
-                </Button> */}
-                <Link to="/login">
-                  <Button onClick={auth.logout} variant="danger">
+                  <span className="material-symbols-outlined">
+                    {auth.unreadNotificationsCount > 0
+                      ? "notifications_active"
+                      : "notifications"}
+                  </span>
+                  {auth.unreadNotificationsCount > 0 && (
+                    <span className={styles.notificationBadge}>
+                      {auth.unreadNotificationsCount}
+                    </span>
+                  )}
+                </button>
+                {showNotifications && (
+                  <div ref={notificationDropdownRef}>
+                    <NotificationDropdown
+                      notifications={auth.notifications}
+                      isLoading={auth.isLoadingNotifications}
+                      onMarkAsSeen={handleMarkAsSeenAndCloseDropdown}
+                      onClose={() => setShowNotifications(false)}
+                    />
+                  </div>
+                )}
+              </li>
+
+              <li className={styles.navItem}>
+                <Link
+                  to="/login"
+                  onClick={async () => {
+                    await auth.logout();
+                  }}
+                >
+                  <Button variant="danger" className={styles.navButtonSpecial}>
+                    {" "}
                     <span className="material-symbols-outlined">logout</span>
                     <span className={styles.linkText}>Wyloguj</span>
                   </Button>
