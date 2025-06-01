@@ -33,6 +33,8 @@ import com.example.event.ui.home.EventAdapter;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.InputStreamReader;
@@ -86,7 +88,7 @@ public class UserFragment extends Fragment {
             @Override
             public void onComment(Event event) {
                 Log.d(TAG, "onComment clicked for organized event: " + event.title);
-                Toast.makeText(getContext(), "Komentuj (Moje Wydarzenia): " + event.title, Toast.LENGTH_SHORT).show();
+                // Comment expansion is handled in the adapter
             }
 
             @Override
@@ -103,6 +105,18 @@ public class UserFragment extends Fragment {
                 args.putString("event_id", event.id);
                 NavHostFragment.findNavController(UserFragment.this).navigate(R.id.action_user_to_eventDetail, args);
             }
+
+            @Override
+            public void onSendComment(Event event, String commentText) {
+                Log.d(TAG, "onSendComment for organized event: " + event.title + ", comment: " + commentText);
+                sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onLoginRequired() {
+                Log.d(TAG, "onLoginRequired - navigating to login");
+                NavHostFragment.findNavController(UserFragment.this).navigate(R.id.navigation_login);
+            }
         });
         recyclerViewOrganizedEvents.setAdapter(organizedEventAdapter);
 
@@ -115,7 +129,7 @@ public class UserFragment extends Fragment {
             @Override
             public void onComment(Event event) {
                 Log.d(TAG, "onComment clicked for reserved event: " + event.title);
-                Toast.makeText(getContext(), "Komentuj (Moje Rezerwacje): " + event.title, Toast.LENGTH_SHORT).show();
+                // Comment expansion is handled in the adapter
             }
 
             @Override
@@ -130,6 +144,18 @@ public class UserFragment extends Fragment {
                 Bundle args = new Bundle();
                 args.putString("event_id", event.id);
                 NavHostFragment.findNavController(UserFragment.this).navigate(R.id.action_user_to_eventDetail, args);
+            }
+
+            @Override
+            public void onSendComment(Event event, String commentText) {
+                Log.d(TAG, "onSendComment for reserved event: " + event.title + ", comment: " + commentText);
+                sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onLoginRequired() {
+                Log.d(TAG, "onLoginRequired - navigating to login");
+                NavHostFragment.findNavController(UserFragment.this).navigate(R.id.navigation_login);
             }
         });
         recyclerViewReservedEvents.setAdapter(reservedEventAdapter);
@@ -564,7 +590,8 @@ public class UserFragment extends Fragment {
                                 obj.optInt("reservation_count", 0),
                                 obj.has("max_participants") && !obj.isNull("max_participants") ? obj.optInt("max_participants", 0) : 0,
                                 reservationId,
-                                organizerId
+                                organizerId,
+                                obj.optInt("comment_count", 0)
                             ));
                         }
                         Log.d(TAG, "LoadEventsTask: Parsed " + fetchedEvents.size() + " total user-related events");
@@ -724,6 +751,58 @@ public class UserFragment extends Fragment {
             Log.w(TAG, "handleUserJoinEvent: Attempted to join event '" + event.title + "' from UserFragment, but this action is not supported here. Event status: " + event.reservationStatus);
             Toast.makeText(getContext(), "Ta akcja nie jest tutaj obsługiwana.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void sendCommentToEvent(Event event, String commentText) {
+        if (LoginRepository.getInstance().getLoggedInUser() == null) {
+            Toast.makeText(getContext(), "Musisz być zalogowany, aby komentować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(ApiConfig.BASE_URL + "api/comments/");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                    if (accessToken != null) {
+                        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                    }
+                    conn.setDoOutput(true);
+
+                    JSONObject json = new JSONObject();
+                    json.put("event_id", event.id);
+                    json.put("content", commentText);
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(json.toString().getBytes());
+                    os.close();
+
+                    int responseCode = conn.getResponseCode();
+                    return responseCode == HttpURLConnection.HTTP_CREATED;
+                } catch (Exception e) {
+                    Log.e(TAG, "Error sending comment", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (!isAdded()) return;
+                if (success) {
+                    Toast.makeText(getContext(), "Komentarz dodany", Toast.LENGTH_SHORT).show();
+                    LoggedInUser currentUser = LoginRepository.getInstance().getLoggedInUser();
+                    if (currentUser != null) {
+                        loadAndCategorizeUserEvents(currentUser.getUserId());
+                    }
+                } else {
+                    Toast.makeText(getContext(), "Błąd podczas dodawania komentarza", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
     }
 
 

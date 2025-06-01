@@ -1,23 +1,39 @@
 package com.example.event.ui.home;
 
 import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.event.R;
+import com.example.event.data.ApiConfig;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> {
+
     private Context context;
     private List<Event> events;
     private OnEventActionListener listener;
@@ -26,6 +42,8 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         void onComment(Event event);
         void onJoin(Event event);
         void onDetails(Event event);
+        void onSendComment(Event event, String commentText);
+        void onLoginRequired(); // Add this method
     }
 
     public EventAdapter(Context context, List<Event> events, OnEventActionListener listener) {
@@ -53,7 +71,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         if (isMyEvent) {
             holder.authorView.setText("Twoje wydarzenie");
         } else {
-            holder.authorView.setText(event.authorName + " " + event.authorSurname);
+            holder.authorView.setText(event.organizerFirstName + " " + event.organizerLastName);
         }
         holder.createdView.setText(formatDate(event.createdAt, "d MMMM yyyy HH:mm"));
 
@@ -61,11 +79,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.titleView.setText(event.title);
 
         // Lokalizacja
-        String loc = event.locationCountry;
-        if (event.locationCity != null && !event.locationCity.isEmpty())
-            loc += ", " + event.locationCity;
-        if (event.locationAddress != null && !event.locationAddress.isEmpty())
-            loc += ", " + event.locationAddress;
+        String loc = event.country;
+        if (event.city != null && !event.city.isEmpty())
+            loc += ", " + event.city;
+        if (event.address != null && !event.address.isEmpty())
+            loc += ", " + event.address;
         holder.locationView.setText(loc);
 
         // Data eventu
@@ -83,6 +101,31 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         }
         holder.reservationCountView.setText(reservationText);
 
+        // Liczba komentarzy
+        holder.commentCountView.setText(String.valueOf(event.commentCount));
+
+        // Comment button click handler
+        holder.commentBtn.setOnClickListener(v -> {
+            if (holder.commentSection.getVisibility() == View.GONE) {
+                holder.commentSection.setVisibility(View.VISIBLE);
+                updateCommentInputVisibility(holder);
+                loadCommentsForEvent(event, holder);
+            } else {
+                holder.commentSection.setVisibility(View.GONE);
+            }
+        });
+
+        // Send comment button click handler
+        holder.sendCommentBtn.setOnClickListener(v -> {
+            String commentText = holder.commentInput.getText().toString().trim();
+            if (!commentText.isEmpty()) {
+                listener.onSendComment(event, commentText);
+                holder.commentInput.setText("");
+                // Reload comments after sending
+                loadCommentsForEvent(event, holder);
+            }
+        });
+
         // Ikona dołączania
         if (!isLoggedIn || isMyEvent) {
             holder.joinBtn.setVisibility(View.GONE);
@@ -90,11 +133,11 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
             holder.joinBtn.setVisibility(View.VISIBLE);
             if ("confirmed".equals(event.reservationStatus)) {
                 holder.joinBtn.setImageResource(R.drawable.person_dash_fill);
-                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.primary_color)); // Tawny - for deleting reservation
+                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.primary_color));
                 holder.joinBtn.setContentDescription("Wycofaj udział");
             } else {
                 holder.joinBtn.setImageResource(R.drawable.person_check_fill);
-                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.secondary_color)); // Hunter Green - for adding reservation
+                holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.secondary_color));
                 holder.joinBtn.setContentDescription("Weź udział");
             }
             holder.joinBtn.setOnClickListener(v -> listener.onJoin(event));
@@ -102,38 +145,158 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
         // Obsługa kliknięć
         holder.itemView.setOnClickListener(v -> listener.onDetails(event));
-        holder.commentBtn.setOnClickListener(v -> listener.onComment(event));
     }
 
     @Override
-    public int getItemCount() { return events.size(); }
+    public int getItemCount() {
+        return events.size();
+    }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView authorView, createdView, titleView, locationView, eventDateView, descriptionView, reservationCountView;
-        ImageView joinBtn, commentBtn;
-
-        public ViewHolder(@NonNull View itemView) {
-            super(itemView);
-            authorView = itemView.findViewById(R.id.text_event_author);
-            createdView = itemView.findViewById(R.id.text_event_created);
-            titleView = itemView.findViewById(R.id.text_event_title);
-            locationView = itemView.findViewById(R.id.text_event_location);
-            eventDateView = itemView.findViewById(R.id.text_event_date);
-            descriptionView = itemView.findViewById(R.id.text_event_description);
-            reservationCountView = itemView.findViewById(R.id.text_reservation_count);
-            joinBtn = itemView.findViewById(R.id.button_join);
-            commentBtn = itemView.findViewById(R.id.button_comment);
+    private String formatDate(String dateString, String pattern) {
+        try {
+            // Try the main format first: "2025-05-31T21:21:09.186588" (UTC)
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
+            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Parse as UTC
+            Date date = inputFormat.parse(dateString);
+            
+            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+            outputFormat.setTimeZone(TimeZone.getDefault()); // Display in local timezone
+            return outputFormat.format(date);
+        } catch (Exception e) {
+            // Fallback to original format
+            try {
+                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
+                inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date = inputFormat.parse(dateString);
+                
+                SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+                outputFormat.setTimeZone(TimeZone.getDefault());
+                return outputFormat.format(date);
+            } catch (Exception ex) {
+                return dateString;
+            }
         }
     }
 
-    private String formatDate(String apiDate, String outFormat) {
-        try {
-            SimpleDateFormat apiFmt = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
-            Date date = apiFmt.parse(apiDate);
-            SimpleDateFormat outFmt = new SimpleDateFormat(outFormat, new Locale("pl", "PL"));
-            return outFmt.format(date);
-        } catch (Exception e) {
-            return apiDate;
+    private void loadCommentsForEvent(Event event, ViewHolder holder) {
+        new LoadCommentsTask(event.id, holder).execute();
+    }
+
+    private void updateCommentInputVisibility(ViewHolder holder) {
+        boolean isLoggedIn = com.example.event.data.LoginRepository.getInstance().getLoggedInUser() != null;
+        
+        if (isLoggedIn) {
+            holder.commentInputLayout.setVisibility(View.VISIBLE);
+            holder.loginPromptButton.setVisibility(View.GONE);
+        } else {
+            holder.commentInputLayout.setVisibility(View.GONE);
+            holder.loginPromptButton.setVisibility(View.VISIBLE);
+            
+            // Set click listener for login prompt button
+            holder.loginPromptButton.setOnClickListener(v -> listener.onLoginRequired());
+        }
+    }
+
+    public static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView authorView;
+        TextView createdView;
+        TextView titleView;
+        TextView locationView;
+        TextView eventDateView;
+        TextView descriptionView;
+        TextView reservationCountView;
+        TextView commentCountView;
+        ImageView commentBtn;
+        ImageView joinBtn;
+        LinearLayout commentSection;
+        EditText commentInput;
+        ImageView sendCommentBtn;
+        RecyclerView commentsRecycler;
+        LinearLayout commentInputLayout;
+        TextView loginPromptButton; // Changed from loginPrompt to loginPromptButton
+
+        public ViewHolder(View view) {
+            super(view);
+            authorView = view.findViewById(R.id.text_event_author);
+            createdView = view.findViewById(R.id.text_event_created);
+            titleView = view.findViewById(R.id.text_event_title);
+            locationView = view.findViewById(R.id.text_event_location);
+            eventDateView = view.findViewById(R.id.text_event_date);
+            descriptionView = view.findViewById(R.id.text_event_description);
+            reservationCountView = view.findViewById(R.id.text_reservation_count);
+            commentCountView = view.findViewById(R.id.text_comment_count);
+            commentBtn = view.findViewById(R.id.button_comment);
+            joinBtn = view.findViewById(R.id.button_join);
+            commentSection = view.findViewById(R.id.comment_section);
+            commentInput = view.findViewById(R.id.edit_comment_input);
+            sendCommentBtn = view.findViewById(R.id.button_send_comment);
+            commentsRecycler = view.findViewById(R.id.recycler_comments);
+            commentInputLayout = view.findViewById(R.id.comment_input_layout);
+            loginPromptButton = view.findViewById(R.id.button_login_prompt);
+        }
+    }
+
+    private class LoadCommentsTask extends AsyncTask<Void, Void, List<Comment>> {
+        private String eventId;
+        private ViewHolder holder;
+
+        LoadCommentsTask(String eventId, ViewHolder holder) {
+            this.eventId = eventId;
+            this.holder = holder;
+        }
+
+        @Override
+        protected List<Comment> doInBackground(Void... voids) {
+            List<Comment> comments = new ArrayList<>();
+            try {
+                URL url = new URL(ApiConfig.BASE_URL + "api/comments/" + eventId);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                String accessToken = com.example.event.data.TokenManager.getAccessToken();
+                if (accessToken != null) {
+                    conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                }
+
+                int responseCode = conn.getResponseCode();
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = in.readLine()) != null) {
+                        response.append(line);
+                    }
+                    in.close();
+
+                    JSONArray commentsArray = new JSONArray(response.toString());
+                    for (int i = 0; i < commentsArray.length(); i++) {
+                        JSONObject commentObj = commentsArray.getJSONObject(i);
+                        // Backend returns "user_data" instead of "author_data"
+                        JSONObject userObj = commentObj.optJSONObject("user_data");
+                        
+                        comments.add(new Comment(
+                            commentObj.optString("id"),
+                            commentObj.optString("event_id"),
+                            commentObj.optString("user_id"),
+                            commentObj.optString("content"),
+                            commentObj.optString("created_at"),
+                            userObj != null ? userObj.optString("name", "") : "",
+                            userObj != null ? userObj.optString("surname", "") : ""
+                        ));
+                    }
+                }
+            } catch (Exception e) {
+                Log.e("EventAdapter", "Error loading comments", e);
+            }
+            return comments;
+        }
+
+        @Override
+        protected void onPostExecute(List<Comment> comments) {
+            if (holder.commentsRecycler != null) {
+                CommentAdapter commentAdapter = new CommentAdapter(context, comments);
+                holder.commentsRecycler.setLayoutManager(new LinearLayoutManager(context));
+                holder.commentsRecycler.setAdapter(commentAdapter);
+            }
         }
     }
 }

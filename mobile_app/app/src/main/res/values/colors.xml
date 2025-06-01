@@ -64,4 +64,7 @@
     <color name="info_color_hover">@color/hunter_green_hover</color>
     <color name="info_bg_light">@color/olivine</color>
     <color name="text_on_info">@color/black</color>
+
+    <!-- Badge -->
+    <color name="badge_color">@color/tawny</color>
 </resources>

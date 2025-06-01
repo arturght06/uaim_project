@@ -33,6 +33,7 @@ import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onComment(Event event) {
                 Log.d("HomeFragment", "onComment clicked for event: " + event.title);
-                Toast.makeText(getContext(), "Komentuj: " + event.title, Toast.LENGTH_SHORT).show();
+                // Comment expansion is handled in the adapter
             }
 
             @Override
@@ -93,6 +94,18 @@ public class HomeFragment extends Fragment {
                 args.putString("event_id", event.id);
                 // Use NavHostFragment.findNavController(HomeFragment.this) for navigation
                 NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.action_home_to_eventDetail, args);
+            }
+
+            @Override
+            public void onSendComment(Event event, String commentText) {
+                Log.d("HomeFragment", "onSendComment for event: " + event.title + ", comment: " + commentText);
+                sendCommentToEvent(event, commentText);
+            }
+
+            @Override
+            public void onLoginRequired() {
+                Log.d("HomeFragment", "onLoginRequired - navigating to login");
+                NavHostFragment.findNavController(HomeFragment.this).navigate(R.id.navigation_login);
             }
         });
         recyclerViewEvents.setAdapter(eventAdapter);
@@ -291,7 +304,8 @@ public class HomeFragment extends Fragment {
                             obj.optInt("reservation_count", 0),
                             obj.has("max_participants") && !obj.isNull("max_participants") ? obj.optInt("max_participants", 0) : 0,
                             reservationId,
-                            organizerId
+                            organizerId,
+                            obj.optInt("comment_count", 0)
                         );
                         fetchedEvents.add(currentEvent);
                     }
@@ -439,6 +453,53 @@ public class HomeFragment extends Fragment {
         }
     }
 
+    private void sendCommentToEvent(Event event, String commentText) {
+        if (LoginRepository.getInstance().getLoggedInUser() == null) {
+            Toast.makeText(getContext(), "Musisz być zalogowany, aby komentować.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new AsyncTask<Void, Void, Boolean>() {
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+                try {
+                    URL url = new URL(ApiConfig.BASE_URL + "api/comments/");
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setRequestMethod("POST");
+                    conn.setRequestProperty("Content-Type", "application/json");
+                    String accessToken = TokenManager.getAccessToken();
+                    if (accessToken != null) {
+                        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
+                    }
+                    conn.setDoOutput(true);
+
+                    JSONObject json = new JSONObject();
+                    json.put("event_id", event.id);
+                    json.put("content", commentText);
+
+                    OutputStream os = conn.getOutputStream();
+                    os.write(json.toString().getBytes());
+                    os.close();
+
+                    int responseCode = conn.getResponseCode();
+                    return responseCode == HttpURLConnection.HTTP_CREATED;
+                } catch (Exception e) {
+                    Log.e("HomeFragment", "Error sending comment", e);
+                    return false;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(Boolean success) {
+                if (success) {
+                    Toast.makeText(getContext(), "Komentarz dodany", Toast.LENGTH_SHORT).show();
+                    loadEvents(getView()); // Reload to update comment count
+                } else {
+                    Toast.makeText(getContext(), "Błąd podczas dodawania komentarza", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }.execute();
+    }
 
     @Override
     public void onDestroyView() {

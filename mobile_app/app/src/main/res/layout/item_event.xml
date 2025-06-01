@@ -182,6 +182,16 @@
                 android:src="@drawable/chat_right_text_fill"
                 android:tint="@color/text_secondary" />
 
+            <TextView
+                android:id="@+id/text_comment_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="4dp"
+                android:paddingRight="8dp"
+                android:text="0"
+                android:textColor="@color/text_main"
+                android:textSize="15sp" />
+
             <ImageView
                 android:id="@+id/button_join"
                 android:layout_width="32dp"
@@ -193,6 +203,73 @@
                 android:padding="4dp"
                 android:src="@drawable/person_check_fill"
                 android:tint="@color/primary_color" />
+        </LinearLayout>
+
+        <!-- Expandable Comment Section -->
+        <LinearLayout
+            android:id="@+id/comment_section"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/bg_content_subtle"
+            android:orientation="vertical"
+            android:paddingLeft="16dp"
+            android:paddingTop="8dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="8dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <!-- Comment Input for logged in users -->
+            <LinearLayout
+                android:id="@+id/comment_input_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <EditText
+                    android:id="@+id/edit_comment_input"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:drawable/edit_text"
+                    android:hint="Napisz komentarz..."
+                    android:inputType="textMultiLine|textCapSentences"
+                    android:maxLines="3"
+                    android:padding="8dp"
+                    android:textSize="14sp" />
+
+                <ImageView
+                    android:id="@+id/button_send_comment"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="8dp"
+                    android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Wyślij komentarz"
+                    android:padding="4dp"
+                    android:src="@android:drawable/ic_menu_send"
+                    android:tint="@color/secondary_color" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/button_login_prompt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zaloguj się, aby dodać komentarz"
+                android:backgroundTint="?attr/colorSecondary"
+                android:textColor="?attr/colorOnSecondary"
+                android:paddingTop="12dp"
+                android:paddingBottom="12dp"
+                android:layout_marginBottom="8dp"/>
+
+            <!-- Comments List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_comments"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxHeight="200dp"
+                android:nestedScrollingEnabled="false" />
         </LinearLayout>
     </LinearLayout>
 </androidx.cardview.widget.CardView>

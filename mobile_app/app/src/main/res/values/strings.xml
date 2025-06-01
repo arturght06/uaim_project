@@ -33,4 +33,10 @@
     <string name="hint_email">Email</string>
     <string name="hint_country_code">Kod kraju</string>
     <string name="hint_phone_number">Numer telefonu</string>
+    <!-- Strings related to notifications -->
+    <string name="notifications_title">Powiadomienia</string>
+    <string name="notifications_empty">Brak powiadomień</string>
+    <string name="notification_delete_confirm">Czy na pewno chcesz usunąć to powiadomienie?</string>
+    <string name="notification_deleted">Powiadomienie zostało usunięte</string>
+    <string name="notification_delete_failed">Nie udało się usunąć powiadomienia</string>
 </resources>
