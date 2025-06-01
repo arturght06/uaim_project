@@ -4,7 +4,7 @@ const API_BASE_URL = "/api/reservations";
 
 /**
  * Fetches all reservations.
- * NOTE: The backend endpoint GET /api/reservations/ currently doesn't seem to filter by user.
+ * NOTE: The backend endpoint GET /api/reservations/ currently doesn't filter by user.
  */
 export const getAllMyReservations = async () => {
   const response = await fetch(`${API_BASE_URL}/`, {

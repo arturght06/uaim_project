@@ -277,7 +277,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
             ? `/events/${eventDataForEdit.id}`
             : savedEvent.id
             ? `/events/${savedEvent.id}`
-            : "/events"
+            : "/"
         );
       }
     } catch (error) {

@@ -149,7 +149,7 @@ const User = () => {
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>Twoje Wydarzenia</h2>
-        <EventList filterType="user_events" userIdForFilter={userId} />
+        <EventList filterType="user_events" userId={userId} />
       </div>
 
       <div className={styles.section}>

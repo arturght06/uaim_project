@@ -116,6 +116,12 @@ def get_user_events_logic(db, user_id):
         # Combine and remove duplicates
         all_events = {event.id: event for event in organized_events + reserved_events}.values()
 
+        # Sort by event date (assuming 'date' is a datetime field on the Event model)
+        sorted_events = sorted(all_events, key=lambda e: e.event_date)
+
+        # Convert to JSON
+        return jsonify([add_event_data(db, event) for event in sorted_events]), 200
+
         return jsonify([add_event_data(db, event) for event in all_events]), 200
 
     except SQLAlchemyError as e:

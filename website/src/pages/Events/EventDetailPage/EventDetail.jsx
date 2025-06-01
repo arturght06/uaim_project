@@ -101,7 +101,7 @@ const EventDetail = () => {
     try {
       await removeEvent(event.id);
       showAlert("Wydarzenie zostało pomyślnie usunięte.", "success");
-      navigate("/events");
+      navigate("/");
     } catch (err) {
       console.error("Error deleting event:", err);
       setError(err.message || "Nie udało się usunąć wydarzenia.");
@@ -129,6 +129,7 @@ const EventDetail = () => {
         reserved_at: new Date().toISOString(),
       });
       await fetchEventDetails();
+      showAlert("Stworzono rezerwację.", "success");
     } catch (err) {
       console.error("Error creating reservation:", err);
       setError(err.data?.error || err.message || "Nie udało się utworzyć rezerwacji.");
@@ -145,6 +146,7 @@ const EventDetail = () => {
       await deleteReservationById(userReservation.id);
       setUserReservation(null);
       await fetchEventDetails();
+      showAlert("Usunięto rezerwację.", "success");
     } catch (err) {
       console.error("Error deleting reservation:", err);
       setError(err.data?.error || err.message || "Nie udało się anulować rezerwacji.");
@@ -164,6 +166,7 @@ const EventDetail = () => {
       };
       await createComment(commentData);
       const updated = await getCommentsByEventId(eventId);
+      showAlert("Dodano komentarz.", "success");
       setComments(updated || []);
       setNewComment("");
     } catch (err) {
@@ -179,6 +182,7 @@ const EventDetail = () => {
     try {
       await deleteComment(commentId);
       const updated = await getCommentsByEventId(eventId);
+      showAlert("Usunięto komentarz.", "success");
       setComments(updated || []);
     } catch (err) {
       console.error("Error deleting comment:", err);
@@ -191,6 +195,7 @@ const EventDetail = () => {
       await updateComment(commentId, { content: editingText });
       const updated = await getCommentsByEventId(eventId);
       setComments(updated || []);
+      showAlert("Edytowano komentarz.", "success");
       setEditingCommentId(null);
       setEditingText("");
     } catch (err) {

@@ -10,7 +10,7 @@ const EventCreate = () => {
     if (createdEvent && createdEvent.id) {
       navigate(`/events/${createdEvent.id}`);
     } else {
-      navigate("/events"); // Fallback
+      navigate("/"); // Fallback
     }
   };
 

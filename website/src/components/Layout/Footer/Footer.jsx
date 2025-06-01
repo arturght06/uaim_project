@@ -6,7 +6,7 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        <p>© {currentYear} Portal Wydarzeń Kulturalnych. Wszelkie prawa zastrzeżone.</p>
+        <p>© {currentYear} EVE.nt. Wszelkie prawa zastrzeżone.</p>
       </div>
     </footer>
   );
