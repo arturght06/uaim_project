@@ -25,6 +25,25 @@ def create_reservation_logic(db, request):
         user_id = uuid.UUID(data["user_id"])
         event_id = uuid.UUID(data["event_id"])
 
+        # Get event and check availability before creating reservation
+        event = db.session.get(Event, event_id)
+        if not event:
+            return jsonify({"error": "Event not found"}), 404
+
+        # Check if event has participant limit and if it's reached
+        if event.max_participants is not None and event.max_participants > 0:
+            current_reservations = db.session.query(Reservation).filter_by(event_id=event_id).count()
+            if current_reservations >= event.max_participants:
+                return jsonify({"error": "Event is full - no more spots available"}), 400
+
+        user_id = uuid.UUID(data["user_id"])
+        event_id = uuid.UUID(data["event_id"])
+
+        # Check if user already has a reservation for this event
+        existing_reservation = db.session.query(Reservation).filter_by(user_id=user_id, event_id=event_id).first()
+        if existing_reservation:
+            return jsonify({"error": "User already has a reservation for this event"}), 400
+
         # Create reservation
         new_reservation = Reservation(
             user_id=user_id,
@@ -34,9 +53,8 @@ def create_reservation_logic(db, request):
 
         db.session.add(new_reservation)
 
-        # Get user email and event name
+        # Get user for notification
         user = db.session.get(User, user_id)
-        event = db.session.get(Event, event_id)
 
         # Create notification BEFORE committing reservation
         try:

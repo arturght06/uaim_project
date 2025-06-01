@@ -504,6 +504,73 @@ def create_reservation(event_id, user_id, token):
     print(f"Create reservation: user {user_id[:8]}... -> event {event_id[:8]}... : {resp.status_code}")
     return resp.ok
 
+# Random comments list
+random_comments = [
+    "Nie mogę się doczekać! 🎉",
+    "Brzmi super! 😊",
+    "Ktoś jeszcze idzie? 👀",
+    "O, to coś dla mnie! 👍",
+    "Zapowiada się ciekawie.",
+    "Będę na pewno! ✅",
+    "Świetny pomysł! ✨",
+    "Już odliczam dni! 🤩",
+    "Mam nadzieję, że uda mi się wpaść.",
+    "Ekstra! 🔥",
+    "To jest to! 💯",
+    "Słyszałem dobre opinie.",
+    "Idealnie! ❤️",
+    "Wow, super inicjatywa!",
+    "Może wpadnę... 🤔",
+    "Wygląda obiecująco!",
+    "Zapisane w kalendarzu! 📅",
+    "Czekam na to z niecierpliwością! 😄",
+    "Zapowiada się świetna zabawa! 🥳",
+    "Genialne! Trzeba być.",
+    "Super sprawa!",
+    "Wreszcie coś interesującego!",
+    "Bardzo ciekawy temat/wydarzenie.",
+    "No to super! Do zobaczenia! 👋",
+    "Brzmi jak plan na udany wieczór/dzień! 🌟"
+]
+
+def create_comment(event_id, user_id, content, token):
+    """Create a comment for an event"""
+    url = f"{BASE_API_URL}/api/comments/"
+    headers = {"Authorization": f"Bearer {token}"}
+    data = {
+        "event_id": event_id,
+        "user_id": user_id,
+        "content": content
+    }
+    resp = requests.post(url, json=data, headers=headers)
+    print(f"Create comment: user {user_id[:8]}... -> event {event_id[:8]}... : {resp.status_code}")
+    return resp.ok
+
+def make_random_comments(event_ids, user_credentials):
+    """Make random users comment on random events"""
+    print("\nCreating random comments...")
+    
+    # For each event, randomly select 10-50% of users to comment
+    for event_id in event_ids:
+        # Get random subset of users (10-50% of all users)
+        comment_rate = random.uniform(0.1, 0.5)
+        num_commenters = int(len(user_credentials) * comment_rate)
+        
+        # Randomly select users to comment
+        commenting_users = random.sample(list(user_credentials.keys()), num_commenters)
+        
+        print(f"Event {event_id[:8]}... will have {len(commenting_users)} comments")
+        
+        for username in commenting_users:
+            user_data = user_credentials[username]
+            # Pick a random comment
+            comment_content = random.choice(random_comments)
+            success = create_comment(event_id, user_data["id"], comment_content, user_data["token"])
+            if success:
+                print(f"  ✓ {username} commented: {comment_content[:30]}...")
+            else:
+                print(f"  ✗ {username} failed to comment")
+
 def make_random_reservations(event_ids, user_credentials):
     """Make random users join random events"""
     print("\nCreating random reservations...")
@@ -596,11 +663,13 @@ def main():
     # Make random reservations after all events are created
     if event_ids:
         make_random_reservations(event_ids, user_credentials)
+        make_random_comments(event_ids, user_credentials)
     
     print(f"\nPopulation complete!")
     print(f"Created {len(registered_users)} users")
     print(f"Created {len(event_ids)} events")
     print(f"Created random reservations for user participation")
+    print(f"Created random comments on events")
 
 
 if __name__ == "__main__":
