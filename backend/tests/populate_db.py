@@ -3,8 +3,9 @@ import os
 from datetime import datetime, date
 import uuid
 import requests
+import random
 
-# Multiple users data
+# Multiple users data - expanded to 20 users
 users_data = [
     {
         "username": "user1",
@@ -34,6 +35,176 @@ users_data = [
         "email": "maria.wisniewska@example.com",
         "phone_country_code": "+48",
         "phone_number": "503456789",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user4",
+        "name": "Tomasz",
+        "surname": "Zieliński",
+        "birthday": "1992-12-03",
+        "email": "tomasz.zielinski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "504567890",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user5",
+        "name": "Katarzyna",
+        "surname": "Lewandowska",
+        "birthday": "1987-05-18",
+        "email": "katarzyna.lewandowska@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "505678901",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user6",
+        "name": "Michał",
+        "surname": "Wójcik",
+        "birthday": "1991-09-14",
+        "email": "michal.wojcik@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "506789012",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user7",
+        "name": "Aleksandra",
+        "surname": "Krawczyk",
+        "birthday": "1989-02-28",
+        "email": "aleksandra.krawczyk@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "507890123",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user8",
+        "name": "Jakub",
+        "surname": "Szymański",
+        "birthday": "1993-08-07",
+        "email": "jakub.szymanski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "508901234",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user9",
+        "name": "Monika",
+        "surname": "Dąbrowska",
+        "birthday": "1986-11-22",
+        "email": "monika.dabrowska@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "509012345",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user10",
+        "name": "Adam",
+        "surname": "Jankowski",
+        "birthday": "1994-04-11",
+        "email": "adam.jankowski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "510123456",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user11",
+        "name": "Paulina",
+        "surname": "Mazur",
+        "birthday": "1990-06-30",
+        "email": "paulina.mazur@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "511234567",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user12",
+        "name": "Łukasz",
+        "surname": "Kozłowski",
+        "birthday": "1988-10-17",
+        "email": "lukasz.kozlowski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "512345678",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user13",
+        "name": "Natalia",
+        "surname": "Woźniak",
+        "birthday": "1991-01-25",
+        "email": "natalia.wozniak@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "513456789",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user14",
+        "name": "Sebastian",
+        "surname": "Kamiński",
+        "birthday": "1987-07-13",
+        "email": "sebastian.kaminski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "514567890",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user15",
+        "name": "Agnieszka",
+        "surname": "Król",
+        "birthday": "1993-03-09",
+        "email": "agnieszka.krol@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "515678901",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user16",
+        "name": "Marcin",
+        "surname": "Pawłowski",
+        "birthday": "1989-12-21",
+        "email": "marcin.pawlowski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "516789012",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user17",
+        "name": "Karolina",
+        "surname": "Michalska",
+        "birthday": "1992-08-16",
+        "email": "karolina.michalska@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "517890123",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user18",
+        "name": "Bartosz",
+        "surname": "Grabowski",
+        "birthday": "1986-04-02",
+        "email": "bartosz.grabowski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "518901234",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user19",
+        "name": "Magdalena",
+        "surname": "Lis",
+        "birthday": "1990-11-07",
+        "email": "magdalena.lis@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "519012345",
+        "password": "Haslo1234."
+    },
+    {
+        "username": "user20",
+        "name": "Grzegorz",
+        "surname": "Adamski",
+        "birthday": "1988-05-24",
+        "email": "grzegorz.adamski@example.com",
+        "phone_country_code": "+48",
+        "phone_number": "520123456",
         "password": "Haslo1234."
     }
 ]
@@ -320,6 +491,42 @@ def create_event_category_relation(event_id, category_id, token):
     print("Create event-category relation:", event_id, category_id, resp.status_code, resp.text)
     return resp.ok
 
+def create_reservation(event_id, user_id, token):
+    """Create a reservation for a user to join an event"""
+    url = f"{BASE_API_URL}/api/reservations/"
+    headers = {"Authorization": f"Bearer {token}"}
+    data = {
+        "user_id": user_id,
+        "event_id": event_id,
+        "status": "confirmed"
+    }
+    resp = requests.post(url, json=data, headers=headers)
+    print(f"Create reservation: user {user_id[:8]}... -> event {event_id[:8]}... : {resp.status_code}")
+    return resp.ok
+
+def make_random_reservations(event_ids, user_credentials):
+    """Make random users join random events"""
+    print("\nCreating random reservations...")
+    
+    # For each event, randomly select 30-70% of users to join
+    for event_id in event_ids:
+        # Get random subset of users (30-70% of all users)
+        participation_rate = random.uniform(0.1, 1)
+        num_participants = int(len(user_credentials) * participation_rate)
+        
+        # Randomly select users to participate
+        participating_users = random.sample(list(user_credentials.keys()), num_participants)
+        
+        print(f"Event {event_id[:8]}... will have {len(participating_users)} participants")
+        
+        for username in participating_users:
+            user_data = user_credentials[username]
+            success = create_reservation(event_id, user_data["id"], user_data["token"])
+            if success:
+                print(f"  ✓ {username} joined event")
+            else:
+                print(f"  ✗ {username} failed to join event")
+
 def main():
     # Register all users first
     print("Registering users...")
@@ -328,7 +535,8 @@ def main():
     
     # Login all users to get their tokens and IDs
     user_credentials = {}
-    for username in ["user1", "user2", "user3"]:
+    for user_data in users_data:
+        username = user_data["username"]
         token, user_id = login_user_by_username(username)
         if token and user_id:
             user_credentials[username] = {"token": token, "id": user_id}
@@ -336,6 +544,8 @@ def main():
     if not user_credentials:
         print("Failed to login any users, aborting.")
         return
+    
+    print(f"Successfully logged in {len(user_credentials)} users")
     
     # Use first available user for creating categories and locations
     first_user = list(user_credentials.values())[0]
@@ -355,6 +565,7 @@ def main():
     # Create locations and events with different organizers
     location_key_to_id = {}
     user_list = list(user_credentials.keys())
+    event_ids = []
     
     for i, event in enumerate(events_data):
         # Distribute events among users (round-robin)
@@ -376,10 +587,20 @@ def main():
         event_cat_ids = [category_name_to_id[cat] for cat in event["categories_list"] if cat in category_name_to_id]
         event_id = create_event(event, loc_id, event_cat_ids, organizer_token, organizer_id)
         
-        # Now create event-category relations
         if event_id:
+            event_ids.append(event_id)
+            # Create event-category relations
             for cat_id in event_cat_ids:
                 create_event_category_relation(event_id, cat_id, organizer_token)
+    
+    # Make random reservations after all events are created
+    if event_ids:
+        make_random_reservations(event_ids, user_credentials)
+    
+    print(f"\nPopulation complete!")
+    print(f"Created {len(registered_users)} users")
+    print(f"Created {len(event_ids)} events")
+    print(f"Created random reservations for user participation")
 
 
 if __name__ == "__main__":
