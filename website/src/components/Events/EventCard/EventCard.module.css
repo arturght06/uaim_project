@@ -25,7 +25,7 @@
 }
 
 .expired {
-  color: var(--text-on-danger);
+  color: var(--danger-color);
   font-size: 0.9em;
 }
 

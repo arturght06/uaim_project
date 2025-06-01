@@ -30,9 +30,9 @@ const EventList = ({
         } else {
           data = await getAllEvents();
         }
-        if (data) {
-          data.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
-        }
+//         if (data) {
+//           data.sort((a, b) => new Date(a.event_date) - new Date(b.event_date));
+//         }
         setEvents(data || []);
       } catch (err) {
         setError(err.message || "Nie udało się załadować wydarzeń.");

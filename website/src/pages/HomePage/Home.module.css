@@ -2,7 +2,7 @@
   flex-grow: 1;
   background-color: var(--bg-page, #f4f4f4);
   padding: calc(min(200px, 10%));
-  padding-top: calc(5em + 50px);
+  padding-top: 10px;
 }
 
 .container {
