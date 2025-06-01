@@ -9,6 +9,7 @@ import enum
 
 class NotificationStatus(enum.Enum):
     pending = "pending"
+    seen = "seen"
     sent = "sent"
     failed = "failed"
 

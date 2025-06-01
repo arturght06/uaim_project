@@ -8,6 +8,9 @@ import uuid
 from app.models.notification import Notification, NotificationStatus
 from flask import current_app, url_for
 import jwt
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def create_reservation_logic(db, request):
@@ -30,48 +33,59 @@ def create_reservation_logic(db, request):
         )
 
         db.session.add(new_reservation)
-        db.session.commit()
-
-        token_payload = {
-            "user_id": str(user_id),
-            "event_id": str(event_id)
-        }
-        token = jwt.encode(token_payload, current_app.config["SECRET_KEY"], algorithm="HS256")
-
-        notification = Notification(
-            user_id=user_id,
-            event_id=event_id,
-            title="Potwierdzenie rezerwacji",
-            content=f"Kliknij, aby potwierdzić swoją rezerwację: {url_for('reservation.confirm_reservation', token=token, _external=True)}",
-            type="email_confirmation",
-            status=NotificationStatus.pending
-        )
-        db.session.add(notification)
-        db.session.commit()
-
 
         # Get user email and event name
         user = db.session.get(User, user_id)
         event = db.session.get(Event, event_id)
 
+        # Create notification BEFORE committing reservation
+        try:
+            token_payload = {
+                "user_id": str(user_id),
+                "event_id": str(event_id)
+            }
+            token = jwt.encode(token_payload, current_app.config["SECRET_KEY"], algorithm="HS256")
+
+            notification = Notification(
+                user_id=user_id,
+                event_id=event_id,
+                title="Potwierdzenie rezerwacji",
+                content=f"Dziękujemy za rezerwację udziału w wydarzeniu {event.title}.",
+                type="reservation_confirmation",
+                status=NotificationStatus.pending
+            )
+            db.session.add(notification)
+            logger.info(f"Created notification for user {user_id} and event {event_id}")
+
+        except Exception as e:
+            logger.error(f"Error creating notification: {str(e)}")
+            db.session.rollback()
+            return jsonify({"error": f"Failed to create notification: {str(e)}"}), 500
+
+        # Commit both reservation and notification
+        db.session.commit()
+        logger.info(f"Committed reservation {new_reservation.id} and notification to database")
+
         if user and event:
-            send_confirmation_email(user.email, event.title, is_reservation=True)
             try:
-                send_confirmation_email(user.email, event.name, user.name, is_reservation=True)
+                send_confirmation_email(user.email, event.title, user.name, is_reservation=True)
                 notification.status = NotificationStatus.sent
                 db.session.commit()
+                logger.info(f"Email sent successfully to {user.email}, notification status updated to sent")
             except Exception as e:
-                db.session.rollback()
-                return jsonify({"error": f"Email sending failed: {str(e)}"}), 500
+                logger.error(f"Email sending failed: {str(e)}")
 
         return jsonify({
             "message": "Reservation created successfully",
-            "id": str(new_reservation.id)
+            "id": str(new_reservation.id),
+            "notification_id": str(notification.id)
         }), 201
 
-    except IntegrityError:
+    except IntegrityError as e:
         db.session.rollback()
-        return jsonify({"error": "Database integrity error"}), 500
+        logger.error(f"Database integrity error: {str(e)}")
+        return jsonify({"error": "Database integrity error", "details": str(e)}), 500
     except Exception as e:
         db.session.rollback()
+        logger.error(f"General error: {str(e)}")
         return jsonify({"error": str(e)}), 500

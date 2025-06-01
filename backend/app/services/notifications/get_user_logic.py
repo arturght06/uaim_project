@@ -1,21 +1,24 @@
 from flask import jsonify
 from app.models.notification import Notification
 from sqlalchemy.exc import SQLAlchemyError
+import uuid
 import logging
 
 logger = logging.getLogger(__name__)
 
-def get_notifications_logic(db):
+def get_user_notifications_logic(db, user_id):
     try:
-        logger.info("Starting to fetch notifications from database")
+        logger.info(f"Fetching notifications for user: {user_id}")
         
-        # Use db.session.query instead of db.session.query
-        notifications = db.session.query(Notification).all()
-        logger.info(f"Query executed successfully. Found {len(notifications)} notifications in database")
+        # Validate UUID format
+        try:
+            user_uuid = uuid.UUID(str(user_id))
+        except ValueError as e:
+            logger.error(f"Invalid user_id format: {user_id}")
+            return jsonify({"error": "Invalid user ID format"}), 400
         
-        if not notifications:
-            logger.warning("No notifications found in database")
-            return jsonify([]), 200
+        notifications = db.session.query(Notification).filter_by(user_id=user_uuid).order_by(Notification.created_at.desc()).all()
+        logger.info(f"Found {len(notifications)} notifications for user {user_id}")
         
         results = []
         for n in notifications:
@@ -31,22 +34,20 @@ def get_notifications_logic(db):
                     "created_at": n.created_at.isoformat() if n.created_at else None
                 }
                 results.append(notification_data)
-                logger.debug(f"Processed notification {n.id}")
             except Exception as e:
                 logger.error(f"Error processing notification {n.id}: {str(e)}")
                 continue
         
-        logger.info(f"Successfully processed {len(results)} notifications")
+        logger.info(f"Successfully processed {len(results)} notifications for user {user_id}")
         return jsonify(results), 200
 
     except SQLAlchemyError as e:
-        logger.error(f"SQLAlchemy error in get_notifications: {str(e)}")
+        logger.error(f"SQLAlchemy error in get_user_notifications: {str(e)}")
         return jsonify({"error": "Database error", "details": str(e)}), 500
     except Exception as e:
-        logger.error(f"General error in get_notifications: {str(e)}")
+        logger.error(f"General error in get_user_notifications: {str(e)}")
         return jsonify({"error": "Server error", "details": str(e)}), 500
     finally:
-        # Ensure session is properly closed
         try:
             db.session.close()
         except Exception as e:
