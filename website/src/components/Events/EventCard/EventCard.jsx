@@ -21,7 +21,7 @@ const EventCard = ({ event, disableLink }) => {
     organizer_data,
     reservation,
     reservation_count,
-    comment_count
+    comment_count,
   } = event || {};
 
   const isOrganizer =
@@ -48,11 +48,13 @@ const EventCard = ({ event, disableLink }) => {
         <div className={styles.eventDetails}>
           <div className={styles.eventItem}>
             <span class="material-symbols-outlined">pin_drop</span>{" "}
-            <span>{formatLocation(location_data)}</span>
+            <span className={styles.nowrap}>
+              {formatLocation(location_data)}
+            </span>
           </div>
           <div className={styles.eventItem}>
             <span class="material-symbols-outlined">calendar_month</span>{" "}
-            <span>{date}</span>
+            <span className={styles.nowrap}>{date}</span>
           </div>
           <div className={styles.eventItem}>
             <p className={styles.descriptionText}>{description}</p>

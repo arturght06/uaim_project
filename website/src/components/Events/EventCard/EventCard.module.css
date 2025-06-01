@@ -111,6 +111,8 @@
 .eventItem {
   display: flex;
   align-items: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
   gap: 6px;
 }
 
@@ -132,6 +134,12 @@
   overflow: hidden;
   text-overflow: ellipsis;
   color: var(--text-muted);
+}
+
+.nowrap {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .actions {
