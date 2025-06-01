@@ -73,7 +73,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         } else {
             holder.authorView.setText(event.organizerFirstName + " " + event.organizerLastName);
         }
-        holder.createdView.setText(formatDate(event.createdAt, "d MMMM yyyy HH:mm"));
+        holder.createdView.setText(formatDate(event.createdAt, "dd.MM.yyyy, HH:mm"));
 
         // Tytuł
         holder.titleView.setText(event.title);
@@ -87,7 +87,7 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         holder.locationView.setText(loc);
 
         // Data eventu
-        holder.eventDateView.setText(formatDate(event.eventDate, "d MMMM yyyy HH:mm"));
+        holder.eventDateView.setText(formatDate(event.eventDate, "dd.MM.yyyy, HH:mm"));
 
         // Opis
         holder.descriptionView.setText(event.description);
@@ -129,16 +129,20 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
         // Ikona dołączania
         if (!isLoggedIn || isMyEvent) {
             holder.joinBtn.setVisibility(View.GONE);
+            Log.d("EventAdapter", "Join button hidden for event " + event.id + " - isLoggedIn: " + isLoggedIn + ", isMyEvent: " + isMyEvent);
         } else {
             holder.joinBtn.setVisibility(View.VISIBLE);
+            Log.d("EventAdapter", "Event " + event.id + " - reservationStatus: '" + event.reservationStatus + "'");
             if ("confirmed".equals(event.reservationStatus)) {
                 holder.joinBtn.setImageResource(R.drawable.person_dash_fill);
                 holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.primary_color));
                 holder.joinBtn.setContentDescription("Wycofaj udział");
+                Log.d("EventAdapter", "Set leave button for event " + event.id);
             } else {
                 holder.joinBtn.setImageResource(R.drawable.person_check_fill);
                 holder.joinBtn.setColorFilter(context.getResources().getColor(R.color.secondary_color));
                 holder.joinBtn.setContentDescription("Weź udział");
+                Log.d("EventAdapter", "Set join button for event " + event.id);
             }
             holder.joinBtn.setOnClickListener(v -> listener.onJoin(event));
         }
@@ -154,25 +158,26 @@ public class EventAdapter extends RecyclerView.Adapter<EventAdapter.ViewHolder> 
 
     private String formatDate(String dateString, String pattern) {
         try {
-            // Try the main format first: "2025-05-31T21:21:09.186588" (UTC)
-            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
-            inputFormat.setTimeZone(TimeZone.getTimeZone("UTC")); // Parse as UTC
+            // Input format from API: "EEE, dd MMM yyyy HH:mm:ss z" (e.g., "Sun, 01 Jun 2025 16:42:19 GMT")
+            SimpleDateFormat inputFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH);
             Date date = inputFormat.parse(dateString);
             
-            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
-            outputFormat.setTimeZone(TimeZone.getDefault()); // Display in local timezone
+            SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, new Locale("pl", "PL"));
+            outputFormat.setTimeZone(TimeZone.getDefault());
             return outputFormat.format(date);
         } catch (Exception e) {
-            // Fallback to original format
+            Log.e("EventAdapter", "Error formatting date: " + dateString, e);
+            // Fallback to original microsecond format if GMT parsing fails
             try {
-                SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault());
-                inputFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                Date date = inputFormat.parse(dateString);
+                SimpleDateFormat fallbackFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSSSS", Locale.getDefault());
+                fallbackFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                Date date = fallbackFormat.parse(dateString);
                 
-                SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, Locale.getDefault());
+                SimpleDateFormat outputFormat = new SimpleDateFormat(pattern, new Locale("pl", "PL"));
                 outputFormat.setTimeZone(TimeZone.getDefault());
                 return outputFormat.format(date);
-            } catch (Exception ex) {
+            } catch (Exception fallbackException) {
+                Log.e("EventAdapter", "Fallback date parsing also failed: " + dateString, fallbackException);
                 return dateString;
             }
         }

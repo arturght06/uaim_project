@@ -225,11 +225,16 @@ public class HomeFragment extends Fragment {
                             String eventId = res.optString("event_id", null);
                             String reservationId = res.optString("id", null);
                             String status = res.optString("status", null);
-                            if (eventId != null && reservationId != null) {
+                            String reservationUserId = res.optString("user_id", null);
+                            
+                            // Only map reservations that belong to the current user
+                            if (eventId != null && reservationId != null && userId.equals(reservationUserId)) {
                                 eventIdToReservationId.put(eventId, reservationId);
                                 eventIdToReservationStatus.put(eventId, status);
+                                Log.d("HomeFragment", "Mapped reservation: eventId=" + eventId + ", status=" + status + ", userId=" + userId);
                             }
                         }
+                        Log.d("HomeFragment", "Total reservations mapped for user " + userId + ": " + eventIdToReservationStatus.size());
                     } else {
                         Log.e("HomeFragment", "LoadEventsTask: Failed to fetch reservations, HTTP " + resCode);
                     }

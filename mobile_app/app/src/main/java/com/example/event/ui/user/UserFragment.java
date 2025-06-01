@@ -96,6 +96,8 @@ public class UserFragment extends Fragment {
                 // No action - user cannot join/leave their own organized events from here.
                 // The adapter should hide the join button for these events.
                 Log.d(TAG, "onJoin clicked for organized event (no action): " + event.title);
+                // Optionally show a message that they can't join their own event
+                Toast.makeText(getContext(), "Nie możesz dołączyć do własnego wydarzenia", Toast.LENGTH_SHORT).show();
             }
 
             @Override
