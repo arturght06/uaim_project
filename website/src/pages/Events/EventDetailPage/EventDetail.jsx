@@ -56,7 +56,10 @@ const EventDetail = () => {
       setEvent(eventData);
     } catch (err) {
       console.error("Error fetching event details:", err);
-      setError(err.message || `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`);
+      setError(
+        err.message ||
+          `Nie udało się załadować szczegółów wydarzenia (ID: ${eventId}).`
+      );
     } finally {
       setIsLoadingEvent(false);
     }
@@ -77,7 +80,8 @@ const EventDetail = () => {
         try {
           const allMyReservations = await getAllMyReservations();
           const foundReservation = allMyReservations.find(
-            (res) => res.event_id === eventId && res.user_id === auth.currentUser.id
+            (res) =>
+              res.event_id === eventId && res.user_id === auth.currentUser.id
           );
           setUserReservation(foundReservation || null);
         } catch (reservationError) {
@@ -94,7 +98,10 @@ const EventDetail = () => {
   }, [eventId, auth.isAuthenticated, auth.currentUser]);
 
   const handleDeleteEvent = async () => {
-    if (!event || !window.confirm(`Czy na pewno chcesz usunąć wydarzenie "${event.title}"?`)) {
+    if (
+      !event ||
+      !window.confirm(`Czy na pewno chcesz usunąć wydarzenie "${event.title}"?`)
+    ) {
       return;
     }
     setIsDeletingEvent(true);
@@ -121,6 +128,7 @@ const EventDetail = () => {
         status: "confirmed",
       };
       const newReservation = await createReservation(reservationData);
+      auth.fetchNotifications();
       setUserReservation({
         id: newReservation.id,
         user_id: auth.currentUser.id,
@@ -132,7 +140,9 @@ const EventDetail = () => {
       showAlert("Stworzono rezerwację.", "success");
     } catch (err) {
       console.error("Error creating reservation:", err);
-      setError(err.data?.error || err.message || "Nie udało się utworzyć rezerwacji.");
+      setError(
+        err.data?.error || err.message || "Nie udało się utworzyć rezerwacji."
+      );
     } finally {
       setIsReservationProcessing(false);
     }
@@ -149,7 +159,9 @@ const EventDetail = () => {
       showAlert("Usunięto rezerwację.", "success");
     } catch (err) {
       console.error("Error deleting reservation:", err);
-      setError(err.data?.error || err.message || "Nie udało się anulować rezerwacji.");
+      setError(
+        err.data?.error || err.message || "Nie udało się anulować rezerwacji."
+      );
     } finally {
       setIsReservationProcessing(false);
     }
@@ -205,7 +217,11 @@ const EventDetail = () => {
   };
 
   if (isLoadingEvent) {
-    return <p className={styles.loadingMessage}>Ładowanie szczegółów wydarzenia...</p>;
+    return (
+      <p className={styles.loadingMessage}>
+        Ładowanie szczegółów wydarzenia...
+      </p>
+    );
   }
   if (error && !event) {
     return <p className={styles.errorMessage}>Błąd: {error}</p>;
@@ -264,14 +280,16 @@ const EventDetail = () => {
         <div className={styles.metaItem}>
           <span className="material-symbols-outlined">person</span>
           <span>
-            Organizator: <strong>{formatUser(organizer_data) || "Nieznany"}</strong>
+            Organizator:{" "}
+            <strong>{formatUser(organizer_data) || "Nieznany"}</strong>
           </span>
         </div>
         <div className={styles.metaItem}>
           <span className="material-symbols-outlined">schedule</span>
           <span>
             Opublikowano:{" "}
-            {formatDate(created_at, { hour: undefined, minute: undefined }) || "Nieznana"}
+            {formatDate(created_at, { hour: undefined, minute: undefined }) ||
+              "Nieznana"}
           </span>
         </div>
       </div>
@@ -307,9 +325,11 @@ const EventDetail = () => {
                 <strong>Liczba rezerwacji:</strong>
                 <p>
                   {reservation_count}
-                  {max_participants !== null && max_participants !== undefined &&
+                  {max_participants !== null &&
+                    max_participants !== undefined &&
                     `/${max_participants}`}
-                  {!isCheckingReservation && spotsLeft < Infinity &&
+                  {!isCheckingReservation &&
+                    spotsLeft < Infinity &&
                     ` (Pozostało: ${spotsLeft})`}
                 </p>
               </div>
@@ -328,8 +348,12 @@ const EventDetail = () => {
                     onClick={handleDeleteReservation}
                     disabled={isReservationProcessing}
                   >
-                    <span className="material-symbols-outlined">event_busy</span>
-                    {isReservationProcessing ? "Anulowanie..." : "Anuluj Rezerwację"}
+                    <span className="material-symbols-outlined">
+                      event_busy
+                    </span>
+                    {isReservationProcessing
+                      ? "Anulowanie..."
+                      : "Anuluj Rezerwację"}
                   </Button>
                 ) : canReserve ? (
                   <Button
@@ -338,11 +362,19 @@ const EventDetail = () => {
                     onClick={handleCreateReservation}
                     disabled={isReservationProcessing}
                   >
-                    <span className="material-symbols-outlined">how_to_reg</span>
-                    {isReservationProcessing ? "Rezerwowanie..." : "Zarezerwuj Miejsce"}
+                    <span className="material-symbols-outlined">
+                      how_to_reg
+                    </span>
+                    {isReservationProcessing
+                      ? "Rezerwowanie..."
+                      : "Zarezerwuj Miejsce"}
                   </Button>
                 ) : (
-                  <Button variant="secondary" className={styles.primaryActionButton} disabled>
+                  <Button
+                    variant="secondary"
+                    className={styles.primaryActionButton}
+                    disabled
+                  >
                     Brak wolnych miejsc
                   </Button>
                 )}
@@ -369,7 +401,11 @@ const EventDetail = () => {
               onChange={(e) => setNewComment(e.target.value)}
               rows={3}
             />
-            <Button onClick={handleCommentSubmit} disabled={isCommentSubmitting} variant="success">
+            <Button
+              onClick={handleCommentSubmit}
+              disabled={isCommentSubmitting}
+              variant="success"
+            >
               {isCommentSubmitting ? "Dodawanie..." : "Dodaj Komentarz"}
             </Button>
           </div>
@@ -399,10 +435,16 @@ const EventDetail = () => {
                 <div className={styles.commentActions}>
                   {editingCommentId === comment.id ? (
                     <>
-                      <Button variant="primary" onClick={() => handleEditComment(comment.id)}>
+                      <Button
+                        variant="primary"
+                        onClick={() => handleEditComment(comment.id)}
+                      >
                         Zapisz
                       </Button>
-                      <Button variant="secondary" onClick={() => setEditingCommentId(null)}>
+                      <Button
+                        variant="secondary"
+                        onClick={() => setEditingCommentId(null)}
+                      >
                         Anuluj
                       </Button>
                     </>
@@ -417,7 +459,10 @@ const EventDetail = () => {
                       >
                         Edytuj
                       </Button>
-                      <Button variant="danger" onClick={() => handleDeleteComment(comment.id)}>
+                      <Button
+                        variant="danger"
+                        onClick={() => handleDeleteComment(comment.id)}
+                      >
                         Usuń
                       </Button>
                     </>

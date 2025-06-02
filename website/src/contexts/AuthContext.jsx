@@ -173,7 +173,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const unreadNotificationsCount = notifications.filter((n) => !n.seen).length;
+  const unreadNotificationsCount = notifications.filter(
+    (n) => n.status !== "seen"
+  ).length;
 
   const value = {
     currentUser,

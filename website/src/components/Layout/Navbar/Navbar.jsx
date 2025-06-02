@@ -181,6 +181,7 @@ const Navbar = () => {
                       notifications={auth.notifications}
                       isLoading={auth.isLoadingNotifications}
                       onMarkAsSeen={handleMarkAsSeenAndCloseDropdown}
+                      fetchNotifications={auth.fetchNotifications}
                       onClose={() => setShowNotifications(false)}
                     />
                   </div>

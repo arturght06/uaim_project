@@ -47,13 +47,13 @@ const EventCard = ({ event, disableLink }) => {
         <h2 className={styles.activityTitle}>{title}</h2>
         <div className={styles.eventDetails}>
           <div className={styles.eventItem}>
-            <span class="material-symbols-outlined">pin_drop</span>{" "}
+            <span className="material-symbols-outlined">pin_drop</span>{" "}
             <span className={styles.nowrap}>
               {formatLocation(location_data)}
             </span>
           </div>
           <div className={styles.eventItem}>
-            <span class="material-symbols-outlined">calendar_month</span>{" "}
+            <span className="material-symbols-outlined">calendar_month</span>{" "}
             <span className={styles.nowrap}>{date}</span>
           </div>
           <div className={styles.eventItem}>
@@ -65,16 +65,16 @@ const EventCard = ({ event, disableLink }) => {
       <div className={styles.cardFooter}>
         <div className={styles.actions}>
           <div className={styles.action}>
-            <span class="material-symbols-outlined">groups</span>
+            <span className="material-symbols-outlined">groups</span>
             {reservation_count}
           </div>
           {/*<div className={styles.action}>
-            <span class="material-symbols-outlined">thumb_up</span>
+            <span className="material-symbols-outlined">thumb_up</span>
             50
           </div>
           */}
           <div className={styles.action}>
-            <span class="material-symbols-outlined">comment</span>
+            <span className="material-symbols-outlined">comment</span>
             {comment_count}
           </div>
         </div>
