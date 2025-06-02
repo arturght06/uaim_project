@@ -7,7 +7,8 @@ const NotificationDropdown = ({
   notifications,
   isLoading,
   onMarkAsSeen,
-  onClose,
+  fetchNotifications,
+  // onClose,
 }) => {
   if (isLoading) {
     return (
@@ -36,10 +37,11 @@ const NotificationDropdown = ({
             key={notif.id}
             notification={notif}
             onMarkAsSeen={() => onMarkAsSeen(notif.id)}
+            fetchNotifications={fetchNotifications}
           />
         ))}
       </div>
-      <div className={styles.footer}>
+      {/* <div className={styles.footer}>
         <Link
           to="/notifications"
           onClick={onClose}
@@ -47,7 +49,7 @@ const NotificationDropdown = ({
         >
           Zobacz wszystkie
         </Link>
-      </div>
+      </div> */}
     </div>
   );
 };

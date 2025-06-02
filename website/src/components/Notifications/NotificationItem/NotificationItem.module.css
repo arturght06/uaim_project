@@ -26,6 +26,10 @@
   flex-grow: 1;
 }
 
+.title {
+  margin: 0 0 4px 0;
+  color: var(--primary-color);
+}
 .message {
   margin: 0 0 4px 0;
   font-size: 0.9em;
