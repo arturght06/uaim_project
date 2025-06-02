@@ -9,10 +9,10 @@ export const translateErrors = (data) => {
         translated.username = "Nieprawidłowa nazwa użytkownika.";
         break;
       case "name":
-        translated.name = "Nieprawidłowe imię.";
+        translated.name = "Imię jest nieprawidłowe (1-30 liter, tylko litery, spacje, myślniki lub apostrofy).";
         break;
-      case "surname":
-        translated.surname = "Nieprawidłowe nazwisko.";
+            case "surname":
+        translated.surname = "Nazwisko jest nieprawidłowe (1-30 liter, tylko litery, spacje, myślniki lub apostrofy).";
         break;
       case "birthday":
         translated.birthday =
@@ -22,7 +22,7 @@ export const translateErrors = (data) => {
         translated.email = "Nieprawidłowy adres e-mail.";
         break;
       case "password":
-        translated.password = "Nieprawidłowe hasło.";
+        translated.password = "Hasło musi mieć co najmniej 8 znaków, zawierać wielką i małą literę oraz znak specjalny.";
         break;
       default:
         translated[field] = message;

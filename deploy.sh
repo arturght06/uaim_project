@@ -19,6 +19,7 @@ if ! docker ps -q -f name=^${DB_CONTAINER_NAME}$ -f status=running | grep -q .; 
             -e POSTGRES_USER=${DB_USER} \
             -e POSTGRES_PASSWORD=${DB_PASS} \
             -p 5432:5432 \
+            --restart unless-stopped \
             -v ${DB_VOLUME}:/var/lib/postgresql/data \
             --name ${DB_CONTAINER_NAME} postgres
     fi
@@ -63,6 +64,7 @@ fi
 docker run --rm -d -p 8800:8800 \
     --env-file app/.env \
     --name "$BACKEND_CONTAINER_NAME" \
+    --restart unless-stopped \
     "$BACKEND_IMAGE_NAME"
 
 echo "Backend deployment complete. Container '$BACKEND_CONTAINER_NAME' is running."
@@ -94,6 +96,7 @@ docker build -t "$WEBSITE_IMAGE_NAME" .
 echo "Running website Docker container '$WEBSITE_CONTAINER_NAME'..."
 docker run --rm -d -p 5173:5173 \
     --name "$WEBSITE_CONTAINER_NAME" \
+    --restart unless-stopped \
     "$WEBSITE_IMAGE_NAME"
 
 echo "Website deployment complete. Container '$WEBSITE_CONTAINER_NAME' is running."

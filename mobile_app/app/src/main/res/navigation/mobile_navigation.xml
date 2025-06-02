@@ -24,7 +24,8 @@
     <fragment
         android:id="@+id/navigation_user"
         android:name="com.example.event.ui.user.UserFragment"
-        android:label="@string/title_user" >
+        android:label="@string/title_user"
+        tools:layout="@layout/fragment_user">
         <action
             android:id="@+id/action_user_to_eventDetail"
             app:destination="@id/eventDetailFragment" />
