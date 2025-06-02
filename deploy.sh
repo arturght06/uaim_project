@@ -61,7 +61,7 @@ if [ ! -f "app/.env" ]; then
     exit 1
 fi
 
-docker run --rm -d -p 8800:8800 \
+docker run -d -p 8800:8800 \
     --env-file app/.env \
     --name "$BACKEND_CONTAINER_NAME" \
     --restart unless-stopped \
@@ -94,7 +94,7 @@ echo "Building website Docker image '$WEBSITE_IMAGE_NAME'..."
 docker build -t "$WEBSITE_IMAGE_NAME" .
 
 echo "Running website Docker container '$WEBSITE_CONTAINER_NAME'..."
-docker run --rm -d -p 5173:5173 \
+docker run -d -p 5173:5173 \
     --name "$WEBSITE_CONTAINER_NAME" \
     --restart unless-stopped \
     "$WEBSITE_IMAGE_NAME"
