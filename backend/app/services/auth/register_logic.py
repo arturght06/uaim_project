@@ -23,11 +23,12 @@ def process_register_logic(data):
         db.session.add(new_user)
         try:
             db.session.commit()
-            return jsonify({"result": "User successfully registered"}), 200  # Use 201 for successful creation
+            return jsonify({"result": "User successfully registered"}), 200
         except Exception as e:
             db.session.rollback()
             # Consider logging the specific database error for debugging
             return jsonify({'error': 'Failed to save user, try later'}), 500
 
     except Exception as e:
-        return jsonify({'error': "Unknown server error!", "More:": e}), 400
+        return jsonify({'error': "Unknown server error!", "More": str(e)}), 400
+

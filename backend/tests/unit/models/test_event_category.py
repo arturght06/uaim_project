@@ -1,7 +1,6 @@
-import pytest
-from app.models.event_category import dummy_model_function  # Replace with actual imports
+from app.models.event_category import EventCategory
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_event_category():
+    ec = EventCategory(event_id="1", category_id="2")
+    assert ec.event_id == "1"
+    assert ec.category_id == "2"

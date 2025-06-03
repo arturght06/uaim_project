@@ -58,5 +58,5 @@ def process_refreshing_token_logic(data):
         }
         return jsonify(response_data), 200
     except Exception as e:
-        return jsonify({'error': "Unknown server error!", "More:": e}), 400
+        return jsonify({'error': "Unknown server error!", "More": str(e)}), 400
 

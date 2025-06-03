@@ -1,7 +1,5 @@
-import pytest
-from app.models.comment import dummy_model_function  # Replace with actual imports
+from app.models.comment import Comment
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_comment():
+    comment = Comment(user_id="1", event_id="2", content="Nice event")
+    assert comment.content == "Nice event"

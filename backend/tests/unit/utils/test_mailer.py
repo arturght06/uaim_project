@@ -1,7 +1,14 @@
-import pytest
-from app.utils.mailer import dummy_util_function  # Replace with actual imports
+from unittest.mock import patch
+from app.utils.mailer import send_confirmation_email, send_reminder_email
 
-def test_dummy_util_function_basic():
-    # TODO: Replace with real test
-    result = dummy_util_function()
-    assert result is not None
+@patch("app.utils.mailer.mail.send")
+@patch("app.utils.mailer.Message")
+def test_send_confirmation_email(mock_msg, mock_send):
+    send_confirmation_email("test@example.com", "Event", user_name="John", is_reservation=True)
+    mock_send.assert_called_once()
+
+@patch("app.utils.mailer.mail.send")
+@patch("app.utils.mailer.Message")
+def test_send_reminder_email(mock_msg, mock_send):
+    send_reminder_email("test@example.com", "Event", "tomorrow", user_name="Anna")
+    mock_send.assert_called_once()

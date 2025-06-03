@@ -1,7 +1,16 @@
-import pytest
-from app.models.user import dummy_model_function  # Replace with actual imports
+from datetime import date
+from app.models.user import User, UserRoleEnum
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_user():
+    user = User(
+        username="john",
+        email="john@example.com",
+        role=UserRoleEnum.user,
+        birthday=date(2000, 1, 1)
+    )
+    assert user.username == "john"
+    assert user.email == "john@example.com"
+    assert user.role == UserRoleEnum.user
+    result = user.to_dict()
+    assert isinstance(result, dict)
+    assert result["role"] == "user"
