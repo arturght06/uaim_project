@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:latest
+    container_name: db
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: user
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - uaim-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: uaim_backend
+    ports:
+      - "8800:8800"
+    env_file:
+      - ./backend/app/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - uaim-network
+
+  website:
+    build:
+      context: ./website
+      dockerfile: Dockerfile
+    container_name: uaim_website
+    ports:
+      - "5173:5173"
+    restart: unless-stopped
+    networks:
+      - uaim-network
+
+volumes:
+  pgdata:
+    driver: local
+
+networks:
+  uaim-network:
+    driver: bridge

@@ -23,5 +23,5 @@ PORT = 8800
 
 if __name__ == '__main__':
     flask_app = create_app()
-    options = {'bind': f'127.0.0.1:{PORT}', 'workers': 4}
+    options = {'bind': f'0.0.0.0:{PORT}', 'workers': 4}
     StandaloneApplication(flask_app, options).run()
