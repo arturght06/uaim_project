@@ -1,7 +1,9 @@
-import pytest
-from app.models.event import dummy_model_function  # Replace with actual imports
+from app.models.event import Event
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_event():
+    ev = Event(title="Test Event", description="Sample description")
+    assert ev.title == "Test Event"
+    assert hasattr(ev, "to_dict")
+    result = ev.to_dict()
+    assert isinstance(result, dict)
+    assert "title" in result

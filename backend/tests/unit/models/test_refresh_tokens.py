@@ -1,7 +1,7 @@
-import pytest
-from app.models.refresh_tokens import dummy_model_function  # Replace with actual imports
+from app.models.refresh_tokens import RefreshToken
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_refresh_token():
+    token = RefreshToken(user_id="1", token="abc123", revoked=False)
+    assert token.token == "abc123"
+    assert token.revoked is False
+    assert token.user_id == "1"

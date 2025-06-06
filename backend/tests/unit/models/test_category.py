@@ -1,7 +1,5 @@
-import pytest
-from app.models.category import dummy_model_function  # Replace with actual imports
+from app.models.category import Category
 
-def test_dummy_model_function_basic():
-    # TODO: Replace with real test
-    result = dummy_model_function()
-    assert result is not None
+def test_create_category():
+    cat = Category(name="Music")
+    assert cat.name == "Music"

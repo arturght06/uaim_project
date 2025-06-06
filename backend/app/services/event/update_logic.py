@@ -9,7 +9,7 @@ def update_event_logic(db, event_id, request):
         if not event:
             return jsonify({"message": "Event not found"}), 404
 
-        for key in ['title', 'description', 'location_id', 'start_time', 'end_time']:
+        for key in ['title', 'description', 'location_id', 'event_date']:
             if key in data:
                 setattr(event, key, data[key])
 

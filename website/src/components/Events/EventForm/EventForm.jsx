@@ -272,7 +272,7 @@ const EventForm = ({ eventToEditId, onSuccess }) => {
       console.log("Category relations updated.");
 
       if (onSuccess) {
-        onSuccess(savedEvent);
+        onSuccess(eventDataForEdit || savedEvent);
       } else {
         navigate(
           isEditMode

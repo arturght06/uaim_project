@@ -1,7 +1,10 @@
-import pytest
-from app.utils.validators.username import dummy_util_function  # Replace with actual imports
+from app.utils.validators.username import is_valid_username
 
-def test_dummy_util_function_basic():
-    # TODO: Replace with real test
-    result = dummy_util_function()
-    assert result is not None
+def test_valid_username():
+    assert is_valid_username("user_123")
+
+def test_invalid_username_symbols():
+    assert not is_valid_username("invalid-username")
+
+def test_invalid_username_too_long():
+    assert not is_valid_username("a" * 31)

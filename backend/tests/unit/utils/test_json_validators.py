@@ -1,7 +1,13 @@
-import pytest
-from app.utils.json_validators import dummy_util_function  # Replace with actual imports
+from app.utils.json_validators import validate_user_data
 
-def test_dummy_util_function_basic():
-    # TODO: Replace with real test
-    result = dummy_util_function()
-    assert result is not None
+def test_validate_user_data_invalid_json():
+    result = validate_user_data("{bad_json")
+    assert "error" in result
+
+def test_validate_user_data_wrong_type():
+    result = validate_user_data(123)
+    assert "error" in result
+
+def test_validate_user_data_valid_dict_missing_fields():
+    result = validate_user_data({})
+    assert "errors" in result
