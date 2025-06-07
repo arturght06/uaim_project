@@ -34,6 +34,7 @@ const NotificationItem = ({
 
   return (
     <div
+      data-testid={`notification-item-clickable-${id}`}
       className={`${styles.notificationItem} ${
         seen ? styles.seen : styles.unseen
       } ${styles[type]}`}

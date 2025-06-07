@@ -3,6 +3,10 @@ export const formatDate = (isoString) => {
   if (!isoString) return "Data nieznana";
   try {
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) {
+      console.error("Invalid date input:", isoString);
+      return "Niepoprawna data";
+    }
     return date.toLocaleDateString("pl-PL", {
       year: "numeric",
       month: "long",

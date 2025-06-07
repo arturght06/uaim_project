@@ -2,7 +2,7 @@ import React, { createContext, useState, useCallback, useContext } from "react";
 
 let alertIdCounter = 0;
 
-const AlertContext = createContext(null);
+export const AlertContext = createContext(null);
 
 export const useAlert = () => {
   const context = useContext(AlertContext);
