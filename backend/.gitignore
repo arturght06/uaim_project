@@ -1,4 +1,4 @@
-.env
+# .env
 .python-version
 .venv
 app.log
